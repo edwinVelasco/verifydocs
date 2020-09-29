@@ -6,6 +6,7 @@ PG_DBHOST = ''
 PG_DBPORT = '5432'
 
 # Project config
+# $ openssl rand -base64 32
 DJ_SECRET_KEY = ''
 DJ_DEBUG = False
 DJ_ALLOWED_HOSTS = ['*']
