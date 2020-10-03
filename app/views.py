@@ -6,6 +6,7 @@ from django.views.generic import CreateView, ListView, DeleteView
 from django.views.generic import UpdateView, TemplateView
 from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
+from app.forms import VerifyDocsForm
 # Create your views here.
 
 from .models import UserMail
@@ -16,6 +17,8 @@ class HomeView(View):
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
+            messages.error(self.request,
+                           'No ha iniciado sesión')
             return redirect(reverse('index'))
 
         user_email = UserMail.objects.filter(email=request.user.email)
@@ -38,11 +41,12 @@ class IndexView(TemplateView):
         Handle POST requests: instantiate a form instance with the passed
         POST variables and then check if it's valid.
         """
-        form = request.POST
-        print(form)
+        form = VerifyDocsForm(data=request.POST)
         if form.is_valid():
-            return self.form_valid(form)
+            messages.success(request, 'Formulario correcto')
+            return render(request, self.template_name, {'user': request.user})
         else:
-            return self.form_invalid(form)
+            messages.error(self.request, 'Codigo no registrado')
+            return render(request, self.template_name, {'user': request.user})
 
 

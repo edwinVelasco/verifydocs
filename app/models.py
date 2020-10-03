@@ -1,6 +1,7 @@
 from django.db import models
 from gdstorage.storage import GoogleDriveStorage
 from django.core.validators import EmailValidator
+from app.validators import validate_domainonly_email
 
 # Define Google Drive Storage
 gd_storage = GoogleDriveStorage()
@@ -14,8 +15,7 @@ class Doc(models.Model):
 
 class UserMail(models.Model):
     email = models.EmailField(
-        validators=[EmailValidator(message='El correo no pertenece a la UFPS',
-                                   whitelist=['@ufps.edu.co']), ],
+        validators=[validate_domainonly_email, ],
         unique=True, )
 
     class Meta:
