@@ -8,6 +8,7 @@ class VerifyDocsForm(forms.Form):
             attrs={
                 'class': 'form-control',
                 'placeholder': 'Código de verificación',
+                'style': 'border-top-left-radius: 4px;border-bottom-left-radius: 4px;'
             }
         )
     )

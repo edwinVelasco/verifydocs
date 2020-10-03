@@ -34,7 +34,9 @@ class IndexView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         """Handle GET requests: instantiate a blank version of the form."""
-        return self.render_to_response(self.get_context_data())
+        contest = self.get_context_data()
+        contest['form'] = VerifyDocsForm()
+        return self.render_to_response(contest)
 
     def post(self, request, *args, **kwargs):
         """
@@ -44,9 +46,11 @@ class IndexView(TemplateView):
         form = VerifyDocsForm(data=request.POST)
         if form.is_valid():
             messages.success(request, 'Formulario correcto')
-            return render(request, self.template_name, {'user': request.user})
+            return render(request, self.template_name, {'user': request.user,
+                                                        'form': form})
         else:
             messages.error(self.request, 'Codigo no registrado')
-            return render(request, self.template_name, {'user': request.user})
+            return render(request, self.template_name, {'user': request.user,
+                                                        'form': form})
 
 
