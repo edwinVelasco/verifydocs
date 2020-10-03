@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google'
+    'allauth.socialaccount.providers.google',
+    'gdstorage'
 ]
 
 MIDDLEWARE = [
@@ -168,3 +169,10 @@ MEDIA_URL = '/media/'
 CELERY_TASK_ALWAYS_EAGER = False
 CELERY_BROKER_URL = f'redis://{CACHE_REDIS_HOST}:{CACHE_REDIS_PORT}/{CACHE_REDIS_DB}'
 CELERY_RESULT_BACKEND = 'django-db'
+
+#
+# Google Drive Storage Settings
+#
+
+GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = 'tools/storage_key_file.json'
+GOOGLE_DRIVE_STORAGE_MEDIA_ROOT = '<base google drive path for file uploads>' # OPTIONAL

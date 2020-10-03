@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 
 verifydocs/parameters.py
+tools/storage_key_file.json
