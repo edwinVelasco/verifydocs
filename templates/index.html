@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% load socialaccount %}
+{% load static %}
+
+{% block body %}
+    <div class="wrapper" style="position: relative; min-height: 100%; top: 0px;">
+        <div id="menu-principal" class="header-v6 header-white-transparent
+                                        header-sticky"
+             style="position: relative;">
+            <div id="barra-superior" class="header-v8">
+                <div class="blog-topbar">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-7 col-xs-7">
+                                {% if user.is_authenticated %}
+                                  <ul class="topbar-list topbar-log_reg
+                                       visible-sm-block visible-md-block
+                                       visible-lg-block">
+                                      <li class="cd-log_reg home"
+                                          style="font-size: 14px !important;">
+                                          {{user.first_name}} {{user.last_name}}
+                                      </li>
+                                  </ul>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-5 col-xs-5 clearfix">
+                                <ul class="topbar-list topbar-log_reg
+                                pull-right visible-sm-block visible-md-block
+                                visible-lg-block">
+                                    {% if user.is_authenticated %}
+                                        <li class="cd-log_reg home"
+                                            style="font-size: 14px !important;">
+                                            <a href="{% url 'home' %}">
+                                                <i class="fa fa-home"></i>
+                                                Home
+                                            </a>
+                                        </li>
+                                        <li class="cd-log_reg home"
+                                            style="font-size: 14px !important;">
+                                            <a href="{% url 'logout' %}">
+                                                <i class="fa fa-power-off"></i>
+                                                Cerrar sesión
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li class="cd-log_reg home"
+                                        style="font-size: 14px !important;">
+                                            <a href="{% provider_login_url 'google' %}">
+                                                <i class="fa fa-google"></i>
+                                                Iniciar sesión
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-v8 img-logo-superior" style="background-color: #aa1916;">
+        <div class="parallax-quote parallaxBg" style="padding: 30px 30px;">
+            <div class="parallax-quote-in" style="padding: 0px;">
+                <div class="row">
+                    <div class="col-md-4 col-sm-4 col-xs-5">
+                        <a href="https://ingsistemas.cloud.ufps.edu.co/" target="_blank">
+                            <img id="logo-header" src="{% static 'app/rsc/img/logo_vertical_ingsistemas_ht180.png' %}"
+                                 alt="Logo Programa de Ingeniería de Sistemas" style="max-height:100px;">
+                        </a>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-5">
+                        <br>
+                        <h1>
+                            Verificación de documentos
+                        </h1>
+                    </div>
+                    <div class="col-md-4 col-ms-4 col-xs-4 pull-right">
+                        <a href="http://www.ufps.edu.co/" target="_blank">
+                            <img class="header-banner" src="{% static 'app/rsc/img/logo_ufps.png' %}"
+                                 style="max-height:100px;" alt="Escudo de la Universidad Francisco de Paula Santander" ></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="clear:both;"></div>
+
+    <div class="container" >
+        <div class="col-lg-6 col-md-8 col-sm-12 col-lg-offset-3 col-lg-offset-3">
+            <div class="row">
+                <h1 class="text-center" style="font-size: 4em;">VerifyDocs</h1>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Código de verificación"
+                               style="border-top-left-radius: 4px;border-bottom-left-radius: 4px;">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button"
+                                    style="border-top-right-radius: 4px;border-bottom-right-radius: 4px;">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="owl-clients-v1" style="bottom: 0 !important; display: block; position: absolute;">
+        <div class="item">
+            <a href="http://www.mineducacion.gov.co/" target="_blank"><img src="{% static 'app/rsc/img/mineducacion.png' %}" class="hover-shadow" alt=""></a>
+        </div>
+        <div class="item">
+            <a href="http://www.gobiernoenlinea.gov.co/" target="_blank"><img src="{% static 'app/rsc/img/gobiernoenlinea.png' %}" class="hover-shadow" alt=""></a>
+        </div>
+        <div class="item">
+            <a href="http://www.contraloriagen.gov.co/" target="_blank"><img src="{% static 'app/rsc/img/contraloria.png' %}" class="hover-shadow" alt=""></a>
+        </div>
+        <div class="item">
+            <a href="http://www.procuraduria.gov.co/" target="_blank"><img src="{% static 'app/rsc/img/procuraduriageneraldelanacion.png' %}" class="hover-shadow" alt=""></a>
+        </div>
+        <div class="item">
+            <a href="http://www.urnadecristal.gov.co/" target="_blank"><img src="{% static 'app/rsc/img/urnadecristal.png' %}" class="hover-shadow" alt=""></a>
+        </div>
+        <div class="item">
+            <a href="http://www.icfes.gov.co/" target="_blank"><img src="{% static 'app/rsc/img/icfes.png' %}" class="hover-shadow" alt=""></a>
+        </div>
+        <div class="item">
+            <a href="http://www.icetex.gov.co/" target="_blank"><img src="{% static 'app/rsc/img/icetex.png' %}" class="hover-shadow" alt=""></a>
+        </div>
+        <div class="item">
+            <a href="http://www.universia.net.co/" target="_blank"><img src="{% static 'app/rsc/img/universia.png' %}" class="hover-shadow" alt=""></a>
+        </div>
+        <div class="item">
+            <a href="http://www.colombiaaprende.edu.co/" target="_blank"><img src="{% static 'app/rsc/img/colombiaaprende.png' %}" class="hover-shadow" alt=""></a>
+        </div>
+        <div class="item">
+            <a href="http://www.renata.edu.co/" target="_blank"><img src="{% static 'app/rsc/img/renata-logo.png' %}" class="hover-shadow" alt=""></a>
+        </div>
+        <div class="item">
+            <a href="http://www.colciencias.gov.co/" target="_blank"><img src="{% static 'app/rsc/img/COLCIENCIAS.png' %}" class="hover-shadow" alt=""></a>
+        </div>
+        <div class="item">
+            <a href="http://www.cna.gov.co/" target="_blank"><img src="{% static 'app/rsc/img/cna.png' %}" class="hover-shadow" alt=""></a>
+        </div>
+        <div class="item">
+            <a href="http://www.mineducacion.gov.co/sistemasdeinformacion/1735/propertyvalue-41698.html" target="_blank"><img src="{% static 'app/rsc/img/SACES.png' %}" class="hover-shadow" alt=""></a>
+        </div>
+        <div class="item">
+            <a href="http://www.mineducacion.gov.co/sistemasdeinformacion/1735/w3-propertyname-2672.html" target="_blank"><img src="{% static 'app/rsc/img/SNIES.png' %}" class="hover-shadow" alt=""></a>
+        </div>
+        <div class="item">
+            <a href="http://www.mineducacion.gov.co/sistemasdeinformacion/1735/w3-propertyname-2895.html" target="_blank"><img src="{% static 'app/rsc/img/SPADIES.png' %}" class="hover-shadow" alt=""></a>
+        </div>
+    </div>
+{% endblock %}
+
