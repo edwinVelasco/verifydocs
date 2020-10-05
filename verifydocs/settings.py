@@ -126,6 +126,9 @@ AUTH_PASSWORD_VALIDATORS = [
 SITE_ID = 2
 LOGIN_REDIRECT_URL = '/home/'
 
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_EMAIL_REQUIRED = True
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': [
@@ -136,6 +139,10 @@ SOCIALACCOUNT_PROVIDERS = {
             'access_type': 'online',
         }
     }
+}
+SOCIALACCOUNT_FORMS = {
+    'login': 'allauth.socialaccount.forms.DisconnectForm',
+    'signup': 'allauth.socialaccount.forms.SignupForm',
 }
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/

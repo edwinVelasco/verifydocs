@@ -11,7 +11,10 @@
     <!-- Favicon -->
     <link href="{% static 'app/rsc/img/favicon.ico' %}" rel="Shortcut icon">
     <!-- Web Fonts -->
-    <link rel='stylesheet' type='text/css' href='//fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin'>
+    <link rel='stylesheet' type='text/css'
+          href='//fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin'>
+    <link href="{% static 'app/css/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/ufps.css' %}" rel="stylesheet">
     <link href="{% static 'app/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'app/css/ie8.min.css' %}" rel="stylesheet">
     <link href="{% static 'app/css/blocks.min.css' %}" rel="stylesheet">
@@ -29,7 +32,6 @@
     <link href="{% static 'app/css/animate.min.css' %}" rel="stylesheet">
     <link href="{% static 'app/css/line-icons.min.css' %}" rel="stylesheet">
     <link href="{% static 'app/css/font-awesome.min.css' %}"  rel="stylesheet">
-    <link href="{% static 'app/css/owl.carousel.min.css' %}" rel="stylesheet">
     <link href="{% static 'app/css/horizontal-parallax.min.css' %}" rel="stylesheet">
     <link href="{% static 'app/css/layerslider.min.css' %}" rel="stylesheet">
     <link href="{% static 'app/css/ured.min.css' %}" rel="stylesheet">
@@ -42,7 +44,6 @@
     <link href="{% static 'app/css/hover.min.css' %}" rel="stylesheet">
     <link href="{% static 'app/css/custom-hover-effects.min.css' %}" rel="stylesheet">
     <link href="{% static 'app/css/custom.min.css' %}" rel="stylesheet">
-    <link href="{% static 'app/css/ufps.css' %}" rel="stylesheet">
     <link href="{% static 'app/css/pgwslider.min.css' %}" rel="stylesheet">
 </head>
 {% block base_body %}
@@ -50,6 +51,7 @@
         {% block body %}
         {% endblock %}
         {% block javascript %}
+            <script  src="{% static 'app/js/owl-recent-works.min.js' %}"></script>
             <script  src="{% static 'app/js/jquery.min.js' %}"></script>
             <script  src="{% static 'app/js/jquery-migrate.min.js' %}"></script>
             <script  src="{% static 'app/js/bootstrap.min.js' %}"></script>
@@ -67,7 +69,6 @@
             <script  src="{% static 'app/js/datepicker.min.js' %}"></script>
             <script  src="{% static 'app/js/validation.min.js' %}"></script>
             <script  src="{% static 'app/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
-            <script  src="{% static 'app/js/owl-recent-works.min.js' %}"></script>
             <script  src="{% static 'app/js/wow.min.js' %}"></script>
             <script  src="{% static 'app/js/ufps.js' %}"></script>
             <!--[if lt IE 9]>

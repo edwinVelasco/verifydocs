@@ -9,22 +9,36 @@ from django.contrib import messages
 from app.forms import VerifyDocsForm
 # Create your views here.
 
-from .models import UserMail
+from .mixins import UserAdminMixin
 
 
-class HomeView(View):
+class HomeView(UserAdminMixin, View):
     template = 'home.html'
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            messages.error(self.request,
-                           'No ha iniciado sesión')
+            messages.error(self.request, 'No ha iniciado sesión')
             return redirect(reverse('index'))
 
-        user_email = UserMail.objects.filter(email=request.user.email)
-        if not user_email:
-            messages.error(self.request, 'Su usuario no tienen acceso al sistema')
+        context = super(HomeView, self).get_context_data(**kwargs)
+        if 'is_admin' in context and context['is_admin']:
+            return redirect(reverse('admon'))
+
+        if 'is_valid' in context and not context['is_valid']:
+            messages.error(self.request,
+                           'Su usuario no tienen acceso al sistema')
             return redirect(reverse('logout'))
+
+        return render(request, self.template, {'user': request.user})
+
+
+class AdminHomeView(UserAdminMixin, View):
+    template = 'admin.html'
+
+    def get(self, request, *args, **kwargs):
+        context = super(AdminHomeView, self).get_context_data(**kwargs)
+        if not 'is_admin' in context and not context['is_admin']:
+            return redirect(reverse('index'))
 
         return render(request, self.template, {'user': request.user})
 
