@@ -26,3 +26,19 @@ class UserMail(models.Model):
 
     def __str__(self):
         return self.email
+
+
+class ModelTracing(models.Model):
+    updated = models.DateTimeField(auto_now_add=True,
+                                   verbose_name='Modificado')
+    created = models.DateTimeField(auto_created=True, verbose_name='Creado')
+
+class Dependence(ModelTracing):
+    initials = models.CharField(max_length=3, verbose_name='siglas',
+                                unique=True)
+    name = models.CharField(max_length=255, verbose_name='Nombre', unique=True)
+
+    class Meta:
+        verbose_name = 'Dependencia'
+        verbose_name_plural = 'Dependencias'
+

@@ -1,6 +1,8 @@
 from django import forms
 from django.forms import ModelForm as BaseModelForm
 
+from app.models import Dependence
+
 
 class VerifyDocsForm(forms.Form):
     code = forms.CharField(
@@ -12,3 +14,18 @@ class VerifyDocsForm(forms.Form):
             }
         )
     )
+
+
+class DependenceForm(forms.ModelForm):
+    name = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Nombre',
+            }
+        )
+    )
+
+    class Meta:
+        model = Dependence
+        fields = ['name']

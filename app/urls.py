@@ -10,5 +10,7 @@ urlpatterns = [
     path('home/admin/', AdminHomeView.as_view(), name='admon'),
     # logout_then_login
     path('logout/', LogoutView.as_view(), name='logout'),
+    #dependences
+
 
 ]
