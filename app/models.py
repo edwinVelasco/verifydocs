@@ -26,3 +26,26 @@ class UserMail(models.Model):
 
     def __str__(self):
         return self.email
+
+
+class DocumentType(models.Model):
+    name = models.CharField(max_length=200)
+    acronym = models.CharField(max_length=4, unique=True)
+    days_validity = models.IntegerField(default=None, null=True, blank=True)
+    active = models.BooleanField(default=True)
+
+    def update_active(self):
+        self.active = not self.active
+        self.save()
+
+    class Meta:
+        verbose_name = 'Tipo de documento'
+        verbose_name_plural = 'Tipos de documento'
+        ordering = ('name',)
+        db_table = 'verifydocs_document_type'
+
+    def __str__(self):
+        return f'"{self.name} - {self.acronym}"'
+
+
+
