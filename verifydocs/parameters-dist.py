@@ -15,6 +15,7 @@ DJ_TIME_ZONE = 'America/Bogota'
 DJ_USE_I18N = False
 DJ_USE_L10N = True
 DJ_USE_TZ = False
+DJ_SITE_ID = 1
 
 CACHE_REDIS_HOST = ''
 CACHE_REDIS_PORT = '6379'
