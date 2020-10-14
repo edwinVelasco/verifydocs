@@ -45,6 +45,8 @@
     <link href="{% static 'app/css/custom-hover-effects.min.css' %}" rel="stylesheet">
     <link href="{% static 'app/css/custom.min.css' %}" rel="stylesheet">
     <link href="{% static 'app/css/pgwslider.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/style.css' %}" rel="stylesheet">
+
 </head>
 {% block base_body %}
     <body class="header-fixed" style="">
@@ -84,6 +86,12 @@
                   ])
                 </script>  -->
             <!-- End For Background Image -->
+            <script>
+                $(document).ready(function(){
+                    $('[data-toggle="tooltip"]').tooltip();
+                });
+            </script>
+
             {{ form.media }}
         {% endblock %}
     </body>
