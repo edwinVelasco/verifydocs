@@ -17,7 +17,11 @@
                                          visible-lg-block">
                                         <li class="cd-log_reg home"
                                             style="font-size: 14px !important;">
-                                            Admin: {{user.first_name}} {{user.last_name}}
+                                            <a href="{% url 'admon' %}">
+                                                <i class="fa fa-user fa-lg"></i>
+                                                Administrador: {{user.first_name}} {{user.last_name}}
+                                            </a>
+
                                         </li>
                                     </ul>
                                 {% endif %}
@@ -48,30 +52,27 @@
             </div>
             <div class="collapse navbar-collapse mega-menu navbar-responsive-collapse">
               <div class="containermenu">
-                  <ul class="nav navbar-nav" style="float:left;">
-                      <li class="dropdown">
-                          <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">Programa</a>
-                          <ul class="dropdown-menu">
-                              <li><a href="#">Presentación</a></li>
-                              <li><a href="#">Misión, Visión y Valores</a></li>
-                              <li class="dropdown-submenu">
-                                  <a href="javascript:;">Comité Curricular</a>
-                                  <ul class="dropdown-menu">
-                                      <li><a href="#">Conformación</a></li>
-                                      <li><a href="#">Cronograma de Actividades</a></li>
-                                      <li><a href="#">Desde el Comité</a></li>
-                                  </ul>
-                              </li>
-                          </ul>
-                      </li>
-                      <li class="nodropdown">
-                          <a href="http://gidis.ufps.edu.co:8080/segra/"
-                              class="dropdown-toggle disabled"
-                              data-toggle="dropdown" target="_blank">
-                              Graduados
-                          </a>
-                      </li>
-                  </ul>
+
+                    <div class="container">
+                        <ul class="nav navbar-nav" style="float:left;">
+                          <li class="nodropdown {% if 'documents_type' in request.path  %}active{% endif %}">
+                              <a href="{% url 'documents_type' %}"
+                                  class="dropdown-toggle disabled"
+                                  data-toggle="dropdown">
+                                  <i class="fa fa-file-pdf-o fa-lg"></i>
+                                  Tipos de documentos
+                              </a>
+                          </li>
+                          <li class="nodropdown {% if 'dependences' in request.path  %}active{% endif %}">
+                              <a href="{% url 'dependences' %}"
+                                  class="dropdown-toggle disabled"
+                                  data-toggle="dropdown">
+                                  <i class="fa fa-folder-o fa-lg"></i>
+                                  Dependencias
+                              </a>
+                          </li>
+                      </ul>
+                    </div>
               </div>
           </div>
         </div>
@@ -79,32 +80,38 @@
       </div>
 
     <div class="container content-prin profile">
-        <div class="row margin-top-10">
-            <div class="headline-center-v2 headline-center-v2-dark margin-bottom-10">
-                <h1 class="shop-h1" style="font-size: 30px;"><b>Novedades</b></h1>
-                <span class="bordered-icon">
-                              <i class="fa fa-newspaper-o" aria-hidden="true"></i>
-                          </span>
-            </div>
-            {% include 'includes/messages.html' %}
-            <div class="col-md-12">
-                <div class="row equal-height-columns margin-bottom-10">
-                    <div class="container">
+        {% include 'includes/messages.html' %}
+        {% block container %}
+            <div class="row margin-top-10">
+                <div class="headline-center-v2 headline-center-v2-dark margin-bottom-10">
+                    <h1 class="shop-h1" style="font-size: 30px;"><b>Novedades</b></h1>
+                    <span class="bordered-icon">
+                                  <i class="fa fa-newspaper-o" aria-hidden="true"></i>
+                              </span>
+                </div>
 
+                <div class="col-md-12">
+                    <div class="row equal-height-columns margin-bottom-10">
+                        <div class="container">
+
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        {% endblock %}
     </div>
+
     <div class="footer-v1 off-container" style="bottom: 0 !important;
                                                 display: block;
-                                                position: absolute;">
+                                                position: fixed;
+                                                z-index: 99;">
         <div class="copyright" style="padding: 1px 0 5px;">
             <div class="container">
                 <div class="row">
                     <div class="col-md-12">
+                        {% now "Y" as current_year %}
                         <p>
-                            2020 © All Rights Reserved.
+                            {{ current_year }} © All Rights Reserved.
                             Desarrollado por: <a href="#">Denis Isidro Gonzales - Edwin Alverto Velasco</a>
                             Curso de profundización de software
                         </p>

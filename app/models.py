@@ -28,17 +28,48 @@ class UserMail(models.Model):
         return self.email
 
 
-class ModelTracing(models.Model):
-    updated = models.DateTimeField(auto_now_add=True,
-                                   verbose_name='Modificado')
-    created = models.DateTimeField(auto_created=True, verbose_name='Creado')
-
-class Dependence(ModelTracing):
-    initials = models.CharField(max_length=3, verbose_name='siglas',
-                                unique=True)
+class Dependence(models.Model):
+    acronym = models.CharField(max_length=4, verbose_name='Acrónimo',
+                               unique=True)
     name = models.CharField(max_length=255, verbose_name='Nombre', unique=True)
+    active = models.BooleanField(default=True, verbose_name='Activo')
+
+    updated = models.DateTimeField(auto_now=True,
+                                   verbose_name='Modificado')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='Creado')
 
     class Meta:
         verbose_name = 'Dependencia'
         verbose_name_plural = 'Dependencias'
+        ordering = ('name',)
+        db_table = 'verifydocs_dependence'
+
+    def update_active(self):
+        self.active = not self.active
+        self.save()
+
+    def __str__(self):
+        return f'"{self.name} - {self.acronym}"'
+
+
+class DocumentType(models.Model):
+    name = models.CharField(max_length=200)
+    acronym = models.CharField(max_length=4, unique=True)
+    days_validity = models.IntegerField(default=None, null=True, blank=True)
+    active = models.BooleanField(default=True)
+
+    def update_active(self):
+        self.active = not self.active
+        self.save()
+
+    class Meta:
+        verbose_name = 'Tipo de documento'
+        verbose_name_plural = 'Tipos de documento'
+        ordering = ('name',)
+        db_table = 'verifydocs_document_type'
+
+    def __str__(self):
+        return f'"{self.name} - {self.acronym}"'
+
+
 

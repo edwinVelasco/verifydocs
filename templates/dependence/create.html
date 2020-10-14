@@ -1,0 +1,75 @@
+{% extends "admin.html" %}
+{% load static %}
+{% block container %}
+    <div class="row">
+        <div class="headline-center-v2-dark col-md-12">
+            <div class="shop-h1 col-md-6 col-sm-6 col-xs-6"
+                style="font-size: 30px;">
+                <b>
+                Dependencias
+                    <p class="text-success text-center">
+                        {% if object.id %}
+                            Actualización
+                        {% else %}
+                            Creación
+                        {% endif %}
+                    </p>
+                </b>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <br>
+            <p class="text-muted text-center">
+                <span style="color: red">*</span> Datos requeridos para el formulario
+            </p>
+            <div class="row equal-height-columns margin-bottom-10">
+
+                <div class="container">
+                    <form class="form-horizontal" method="POST">
+                        {% csrf_token %}
+                        {{ form.active }}
+                        <div class="form-group">
+
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-4 col-sm-4 col-xs-12">
+								<label>
+									<span style="color: red">*</span> Nombre:
+								</label>
+								{{ form.name }}
+								<label>
+									{{ form.name.errors }}
+								</label>
+							</div>
+							<div class="col-md-4 col-sm-6 col-xs-12">
+								<label>
+									<span style="color: red">*</span> Acrónimo:
+								</label>
+								{{ form.acronym }}
+								<label>
+									{{ form.acronym.errors }}
+								</label>
+							</div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-8 text-right">
+                                <a href="{% url 'dependences' %}" class="btn
+                                btn-default">
+                                    <i class="fa fa-angle-double-left"></i>
+                                    Volver
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-floppy-o"></i>
+                                    Guardar
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

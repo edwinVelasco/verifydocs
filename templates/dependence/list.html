@@ -1,0 +1,107 @@
+{% extends "admin.html" %}
+{% load static %}
+{% block container %}
+    <div class="row">
+        <div class="headline-center-v2-dark col-md-12">
+            <div class="shop-h1 col-md-6 col-sm-6 col-xs-6"
+                style="font-size: 30px;"><b>Dependencias</b></div>
+            <div class="col-md-6 col-sm-6 col-xs-6 text-right">
+                <a class="btn btn-primary"
+                   style="margin-top: 14px !important;"
+                   href="{% url 'dependences_create' %}" role="button">
+                    <i class="fa fa-plus"></i> Agregar
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form class="form-inline" method="GET" novalidate>
+                <div class="form-group">
+                    {{ form_search.name }}
+                </div>
+                <div class="form-group">
+                    {{ form_search.acronym }}
+                </div>
+                <div class="checkbox">
+                    <label>
+                        {{ form_search.is_active }} Solo activos
+                    </label>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fa fa-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row equal-height-columns margin-bottom-10">
+                <div class="container">
+                    <br>
+                {% if dependence_list %}
+                    <div class="">
+                        <table class="table table-bordered table-hover text-center">
+                            <thead>
+                                <tr>
+                                    <th class="text-center col-md-1">Creación</th>
+                                    <th class="text-center col-md-1">Última modificación</th>
+                                    <th class="text-center col-md-7">Nombre</th>
+                                    <th class="text-center col-md-1">Siglas</th>
+                                    <th class="text-center col-md-2">Gestión</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for dependence in dependence_list %}
+                                <tr
+                                    {% if not dependence.active %}
+                                    style="background: #d0d0d0"
+                                    {% endif %} >
+                                    <td>{{ dependence.created|date:"SHORT_DATE_FORMAT" }}</td>
+                                    <td>{{ dependence.updated|date:"SHORT_DATE_FORMAT" }}</td>
+                                    <td>{{ dependence.name }}</td>
+                                    <td>{{ dependence.acronym }} </td>
+                                    <td class="text-center">
+                                        <a class="btn btn-outline btn-xs btn-primary"
+                                           type="button" data-toggle="tooltip"
+                                           data-placement="top"
+                                           title data-original-title="Editar"
+                                           href="{% url 'dependences_update' dependence.id %}">
+                                                <i class="fa fa-edit"></i>
+                                        </a>
+                                        {% if not doc_type.active %}
+                                            <a class="btn btn-outline btn-xs btn-primary"
+                                                type="button" data-toggle="tooltip"
+                                                data-placement="top"
+                                                title data-original-title="Activar"
+                                                href="{% url 'dependences_update_active' dependence.id %}">
+                                                    <i class="fa fa-check fa-lg"></i>
+                                            </a>
+                                        {% else %}
+                                            <a class="btn btn-outline btn-xs btn-primary"
+                                                type="button" data-toggle="tooltip"
+                                                data-placement="top"
+                                                title data-original-title="Desactivar"
+                                                href="{% url 'dependences_update_active' dependence.id %}">
+                                                    <i class="fa fa-times fa-lg"></i>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% include 'includes/pagination.html' %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info text-center">
+                        <h3>No hay tipos de documentos registrados en el sistema.</h3>
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

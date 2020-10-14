@@ -1,0 +1,53 @@
+{% if is_paginated %}
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <ul class="pagination">
+                <li>
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{{ paginator_params }}">
+                            <i class="fa fa-angle-double-left"></i>
+                        </a>
+                    {% else %}
+                        <span class="text-muted">
+                            <i class="fa fa-angle-double-left"></i>
+                        </span>
+                    {% endif %}
+                </li>
+
+                {% for page_number in paginator.page_range %}
+                    {% if page_number == page_obj.number %}
+                        <li class="active">
+                            <span>{{ page_number }}</span>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="?page={{ page_number }}{{ paginator_params }}">
+                                {{ page_number }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                <li>
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{{ paginator_params }}">
+                            <i class="fa fa-angle-double-right"></i>
+                        </a>
+                    {% else %}
+                        <span class="text-muted">
+                            <i class="fa fa-angle-double-right"></i>
+                        </span>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </div>
+    <br>
+    <br>
+{% else %}
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <ul class="pagination"></ul>
+        </div>
+    </div>
+{% endif %}
