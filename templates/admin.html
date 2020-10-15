@@ -96,7 +96,16 @@
                                     Dependencias
                                 </a>
                             </li>
+                          <li class="nodropdown {% if 'allowed_users' in request.path  %}active{% endif %}">
+                              <a href="{% url 'allowed_users' %}"
+                                  class="dropdown-toggle disabled"
+                                  data-toggle="dropdown">
+                                  <i class="fa fa-users fa-lg"></i>
+                                  Usuarios permitidos
+                              </a>
+                          </li>
                         </ul>
+                      </ul>
                     </div>
                 </div>
           </div>
@@ -126,7 +135,7 @@
         {% endblock %}
     </div>
 
-    <div class="footer-v1 off-container" style="bottom: 0 !important;
+    <div class="footer-v1 off-container hidden-xs" style="bottom: 0 !important;
                                                 display: block;
                                                 position: fixed;
                                                 z-index: 99;">

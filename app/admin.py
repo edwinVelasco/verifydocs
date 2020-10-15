@@ -10,11 +10,13 @@ class DocAdmin(admin.ModelAdmin):
 
 
 class UserMailAdmin(admin.ModelAdmin):
-    fields = ('email', )
+    fields = ('email', 'dependence', 'is_staff', 'updated', 'created')
+    readonly_fields = ('updated', 'created')
+    list_display = ['email', 'dependence', 'is_staff']
+
 
 class DependenceAdmin(admin.ModelAdmin):
     fields = ('name',)
-
 
 
 admin.site.register(Doc, DocAdmin)

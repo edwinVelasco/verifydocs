@@ -4,11 +4,11 @@
     <div class="row">
         <div class="headline-center-v2-dark col-md-12">
             <div class="shop-h1 col-md-6 col-sm-6 col-xs-6"
-                style="font-size: 30px;"><b>Tipos de documentos</b></div>
+                style="font-size: 30px;"><b>Usuarios permitidos</b></div>
             <div class="col-md-6 col-sm-6 col-xs-6 text-right">
                 <a class="btn btn-primary"
                    style="margin-top: 14px !important;"
-                   href="{% url 'documents_type_create' %}" role="button">
+                   href="{% url 'allowed_user_create' %}" role="button">
                     <i class="fa fa-plus"></i> Agregar
                 </a>
             </div>
@@ -18,14 +18,19 @@
         <div class="col-md-12">
             <form class="form-inline" method="GET" novalidate>
                 <div class="form-group">
-                    {{ form_search.name }}
+                    {{ form_search.email }}
                 </div>
                 <div class="form-group">
-                    {{ form_search.acronym }}
+                    {{ form_search.dependence }}
                 </div>
                 <div class="checkbox">
                     <label>
                         {{ form_search.is_active }} Solo activos
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        {{ form_search.is_staff }} Administrador
                     </label>
                 </div>
                 <div class="form-group">
@@ -41,30 +46,46 @@
             <div class="row equal-height-columns margin-bottom-10">
                 <div class="container">
                     <br>
-                {% if document_type_list %}
+                {% if allowed_users_list %}
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover text-center">
                             <thead>
                                 <tr>
-                                    <th class="text-center">Nombre</th>
-                                    <th class="text-center">Siglas</th>
-                                    <th class="text-center">Días de vigencia</th>
-                                    <th class="text-center">Gestión</th>
+                                    <th class="text-center col-md-1">Creación</th>
+                                    <th class="text-center col-md-1">Última modificación</th>
+                                    <th class="text-center col-md-3">Correo</th>
+                                    <th class="text-center col-md-3">Dependencia</th>
+                                    <th class="text-center col-md-1">Es administrador</th>
+                                    <th class="text-center col-md-1">Activo</th>
+                                    <th class="text-center col-md-2">Gestión</th>
                                 </tr>
                             </thead>
                             <tbody>
-                            {% for doc_type in document_type_list %}
+                            {% for allowed_user in allowed_users_list %}
                                 <tr
-                                    {% if not doc_type.active %}
-                                    class="danger"
+                                    {% if not allowed_user.active %}
+                                    style="background: #d0d0d0"
                                     {% endif %} >
-                                    <td>{{ doc_type.name }}</td>
-                                    <td>{{ doc_type.acronym }} </td>
+                                    <td>{{ allowed_user.created|date:"SHORT_DATE_FORMAT" }}</td>
+                                    <td>{{ allowed_user.updated|date:"SHORT_DATE_FORMAT" }}</td>
+                                    <td>{{ allowed_user.email }}</td>
+                                    <td>{{ allowed_user.dependence|default:"Sin depenedencia" }}</td>
                                     <td>
-                                        {% if doc_type.days_validity %}
-                                            {{ doc_type.days_validity }}
+                                        {% if allowed_user.is_staff %}
+                                        <i class="fa fa-cogs fa-lg text-success"
+                                           data-toggle="tooltip" data-placement="bottom" title="Administrador"
+                                        ></i>
                                         {% else %}
-                                            -----
+                                        <i class="fa fa-user fa-lg"
+                                           data-toggle="tooltip" data-placement="bottom" title="Usuario de dependencia"
+                                        ></i>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if allowed_user.active %}
+                                        <i class="fa fa-check fa-lg text-success"></i>
+                                        {% else %}
+                                        <i class="fa fa-times fa-lg text-danger"></i>
                                         {% endif %}
                                     </td>
                                     <td class="text-center">
@@ -72,15 +93,15 @@
                                            type="button" data-toggle="tooltip"
                                            data-placement="top"
                                            title data-original-title="Editar"
-                                           href="{% url 'documents_type_update' doc_type.id %}">
+                                           href="{% url 'allowed_user_update' allowed_user.id %}">
                                                 <i class="fa fa-edit"></i>
                                         </a>
-                                        {% if not doc_type.active %}
+                                        {% if not allowed_user.active %}
                                             <a class="btn btn-outline btn-xs btn-primary"
                                                 type="button" data-toggle="tooltip"
                                                 data-placement="top"
                                                 title data-original-title="Activar"
-                                                href="{% url 'documents_type_update_active' doc_type.id %}">
+                                                href="{% url 'allowed_user_update_active' allowed_user.id %}">
                                                     <i class="fa fa-check fa-lg"></i>
                                             </a>
                                         {% else %}
@@ -88,11 +109,10 @@
                                                 type="button" data-toggle="tooltip"
                                                 data-placement="top"
                                                 title data-original-title="Desactivar"
-                                                href="{% url 'documents_type_update_active' doc_type.id %}">
+                                                href="{% url 'allowed_user_update_active' allowed_user.id %}">
                                                     <i class="fa fa-times fa-lg"></i>
                                             </a>
                                         {% endif %}
-
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -102,7 +122,7 @@
                     {% include 'includes/pagination.html' %}
                 {% else %}
                     <div class="alert alert-info text-center">
-                        <h3>No hay tipos de documentos registrados en el sistema.</h3>
+                        <h3>No hay usuarios registrados en el sistema.</h3>
                     </div>
                 {% endif %}
                 </div>

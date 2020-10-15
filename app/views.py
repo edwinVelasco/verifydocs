@@ -13,8 +13,9 @@ from django.db.models import Q
 from django.http import Http404
 from django.utils.translation import gettext as _
 
-from app.forms import VerifyDocsForm, DependenceForm
-from app.models import DocumentType, Dependence
+from app.forms import VerifyDocsForm, DependenceForm, UserMailForm, \
+    UserMailSearchForm, DependenceSearchForm
+from app.models import DocumentType, Dependence, UserMail
 from app.forms import DocumentTypeSearchForm, DocumentTypeForm
 # Create your views here.
 
@@ -164,7 +165,7 @@ class DependenceListView(UserAdminMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(DependenceListView, self) \
             .get_context_data(**kwargs)
-        context['form_search'] = DocumentTypeSearchForm(data=self.request.GET)
+        context['form_search'] = DependenceSearchForm(data=self.request.GET)
         context['paginator_params'] = self.get_params_pagination()
         return context
 
@@ -289,4 +290,109 @@ class DocumentTypeUpdateActiveView(UserAdminMixin, TemplateView):
         return redirect(get_url_to_redirect(self.request, 'filter',
                                    'documents_type'))
 
+
+class UserMailCreateView(UserAdminMixin, CreateView):
+    model = UserMail
+    template_name = 'allowed_user/create.html'
+    form_class = UserMailForm
+
+    def get_success_url(self):
+        messages.success(self.request,
+                         'Usuario registrado correctamente')
+        return get_url_to_redirect(self.request, 'filter',
+                                   'allowed_users')
+
+
+class UserMailUpdateView(UserAdminMixin, UpdateView):
+    model = UserMail
+    template_name = 'allowed_user/create.html'
+    form_class = UserMailForm
+
+    def get_success_url(self):
+        messages.success(self.request,
+                         'Usuario actualizado correctamente')
+        return get_url_to_redirect(self.request, 'filter',
+                                   'allowed_users')
+
+
+class UserMailListView(UserAdminMixin, ListView):
+    model = UserMail
+    template_name = 'allowed_user/list.html'
+    context_object_name = 'allowed_users_list'
+    paginate_by = 5
+
+    def get_queryset(self):
+        # clear_data_session(self.request, 'filter')
+        load_data_session(self.request, self.request.GET, 'filter')
+        if self.request.GET.get('email', '') == '' and \
+                self.request.GET.get('dependence', '') == '' and \
+                self.request.GET.get('is_staff', '') == '' and \
+                self.request.GET.get('is_active', '') == '':
+            return self.model.objects.all()
+        params = dict()
+        if 'is_staff' in self.request.GET:
+            params['is_staff'] = True
+        if 'is_active' in self.request.GET:
+            params['active'] = True
+        try:
+            if self.request.GET.get('email', '') != '':
+                params['email__icontains'] = self.request.GET.get('email', '')
+            if self.request.GET.get('dependence', '') != '':
+                params['dependence'] = self.request.GET.get('dependence', '')
+            return self.model.objects.filter(**params)
+        except ValueError:
+            return self.model.objects.all()
+
+    def paginate_queryset(self, queryset, page_size):
+        """Paginate the queryset, if needed."""
+        paginator = self.get_paginator(
+            queryset, self.paginate_by, orphans=self.get_paginate_orphans(),
+            allow_empty_first_page=self.get_allow_empty())
+        page_kwarg = self.page_kwarg
+        page = self.kwargs.get(page_kwarg) or self.request.GET.get(
+            page_kwarg) or 1
+        try:
+            page_number = int(page)
+        except ValueError:
+            if page == 'last':
+                page_number = paginator.num_pages
+            else:
+                raise Http404(_(
+                    "Page is not 'last', nor can it be converted to an int."))
+        try:
+            page = paginator.page(page_number)
+            if page.number < page_number:
+                page = paginator.page(page_number - 1)
+                return (
+                paginator, page, page.object_list, page.has_other_pages())
+            return (paginator, page, page.object_list, page.has_other_pages())
+        except InvalidPage as e:
+            page = paginator.page(page_number - 1)
+            return (paginator, page, page.object_list, page.has_other_pages())
+
+    def get_context_data(self, **kwargs):
+        context = super(UserMailListView, self) \
+            .get_context_data(**kwargs)
+        context['form_search'] = UserMailSearchForm(data=self.request.GET)
+        context['paginator_params'] = self.get_params_pagination()
+        return context
+
+    def get_params_pagination(self):
+        params = ""
+        for key in self.request.GET:
+            if self.request.GET[key] != '' and key != 'page':
+                params += "&" + key + "=" + self.request.GET[key]
+        return params
+
+
+class UserMailActiveView(UserAdminMixin, UpdateView):
+    model = UserMail
+
+    def get(self, request, *args, **kwargs):
+        obj = self.model.objects.get(id=kwargs['pk'])
+        obj.update_active()
+        messages.success(self.request,
+                         f'Usuario {obj} ha sido actualizado')
+        return redirect(get_url_to_redirect(self.request, 'filter',
+                                            'allowed_users'))
 
