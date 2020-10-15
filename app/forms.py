@@ -170,7 +170,7 @@ class UserMailForm(forms.ModelForm):
         error_messages = {
             'email': {
                 'required': "El correo es requerido.",
-                'unique': 'El acrónimo ya se encuentra registrado'
+                'unique': 'El correo ya se encuentra registrado'
             }
         }
 
@@ -187,14 +187,6 @@ class UserMailForm(forms.ModelForm):
 
     def clean_email(self):
         return self.cleaned_data.get('email', '').lower()
-
-    def clean(self):
-        cleaned_data = super(UserMailForm, self).clean()
-        email = cleaned_data.get('email', '')
-        if '@ufps.edu.co' not in email:
-            self.add_error('email',
-                           'Solo correos con dominio UFPS')
-        return cleaned_data
 
 
 class UserMailSearchForm(forms.Form):

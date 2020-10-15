@@ -20,7 +20,7 @@ class Dependence(models.Model):
     active = models.BooleanField(default=True, verbose_name='Activo')
 
     updated = models.DateTimeField(auto_now=True,
-                                   verbose_name='Modificado')
+                                   verbose_name='Última modificación')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Creado')
 
     class Meta:
@@ -51,7 +51,7 @@ class UserMail(models.Model):
                                  verbose_name='Activo')
 
     updated = models.DateTimeField(auto_now=True,
-                                   verbose_name='Modificado')
+                                   verbose_name='Última modificación')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Creado')
 
     class Meta:
