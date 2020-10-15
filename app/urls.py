@@ -5,7 +5,8 @@ from app.views import HomeView, IndexView, AdminHomeView
 from app.views import DocumentTypeListView, DocumentTypeCreateView, \
     DocumentTypeUpdateActiveView, DocumentTypeUpdateView, DependenceListView, \
     DependenceCreateView, DependenceUpdateView, DependenceActiveView,\
-    UserMailUpdateView, UserMailListView, UserMailCreateView
+    UserMailUpdateView, UserMailListView, UserMailCreateView, \
+    UserMailActiveView
 
 urlpatterns = [
     path('', IndexView.as_view(),
@@ -31,7 +32,7 @@ urlpatterns = [
     path('home/dependences/create/', DependenceCreateView.as_view(),
          name='dependences_create'),
     path('home/dependences/<int:pk>/update/',
-         UserMailUpdateView.as_view(),
+         DependenceUpdateView.as_view(),
          name='dependences_update'),
     path('home/dependences/<int:pk>/active/',
          DependenceActiveView.as_view(),
@@ -42,8 +43,11 @@ urlpatterns = [
     path('home/allowed_users/create/', UserMailCreateView.as_view(),
          name='allowed_user_create'),
     path('home/allowed_users/<int:pk>/update/',
-         DependenceUpdateView.as_view(),
+         UserMailUpdateView.as_view(),
          name='allowed_user_update'),
+    path('home/allowed_users/<int:pk>/active/',
+         UserMailActiveView.as_view(),
+         name='allowed_user_update_active'),
 
 
     # logout_then_login

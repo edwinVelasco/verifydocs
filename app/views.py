@@ -326,7 +326,6 @@ class UserMailListView(UserAdminMixin, ListView):
         if self.request.GET.get('email', '') == '' and \
                 self.request.GET.get('dependence', '') == '' and \
                 self.request.GET.get('is_staff', '') == '':
-            print(self.model.objects.all())
             return self.model.objects.all()
         params = dict()
         if 'is_staff' in self.request.GET:
@@ -382,21 +381,14 @@ class UserMailListView(UserAdminMixin, ListView):
         return params
 
 
-# class UserMailActiveView(UserAdminMixin, UpdateView):
-#     model = UserMail
-#
-#     def get(self, request, *args, **kwargs):
-#         doc_type = self.model.objects.get(id=kwargs['pk'])
-#         doc_type.update_active()
-#         messages.success(self.request,
-#                          f'Dependencia {doc_type} ha sido actualizado')
-#         return redirect(get_url_to_redirect(self.request, 'filter',
-#                                             'dependences'))
+class UserMailActiveView(UserAdminMixin, UpdateView):
+    model = UserMail
 
-
-# class UserMailDeleteView(UserAdminMixin, DeleteView):
-#     model = UserMail
-#
-#     def delete(self, request, *args, **kwargs):
-#         if self.object
+    def get(self, request, *args, **kwargs):
+        obj = self.model.objects.get(id=kwargs['pk'])
+        obj.update_active()
+        messages.success(self.request,
+                         f'Usuario {obj} ha sido actualizado')
+        return redirect(get_url_to_redirect(self.request, 'filter',
+                                            'allowed_users'))
 

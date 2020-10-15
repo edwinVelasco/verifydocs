@@ -42,43 +42,61 @@
                 <div class="container">
                     <br>
                 {% if allowed_users_list %}
-                    <div class="">
+                    <div class="table-responsive">
                         <table class="table table-bordered table-hover text-center">
                             <thead>
                                 <tr>
                                     <th class="text-center col-md-1">Creación</th>
                                     <th class="text-center col-md-1">Última modificación</th>
-                                    <th class="text-center col-md-4">Correo</th>
+                                    <th class="text-center col-md-3">Correo</th>
                                     <th class="text-center col-md-3">Dependencia</th>
                                     <th class="text-center col-md-1">Es administrador</th>
+                                    <th class="text-center col-md-1">Activo</th>
                                     <th class="text-center col-md-2">Gestión</th>
                                 </tr>
                             </thead>
                             <tbody>
-                            {% for dependence in allowed_users_list %}
+                            {% for allowed_user in allowed_users_list %}
                                 <tr
-                                    {% if not dependence.active %}
+                                    {% if not allowed_user.active %}
                                     style="background: #d0d0d0"
                                     {% endif %} >
-                                    <td>{{ dependence.created|date:"SHORT_DATE_FORMAT" }}</td>
-                                    <td>{{ dependence.updated|date:"SHORT_DATE_FORMAT" }}</td>
-                                    <td>{{ dependence.email }}</td>
-                                    <td>{{ dependence.dependence|default:"Sin depenedencia" }}</td>
-                                    <td>{{ dependence.is_staff|yesno:"Si,No,maybe" }} </td>
+                                    <td>{{ allowed_user.created|date:"SHORT_DATE_FORMAT" }}</td>
+                                    <td>{{ allowed_user.updated|date:"SHORT_DATE_FORMAT" }}</td>
+                                    <td>{{ allowed_user.email }}</td>
+                                    <td>{{ allowed_user.dependence|default:"Sin depenedencia" }}</td>
+                                    <td>
+                                        {% if allowed_user.is_staff %}
+                                        <i class="fa fa-cogs fa-lg text-success"
+                                           data-toggle="tooltip" data-placement="bottom" title="Administrador"
+                                        ></i>
+                                        {% else %}
+                                        <i class="fa fa-user fa-lg"
+                                           data-toggle="tooltip" data-placement="bottom" title="Usuario de dependencia"
+                                        ></i>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if allowed_user.active %}
+                                        <i class="fa fa-check fa-lg text-success"></i>
+                                        {% else %}
+                                        <i class="fa fa-times fa-lg text-danger"></i>
+                                        {% endif %}
+                                    </td>
                                     <td class="text-center">
                                         <a class="btn btn-outline btn-xs btn-primary"
                                            type="button" data-toggle="tooltip"
                                            data-placement="top"
                                            title data-original-title="Editar"
-                                           href="{% url 'dependences_update' dependence.id %}">
+                                           href="{% url 'allowed_user_update' allowed_user.id %}">
                                                 <i class="fa fa-edit"></i>
                                         </a>
-                                        {% if not doc_type.active %}
+                                        {% if not allowed_user.active %}
                                             <a class="btn btn-outline btn-xs btn-primary"
                                                 type="button" data-toggle="tooltip"
                                                 data-placement="top"
                                                 title data-original-title="Activar"
-                                                href="{% url 'dependences_update_active' dependence.id %}">
+                                                href="{% url 'allowed_user_update_active' allowed_user.id %}">
                                                     <i class="fa fa-check fa-lg"></i>
                                             </a>
                                         {% else %}
@@ -86,7 +104,7 @@
                                                 type="button" data-toggle="tooltip"
                                                 data-placement="top"
                                                 title data-original-title="Desactivar"
-                                                href="{% url 'dependences_update_active' dependence.id %}">
+                                                href="{% url 'allowed_user_update_active' allowed_user.id %}">
                                                     <i class="fa fa-times fa-lg"></i>
                                             </a>
                                         {% endif %}
@@ -95,11 +113,11 @@
                             {% endfor %}
                             </tbody>
                         </table>
-                        {% include 'includes/pagination.html' %}
                     </div>
+                    {% include 'includes/pagination.html' %}
                 {% else %}
                     <div class="alert alert-info text-center">
-                        <h3>No hay tipos de documentos registrados en el sistema.</h3>
+                        <h3>No hay usuarios registrados en el sistema.</h3>
                     </div>
                 {% endif %}
                 </div>

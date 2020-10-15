@@ -47,6 +47,8 @@ class UserMail(models.Model):
                                    related_name='users_mail')
     is_staff = models.BooleanField(default=False,
                                    verbose_name='Es administrador')
+    active = models.BooleanField(default=False,
+                                 verbose_name='Activo')
 
     updated = models.DateTimeField(auto_now=True,
                                    verbose_name='Modificado')
@@ -60,6 +62,10 @@ class UserMail(models.Model):
 
     def __str__(self):
         return f'{self.email} - {self.dependence or "Sin dependencia"}'
+
+    def update_active(self):
+        self.active = not self.active
+        self.save()
 
 
 class DocumentType(models.Model):
@@ -80,6 +86,3 @@ class DocumentType(models.Model):
 
     def __str__(self):
         return f'"{self.name} - {self.acronym}"'
-
-
-

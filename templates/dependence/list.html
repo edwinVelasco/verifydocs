@@ -42,7 +42,7 @@
                 <div class="container">
                     <br>
                 {% if dependence_list %}
-                    <div class="">
+                    <div class="table-responsive">
                         <table class="table table-bordered table-hover text-center">
                             <thead>
                                 <tr>
@@ -93,11 +93,11 @@
                             {% endfor %}
                             </tbody>
                         </table>
-                        {% include 'includes/pagination.html' %}
                     </div>
+                    {% include 'includes/pagination.html' %}
                 {% else %}
                     <div class="alert alert-info text-center">
-                        <h3>No hay tipos de documentos registrados en el sistema.</h3>
+                        <h3>No hay dependencias registradas en el sistema.</h3>
                     </div>
                 {% endif %}
                 </div>
