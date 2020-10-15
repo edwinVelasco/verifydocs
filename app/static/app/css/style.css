@@ -115,8 +115,8 @@ a.btn-primary {
 .pagination > .active > span:hover,
 .pagination > .active > a:focus,
 .pagination > .active > span:focus {
-  background-color: #aa1916;
-  border-color: #aa1916;
+  background-color: #BC0017;
+  border-color: #BC0017;
   color: #FFFFFF;
   cursor: default;
   z-index: 2;
@@ -136,7 +136,8 @@ a.btn-primary {
     font-size: 14px;
 }
 .pagination li a:hover {
-    background: #aa1916;
+    //background: #aa1916;
+    background: #BC0017;
     border-color: #FFFFFF;
 }
 
@@ -145,12 +146,38 @@ a.btn-primary {
 }
 
 .errorlist li{
-    color: #aa1916 !important;
+    color: #BC0017 !important;
 }
 
 b p {
     font-size: 20px;
 }
 .nav .active {
-    background-color: #aa1916;
+    background-color: #BC0017;
+}
+
+.nodropdown:hover {
+    border-left: 0.5px solid #FFFFFF;
+    border-right: 0.5px solid #FFFFFF;
+    border-top: 0.5px solid #FFFFFF;
+}
+
+.topbar-list .home_hover:hover {
+    border-left: 0.5px solid #FFFFFF;
+    border-right: 0.5px solid #FFFFFF;
+    border-top: 0.5px solid #FFFFFF;
+    border-radius: 4px;
+    background-color: #BC0017;
+}
+
+#barra-superior .blog-topbar {
+    background-color: #BC0017;
+}
+
+#menu-principal .collapse{
+    //background-color: #818386;
+    //background-color: #424242;
+}
+#menu-principal .menu-responsive{
+    background-color: #BC0017;
 }

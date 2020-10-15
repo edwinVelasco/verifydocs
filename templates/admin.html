@@ -10,40 +10,58 @@
                 <div class="blog-topbar">
                     <div class="container">
                         <div class="row">
-                            <div class="col-sm-7 col-xs-7">
+                            <div class="col-sm-7 col-xs-2">
                                 {% if user.is_authenticated %}
-                                    <ul class="topbar-list topbar-log_reg
-                                         visible-sm-block visible-md-block
-                                         visible-lg-block">
-                                        <li class="cd-log_reg home"
+                                    <ul class="topbar-list topbar-log_reg">
+                                        <li class="cd-log_reg home visible-sm-block visible-md-block
+                                         visible-lg-block"
                                             style="font-size: 14px !important;">
-                                            <a href="{% url 'admon' %}">
-                                                <i class="fa fa-user fa-lg"></i>
-                                                Administrador: {{user.first_name}} {{user.last_name}}
-                                            </a>
-
+                                             <i class="fa fa-user fa-lg"></i>
+                                             Administrador: {{user.first_name}} {{user.last_name}}
+                                        </li>
+                                        <li class="cd-log_reg home visible-xs-block visible-sm-block"
+                                            style="font-size: 14px !important; float: left">
+                                            <button type="button" class="navbar-toggle"
+                                                    data-toggle="collapse"
+                                                    data-target=".navbar-responsive-collapse"
+                                            style="padding-top: 0;">
+                                                <i class="fa fa-bars fa-lg"></i>
+                                            </button>
                                         </li>
                                     </ul>
                                 {% endif %}
                             </div>
-                            <div class="col-sm-5 col-xs-5 clearfix">
+                            <div class="col-sm-5 col-xs-10 clearfix">
                                 <ul class="topbar-list topbar-log_reg
                                      pull-right visible-sm-block visible-md-block
-                                     visible-lg-block">
-                                    <li class="cd-log_reg home"
+                                visible-lg-block visible-xs-block">
+                                    <li class="cd-log_reg home home_hover hidden-xs"
                                         style="font-size: 14px !important;">
                                         <a href="{% url 'index' %}">
-                                            <i class="fa fa-home"></i>
-                                            Inicio
+                                            <i class="fa fa-search fa-lg"></i>
+                                            Buscar
                                         </a>
                                     </li>
-                                    <li class="cd-log_reg home"
+                                    <li class="cd-log_reg home home_hover hidden-lg hidden-md hidden-sm"
                                         style="font-size: 14px !important;">
+                                        <a href="{% url 'index' %}">
+                                            <i class="fa fa-search fa-lg"></i>
+                                        </a>
+                                    </li>
+                                    <li class="cd-log_reg home home_hover hidden-xs"
+                                        style="font-size: 14px !important; padding-right: 12px;">
                                         <a href="{% url 'logout' %}">
                                             <i class="fa fa-power-off"></i>
-                                            Cerrar sesión
+                                            Salir
                                         </a>
                                     </li>
+                                    <li class="cd-log_reg home home_hover hidden-lg hidden-md hidden-sm"
+                                        style="font-size: 14px !important; padding-right: 12px;">
+                                        <a href="{% url 'logout' %}">
+                                            <i class="fa fa-power-off fa-lg"></i>
+                                        </a>
+                                    </li>
+
                                 </ul>
                             </div>
                         </div>
@@ -51,29 +69,36 @@
                 </div>
             </div>
             <div class="collapse navbar-collapse mega-menu navbar-responsive-collapse">
-              <div class="containermenu">
+                <div class="containermenu">
 
                     <div class="container">
                         <ul class="nav navbar-nav" style="float:left;">
-                          <li class="nodropdown {% if 'documents_type' in request.path  %}active{% endif %}">
-                              <a href="{% url 'documents_type' %}"
-                                  class="dropdown-toggle disabled"
-                                  data-toggle="dropdown">
-                                  <i class="fa fa-file-pdf-o fa-lg"></i>
-                                  Tipos de documentos
-                              </a>
-                          </li>
-                          <li class="nodropdown {% if 'dependences' in request.path  %}active{% endif %}">
-                              <a href="{% url 'dependences' %}"
-                                  class="dropdown-toggle disabled"
-                                  data-toggle="dropdown">
-                                  <i class="fa fa-folder-o fa-lg"></i>
-                                  Dependencias
-                              </a>
-                          </li>
-                      </ul>
+                            <li class="nodropdown {% if 'admin' in request.path  %}active{% endif %}">
+                                <a href="{% url 'admon' %}"
+                                   class="dropdown-toggle disabled"
+                                   data-toggle="dropdown">
+                                    <i class="fa fa-home fa-lg"></i>
+                                </a>
+                            </li>
+                            <li class="nodropdown {% if 'documents_type' in request.path  %}active{% endif %}">
+                                <a href="{% url 'documents_type' %}"
+                                   class="dropdown-toggle disabled"
+                                   data-toggle="dropdown">
+                                    <i class="fa fa-file-pdf-o fa-lg"></i>
+                                    Tipos de documentos
+                                </a>
+                            </li>
+                            <li class="nodropdown {% if 'dependences' in request.path  %}active{% endif %}">
+                                <a href="{% url 'dependences' %}"
+                                   class="dropdown-toggle disabled"
+                                   data-toggle="dropdown">
+                                    <i class="fa fa-folder-o fa-lg"></i>
+                                    Dependencias
+                                </a>
+                            </li>
+                        </ul>
                     </div>
-              </div>
+                </div>
           </div>
         </div>
         <div style="clear:both;"></div>
@@ -86,8 +111,8 @@
                 <div class="headline-center-v2 headline-center-v2-dark margin-bottom-10">
                     <h1 class="shop-h1" style="font-size: 30px;"><b>Novedades</b></h1>
                     <span class="bordered-icon">
-                                  <i class="fa fa-newspaper-o" aria-hidden="true"></i>
-                              </span>
+                        <i class="fa fa-newspaper-o" aria-hidden="true"></i>
+                    </span>
                 </div>
 
                 <div class="col-md-12">
@@ -112,7 +137,7 @@
                         {% now "Y" as current_year %}
                         <p>
                             {{ current_year }} © All Rights Reserved.
-                            Desarrollado por: <a href="#">Denis Isidro Gonzales - Edwin Alverto Velasco</a>
+                            Desarrollado por: <a href="#">Denis Isidro Gonzales - Edwin Alberto Velasco</a>
                             Curso de profundización de software
                         </p>
                     </div>

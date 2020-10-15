@@ -13,42 +13,78 @@
                     <div class="container">
                         <div class="row">
                             <div class="col-sm-7 col-xs-7">
-                                {% if user.is_authenticated %}
-                                  <ul class="topbar-list topbar-log_reg
-                                       visible-sm-block visible-md-block
-                                       visible-lg-block">
-                                      <li class="cd-log_reg home"
-                                          style="font-size: 14px !important;">
-                                          {{user.first_name}} {{user.last_name}}
-                                      </li>
-                                  </ul>
-                                {% endif %}
-                            </div>
-                            <div class="col-sm-5 col-xs-5 clearfix">
-                                <ul class="topbar-list topbar-log_reg
-                                pull-right visible-sm-block visible-md-block
-                                visible-lg-block">
+                                <div class="visible-xs-block visible-sm-block hidden-md hidden-lg"
+                                     style="font-size: 10px; color: #eee; letter-spacing: 1px; text-transform: uppercase;">
+                                            <a href="http://www.ufps.edu.co/" target="_blank">
+                                            <img class="header-banner" src="{% static 'app/rsc/img/logo_ufps_png.png' %}"
+                                                 style="max-height:5em;"
+                                                 alt="Escudo de la Universidad Francisco de Paula Santander" ></a>
+                                </div>
+                                <ul class="topbar-list topbar-menu">
                                     {% if user.is_authenticated %}
                                         <li class="cd-log_reg home"
+                                            style="font-size: 14px !important;">
+                                            {{user.first_name}} {{user.last_name}}
+                                        </li>
+                                        <li class="cd-log_reg hidden-sm hidden-md hidden-lg">
+                                            <a href="{% url 'home' %}">
+                                                <i class="fa fa-home"></i>
+                                            </a>
+                                        </li>
+                                        <li class="cd-log_reg hidden-sm hidden-md hidden-lg">
+                                            <a href="{% url 'logout' %}">
+                                                <i class="fa fa-power-off"></i>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            <div class="col-sm-5 col-xs-5">
+                                <ul class="topbar-list topbar-log_reg
+                                pull-right visible-sm-block visible-md-block
+                                visible-lg-block visible-xs-block">
+                                    {% if user.is_authenticated %}
+                                        <li class="cd-log_reg home home_hover hidden-xs"
                                             style="font-size: 14px !important;">
                                             <a href="{% url 'home' %}">
                                                 <i class="fa fa-home"></i>
                                                 Home
                                             </a>
                                         </li>
-                                        <li class="cd-log_reg home"
+                                        <li class="cd-log_reg home home_hover hidden-lg hidden-md hidden-sm"
                                             style="font-size: 14px !important;">
+                                            <a href="{% url 'home' %}">
+                                                <i class="fa fa-home fa-lg"></i>
+                                            </a>
+                                        </li>
+
+                                        <li class="cd-log_reg home home_hover hidden-xs"
+                                            style="font-size: 14px !important; padding-right: 12px;">
                                             <a href="{% url 'logout' %}">
                                                 <i class="fa fa-power-off"></i>
-                                                Cerrar sesión
+                                                Salir
+                                            </a>
+                                        </li>
+                                        <li class="cd-log_reg home home_hover hidden-lg hidden-md hidden-sm"
+                                            style="font-size: 14px !important; padding-right: 12px;">
+                                            <a href="{% url 'logout' %}">
+                                                <i class="fa fa-power-off fa-lg"></i>
                                             </a>
                                         </li>
                                     {% else %}
-                                        <li class="cd-log_reg home"
-                                        style="font-size: 14px !important;">
+                                        <li class="cd-log_reg home home_hover hidden-xs"
+                                            style="font-size: 14px !important; padding-right: 12px;">
                                             <a href="{% provider_login_url 'google' %}">
-                                                <i class="fa fa-google"></i>
+                                                <i class="fa fa-google fa-lg"></i>
                                                 Iniciar sesión
+                                            </a>
+                                        </li>
+                                        <li class="cd-log_reg home home_hover hidden-lg hidden-md hidden-sm"
+                                            style="font-size: 14px !important; padding-right: 12px;">
+                                            <a href="{% provider_login_url 'google' %}" data-toggle="tooltip"
+                                                data-placement="bottom"
+                                                title data-original-title="Iniciar sesión">
+                                                <i class="fa fa-google fa-2x"></i>
                                             </a>
                                         </li>
                                     {% endif %}
@@ -58,34 +94,53 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="header-v8 img-logo-superior" style="background-color: #aa1916;">
-        <div class="parallax-quote parallaxBg" style="padding: 30px 30px;">
-            <div class="parallax-quote-in" style="padding: 0px;">
-                <div class="row">
-                    <div class="col-md-4 col-sm-4 col-xs-5">
-                        <a href="https://ingsistemas.cloud.ufps.edu.co/" target="_blank">
-                            <img id="logo-header" src="{% static 'app/rsc/img/logo_vertical_ingsistemas_ht180.png' %}"
-                                 alt="Logo Programa de Ingeniería de Sistemas" style="max-height:100px;">
-                        </a>
-                    </div>
-                    <div class="col-md-4 col-sm-4 col-xs-5">
-                        <br>
-                        <h1>
-                            Verificación de documentos
-                        </h1>
-                    </div>
-                    <div class="col-md-4 col-ms-4 col-xs-4 pull-right">
-                        <a href="http://www.ufps.edu.co/" target="_blank">
-                            <img class="header-banner" src="{% static 'app/rsc/img/logo_ufps.png' %}"
-                                 style="max-height:100px;" alt="Escudo de la Universidad Francisco de Paula Santander" ></a>
+            <div class="header-v8 img-logo-superior" style="background-color: #aa1916;">
+                <div class="parallax-quote parallaxBg" style="padding: 30px 30px;">
+                    <div class="parallax-quote-in" style="padding: 0px;">
+                        <div class="row">
+                            <div class="col-md-4 col-sm-4 col-xs-5">
+                                <a href="https://ingsistemas.cloud.ufps.edu.co/" target="_blank">
+                                    <img id="logo-header" src="{% static 'app/rsc/img/logo_vertical_ingsistemas_ht180.png' %}"
+                                         alt="Logo Programa de Ingeniería de Sistemas" style="max-height:100px;">
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-4 col-xs-5">
+                                <br>
+                                <h1>
+                                    Verificación de documentos
+                                </h1>
+                            </div>
+                            <div class="col-md-5 col-ms-4 col-xs-4 pull-right">
+                                <a href="http://www.ufps.edu.co/" target="_blank">
+                                    <img class="header-banner" src="{% static 'app/rsc/img/logo_ufps2.png' %}"
+                                         style="max-height:100px;" alt="Escudo de la Universidad Francisco de Paula Santander" ></a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+            <!--<div class="menu-responsive">
+                <button type="button" class="navbar-toggle"
+                        data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                    <span class="fa fa-bars"></span>
+                </button>
+
+            </div>
+            <div class="collapse navbar-collapse mega-menu navbar-responsive-collapse">
+                <div class="containermenu">
+                    <ul class="nav navbar-nav" style="float:left;">
+
+                        <li class="nodropdown">
+                            <a href="" class="dropdown-toggle disabled"
+                               data-toggle="dropdown" >Graduados</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>-->
         </div>
     </div>
+
+
     <div style="clear:both;"></div>
     {% include 'includes/messages.html' %}
 
@@ -94,7 +149,9 @@
             {% csrf_token %}
             <div class="col-lg-6 col-md-8 col-sm-12 col-lg-offset-3 col-lg-offset-3">
                 <div class="row">
+                    <br>
                     <h1 class="text-center" style="font-size: 4em;">VerifyDocs</h1>
+                    <br>
                 </div>
                 <div class="row">
                     <div class="col-lg-12">
@@ -127,7 +184,7 @@
                     <div class="col-md-12">
                         <p>
                             2020 © All Rights Reserved.
-                            Desarrollado por: <a href="#">Denis Isidro Gonzales - Edwin Alverto Velasco</a>
+                            Desarrollado por: <a href="#">Denis Isidro Gonzales - Edwin Alberto Velasco</a>
                             Curso de profundización de software
                         </p>
                     </div>
