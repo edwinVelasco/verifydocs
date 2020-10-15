@@ -13,21 +13,6 @@ class Doc(models.Model):
     file = models.FileField(upload_to='docs', storage=gd_storage)
 
 
-class UserMail(models.Model):
-    email = models.EmailField(
-        validators=[validate_domainonly_email, ],
-        unique=True, )
-
-    class Meta:
-        verbose_name = 'Correo permitido'
-        verbose_name_plural = 'Correos permitidos'
-        ordering = ('email',)
-        db_table = 'verifydocs_user_email'
-
-    def __str__(self):
-        return self.email
-
-
 class Dependence(models.Model):
     acronym = models.CharField(max_length=4, verbose_name='Acrónimo',
                                unique=True)
@@ -50,6 +35,31 @@ class Dependence(models.Model):
 
     def __str__(self):
         return f'"{self.name} - {self.acronym}"'
+
+
+class UserMail(models.Model):
+    email = models.EmailField(
+        validators=[validate_domainonly_email, ],
+        unique=True, verbose_name='Correo')
+    dependence = models.ForeignKey(Dependence, on_delete=models.PROTECT,
+                                   verbose_name='Dependencia', null=True,
+                                   blank=True,
+                                   related_name='users_mail')
+    is_staff = models.BooleanField(default=False,
+                                   verbose_name='Es administrador')
+
+    updated = models.DateTimeField(auto_now=True,
+                                   verbose_name='Modificado')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='Creado')
+
+    class Meta:
+        verbose_name = 'Correo permitido'
+        verbose_name_plural = 'Correos permitidos'
+        ordering = ('-updated',)
+        db_table = 'verifydocs_user_email'
+
+    def __str__(self):
+        return f'{self.email} - {self.dependence or "Sin dependencia"}'
 
 
 class DocumentType(models.Model):

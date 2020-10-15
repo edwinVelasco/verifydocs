@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm as BaseModelForm
 
-from app.models import Dependence
+from app.models import Dependence, UserMail
 
 from app.models import DocumentType
 
@@ -106,6 +106,7 @@ class DependenceSearchForm(forms.Form):
         widget=forms.CheckboxInput()
     )
 
+
 class DependenceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(DependenceForm, self).__init__(*args, **kwargs)
@@ -154,3 +155,43 @@ class DependenceForm(forms.ModelForm):
         return cleaned_data
 
 
+class UserMailForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(UserMailForm, self).__init__(*args, **kwargs)
+        self.fields['email'].required = True
+        self.fields['dependence'].required = False
+        self.fields['dependence'].queryset = Dependence.objects.filter(
+            active=True)
+
+    class Meta:
+        model = UserMail
+        fields = ('email', 'dependence', 'is_staff')
+
+        error_messages = {
+            'email': {
+                'required': "El correo es requerido.",
+                'unique': 'El acrónimo ya se encuentra registrado'
+            }
+        }
+
+        widgets = {
+            'email': forms.EmailInput(
+                attrs={'class': 'form-control',
+                       'placeholder': 'Correo electrónico'}
+            ),
+            'dependence': forms.Select(
+                attrs={'class': 'form-control'}
+            ),
+            'is_staff': forms.CheckboxInput(attrs={})
+        }
+
+    def clean_email(self):
+        return self.cleaned_data.get('email', '').lower()
+
+    def clean(self):
+        cleaned_data = super(UserMailForm, self).clean()
+        email = cleaned_data.get('email', '')
+        if '@ufps.edu.co' not in email:
+            self.add_error('email',
+                           'Solo correos con dominio UFPS')
+        return cleaned_data

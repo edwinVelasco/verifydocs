@@ -71,6 +71,14 @@
                                   Dependencias
                               </a>
                           </li>
+                          <li class="nodropdown {% if 'allowed_users' in request.path  %}active{% endif %}">
+                              <a href="{% url 'allowed_users' %}"
+                                  class="dropdown-toggle disabled"
+                                  data-toggle="dropdown">
+                                  <i class="fa fa-folder-o fa-lg"></i>
+                                  Usuarios permitidos
+                              </a>
+                          </li>
                       </ul>
                     </div>
               </div>

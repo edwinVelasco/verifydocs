@@ -12,8 +12,11 @@ class UserMixin(LoginRequiredMixin):
         user_email = UserMail.objects.filter(email=request.user.email)
         if not user_email:
             return redirect(reverse('logout'))
-        if request.user.is_staff:
+        user_email = user_email.first()
+        if user_email.is_staff:
             return redirect(reverse('admon'))
+        if not user_email.dependence:
+            return redirect(reverse('logout'))
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -26,6 +29,7 @@ class UserAdminMixin(LoginRequiredMixin):
         user_email = UserMail.objects.filter(email=request.user.email)
         if not user_email:
             return redirect(reverse('logout'))
-        if not request.user.is_staff:
+        user_email = user_email.first()
+        if not user_email.is_staff:
             return redirect(reverse('home'))
         return super().dispatch(request, *args, **kwargs)
