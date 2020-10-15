@@ -195,3 +195,25 @@ class UserMailForm(forms.ModelForm):
             self.add_error('email',
                            'Solo correos con dominio UFPS')
         return cleaned_data
+
+
+class UserMailSearchForm(forms.Form):
+    email = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control', 'placeholder': 'Correo',
+            'autocomplete': 'off'
+        })
+    )
+    dependence = forms.ModelChoiceField(
+        queryset=Dependence.objects.all(),
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'autocomplete': 'off'
+        })
+    )
+    is_staff = forms.BooleanField(
+        widget=forms.CheckboxInput()
+    )
+    is_active = forms.BooleanField(
+        widget=forms.CheckboxInput()
+    )

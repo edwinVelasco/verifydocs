@@ -13,7 +13,8 @@ from django.db.models import Q
 from django.http import Http404
 from django.utils.translation import gettext as _
 
-from app.forms import VerifyDocsForm, DependenceForm, UserMailForm
+from app.forms import VerifyDocsForm, DependenceForm, UserMailForm, \
+    UserMailSearchForm, DependenceSearchForm
 from app.models import DocumentType, Dependence, UserMail
 from app.forms import DocumentTypeSearchForm, DocumentTypeForm
 # Create your views here.
@@ -164,7 +165,7 @@ class DependenceListView(UserAdminMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(DependenceListView, self) \
             .get_context_data(**kwargs)
-        context['form_search'] = DocumentTypeSearchForm(data=self.request.GET)
+        context['form_search'] = DependenceSearchForm(data=self.request.GET)
         context['paginator_params'] = self.get_params_pagination()
         return context
 
@@ -325,16 +326,19 @@ class UserMailListView(UserAdminMixin, ListView):
         load_data_session(self.request, self.request.GET, 'filter')
         if self.request.GET.get('email', '') == '' and \
                 self.request.GET.get('dependence', '') == '' and \
-                self.request.GET.get('is_staff', '') == '':
+                self.request.GET.get('is_staff', '') == '' and \
+                self.request.GET.get('is_active', '') == '':
             return self.model.objects.all()
         params = dict()
         if 'is_staff' in self.request.GET:
             params['is_staff'] = True
+        if 'is_active' in self.request.GET:
+            params['active'] = True
         try:
-            if self.request.GET.get('name', '') != '':
+            if self.request.GET.get('email', '') != '':
                 params['email__icontains'] = self.request.GET.get('email', '')
-            if self.request.GET.get('acronym', '') != '':
-                params['dependece'] = self.request.GET.get('dependece', '')
+            if self.request.GET.get('dependence', '') != '':
+                params['dependence'] = self.request.GET.get('dependence', '')
             return self.model.objects.filter(**params)
         except ValueError:
             return self.model.objects.all()
@@ -369,7 +373,7 @@ class UserMailListView(UserAdminMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(UserMailListView, self) \
             .get_context_data(**kwargs)
-        context['form_search'] = DocumentTypeSearchForm(data=self.request.GET)
+        context['form_search'] = UserMailSearchForm(data=self.request.GET)
         context['paginator_params'] = self.get_params_pagination()
         return context
 
