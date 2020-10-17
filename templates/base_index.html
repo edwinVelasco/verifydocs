@@ -1,0 +1,103 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es" ng-app="demoApp">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}VerifyDocs{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Favicon -->
+    <link href="{% static 'app/rsc/img/favicon.ico' %}" rel="Shortcut icon">
+    <!-- Web Fonts -->
+    <link rel='stylesheet' type='text/css'
+          href='//fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin'>
+    <link href="{% static 'app/css/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/ufps.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/ie8.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/blocks.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/plugins.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/style.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/app.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/shop.plugins.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/shop.blocks.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/style-switcher.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/shop.style.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/header-v6.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/header-v8.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/header.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/footer-v1.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/animate.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/line-icons.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/font-awesome.min.css' %}"  rel="stylesheet">
+    <link href="{% static 'app/css/horizontal-parallax.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/layerslider.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/ured.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/jquery.mCustomScrollbar.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/sky-forms.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/custom-sky-forms.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/profile.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/brand-buttons.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/brand-buttons-inversed.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/hover.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/custom-hover-effects.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/custom.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/pgwslider.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/css/style.css' %}" rel="stylesheet">
+
+</head>
+{% block base_body %}
+    <body class="header-fixed" style="" ng-controller="DemoCtrl">
+        {% block body %}
+        {% endblock %}
+        {% block javascript %}
+            <script src="{% static 'app/js/angular.min.js' %}"></script>
+            <script src="{% static 'app/demo/demoApp.js' %}"></script>
+            <script src="{% static 'app/demo/demoController.js' %}"></script>
+            <script src="{% static 'app/bower_components/webcam-directive/app/scripts/webcam.js' %}"></script>
+            <script src="{% static 'app/dist/bc-qr-reader.js' %}"></script>
+            <script  src="{% static 'app/js/owl-recent-works.min.js' %}"></script>
+            <script  src="{% static 'app/js/jquery.min.js' %}"></script>
+            <script  src="{% static 'app/js/jquery-migrate.min.js' %}"></script>
+            <script  src="{% static 'app/js/bootstrap.min.js' %}"></script>
+            <script  src="{% static 'app/js/pgwslider.min.js' %}"></script>
+            <script  src="{% static 'app/js/back-to-top.min.js' %}"></script>
+            <script  src="{% static 'app/js/smoothScroll.min.js' %}"></script>
+            <script  src="{% static 'app/js/owl.carousel.min.js' %}"></script>
+            <script  src="{% static 'app/js/sequence.jquery-min.js' %}"></script>
+            <script  src="{% static 'app/js/greensock.js' %}"></script>
+            <script  src="{% static 'app/js/layerslider.transitions.js' %}"></script>
+            <script  src="{% static 'app/js/layerslider.kreaturamedia.jquery.js' %}"></script>
+            <script  src="{% static 'app/js/custom.min.js' %}"></script>
+            <script  src="{% static 'app/js/app.min.js' %}"></script>
+            <script  src="{% static 'app/js/owl-carousel.min.js' %}"></script>
+            <script  src="{% static 'app/js/datepicker.min.js' %}"></script>
+            <script  src="{% static 'app/js/validation.min.js' %}"></script>
+            <script  src="{% static 'app/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+            <script  src="{% static 'app/js/wow.min.js' %}"></script>
+            <script  src="{% static 'app/js/ufps.js' %}"></script>
+            <!--[if lt IE 9]>
+            <script src="{% static 'app/js/respond.js' %}"></script>
+            <script src="{% static 'app/js/html5shiv.js' %}"></script>
+            <script src="{% static 'app/js/placeholder-IE-fixes.js' %}"></script><![endif]-->
+            <!-- For Background Image -->
+            <!--<script  src="{% static 'app/js/jquery.backstretch.min.js' %}"></script>  -->
+            <!--<script >
+                  $.backstretch([
+                    "assets/rsc/img/bg/13.jpg"
+                  ])
+                </script>  -->
+            <!-- End For Background Image -->
+            <script>
+                $(document).ready(function(){
+                    $('[data-toggle="tooltip"]').tooltip();
+                });
+            </script>
+
+            {{ form.media }}
+        {% endblock %}
+    </body>
+{% endblock %}
+</html>
