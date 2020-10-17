@@ -34,7 +34,7 @@ class Dependence(models.Model):
         self.save()
 
     def __str__(self):
-        return f'"{self.name} - {self.acronym}"'
+        return f'{self.name} - {self.acronym}'
 
 
 class UserMail(models.Model):

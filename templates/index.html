@@ -22,7 +22,7 @@
                                 </div>
                                 <ul class="topbar-list topbar-menu">
                                     {% if user.is_authenticated %}
-                                        <li class="cd-log_reg home"
+                                        <li class="cd-log_reg home hidden-sm"
                                             style="font-size: 14px !important;">
                                             {{user.first_name}} {{user.last_name}}
                                         </li>
@@ -95,25 +95,24 @@
                 </div>
             </div>
             <div class="header-v8 img-logo-superior" style="background-color: #aa1916;">
-                <div class="parallax-quote parallaxBg" style="padding: 30px 30px;">
+                <div class="parallax-quote parallaxBg" style="padding: 10px 30px;">
                     <div class="parallax-quote-in" style="padding: 0px;">
                         <div class="row">
                             <div class="col-md-4 col-sm-4 col-xs-5">
-                                <a href="https://ingsistemas.cloud.ufps.edu.co/" target="_blank">
-                                    <img id="logo-header" src="{% static 'app/rsc/img/logo_vertical_ingsistemas_ht180.png' %}"
-                                         alt="Logo Programa de Ingeniería de Sistemas" style="max-height:100px;">
-                                </a>
-                            </div>
-                            <div class="col-md-3 col-sm-4 col-xs-5">
-                                <br>
-                                <h1>
-                                    Verificación de documentos
-                                </h1>
-                            </div>
-                            <div class="col-md-5 col-ms-4 col-xs-4 pull-right">
                                 <a href="http://www.ufps.edu.co/" target="_blank">
                                     <img class="header-banner" src="{% static 'app/rsc/img/logo_ufps2.png' %}"
                                          style="max-height:100px;" alt="Escudo de la Universidad Francisco de Paula Santander" ></a>
+                            </div>
+                            <div class="col-md-6 col-sm-5 col-xs-5" style="padding-top: 10px;">
+                                <h1 class="text-center" style="font-size: 38px;">
+                                    Verificación de documentos <br>
+                                    UFPS
+                                </h1>
+                            </div>
+                            <div class="col-md-2 col-ms-4 col-xs-4 pull-right">
+                                <a href="https://www.colombia.co/" target="_blank">
+                                    <img class="header-banner" src="{% static 'app/rsc/img/escudo_colombia.png' %}"
+                                         style="max-height:100px;" alt="Escudo de colombia" ></a>
                             </div>
                         </div>
                     </div>
@@ -147,7 +146,7 @@
     <div class="container" >
         <form method="POST">
             {% csrf_token %}
-            <div class="col-lg-6 col-md-8 col-sm-12 col-lg-offset-3 col-lg-offset-3">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-lg-offset-3 col-md-offset-3">
                 <div class="row">
                     <br>
                     <h1 class="text-center" style="font-size: 4em;">VerifyDocs</h1>
