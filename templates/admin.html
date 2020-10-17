@@ -13,7 +13,7 @@
                             <div class="col-sm-7 col-xs-2">
                                 {% if user.is_authenticated %}
                                     <ul class="topbar-list topbar-log_reg">
-                                        <li class="cd-log_reg home visible-sm-block visible-md-block
+                                        <li class="cd-log_reg home visible-md-block
                                          visible-lg-block"
                                             style="font-size: 14px !important;">
                                              <i class="fa fa-user fa-lg"></i>
@@ -70,7 +70,6 @@
             </div>
             <div class="collapse navbar-collapse mega-menu navbar-responsive-collapse">
                 <div class="containermenu">
-
                     <div class="container">
                         <ul class="nav navbar-nav" style="float:left;">
                             <li class="nodropdown {% if 'admin' in request.path  %}active{% endif %}">
@@ -96,19 +95,18 @@
                                     Dependencias
                                 </a>
                             </li>
-                          <li class="nodropdown {% if 'allowed_users' in request.path  %}active{% endif %}">
-                              <a href="{% url 'allowed_users' %}"
-                                  class="dropdown-toggle disabled"
-                                  data-toggle="dropdown">
-                                  <i class="fa fa-users fa-lg"></i>
-                                  Usuarios permitidos
-                              </a>
-                          </li>
+                            <li class="nodropdown {% if 'allowed_users' in request.path  %}active{% endif %}">
+                                <a href="{% url 'allowed_users' %}"
+                                    class="dropdown-toggle disabled"
+                                    data-toggle="dropdown">
+                                    <i class="fa fa-users fa-lg"></i>
+                                    Usuarios permitidos
+                                </a>
+                            </li>
                         </ul>
-                      </ul>
                     </div>
                 </div>
-          </div>
+            </div>
         </div>
         <div style="clear:both;"></div>
       </div>

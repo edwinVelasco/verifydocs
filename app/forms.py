@@ -165,7 +165,7 @@ class UserMailForm(forms.ModelForm):
 
     class Meta:
         model = UserMail
-        fields = ('email', 'dependence', 'is_staff')
+        fields = ('email', 'dependence', 'is_staff', 'active')
 
         error_messages = {
             'email': {
@@ -177,12 +177,14 @@ class UserMailForm(forms.ModelForm):
         widgets = {
             'email': forms.EmailInput(
                 attrs={'class': 'form-control',
-                       'placeholder': 'Correo electrónico'}
+                       'placeholder': 'Correo electrónico',
+                       'value': '@ufps.edu.co'}
             ),
             'dependence': forms.Select(
                 attrs={'class': 'form-control'}
             ),
-            'is_staff': forms.CheckboxInput(attrs={})
+            'is_staff': forms.CheckboxInput(attrs={}),
+            'active': forms.HiddenInput()
         }
 
     def clean_email(self):
