@@ -34,7 +34,7 @@ class Dependence(models.Model):
         self.save()
 
     def __str__(self):
-        return f'"{self.name} - {self.acronym}"'
+        return f'{self.name} - {self.acronym}'
 
 
 class UserMail(models.Model):
@@ -47,7 +47,7 @@ class UserMail(models.Model):
                                    related_name='users_mail')
     is_staff = models.BooleanField(default=False,
                                    verbose_name='Es administrador')
-    active = models.BooleanField(default=False,
+    active = models.BooleanField(default=True,
                                  verbose_name='Activo')
 
     updated = models.DateTimeField(auto_now=True,

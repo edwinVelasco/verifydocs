@@ -8,7 +8,7 @@
                     alert-success
                 {% elif message.tags == 'error' %}
                     alert-danger
-                {% elif message.tags == 'warning' and user.is_authenticated %}
+                {% elif message.tags == 'warning'%}
                     alert-warning
                 {% elif user.is_authenticated %}
                     alert-info
