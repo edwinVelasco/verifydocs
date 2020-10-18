@@ -10,7 +10,8 @@ function DemoCtrl($scope) {
 
     $scope.processURLfromQR = function (url) {
         $scope.url = url;
-        $('#id_code').val(url);
+        $('#id_code').val($scope.url);
+        console.log($scope.url);
         $scope.cameraRequested = false;
     }
 }
