@@ -14,7 +14,6 @@ function DemoCtrl($scope) {
         $scope.document = JSON.parse($scope.url);
         console.log($scope.document);
         $('#id_code').val($scope.document.token);
-        console.log($scope.url);
         $scope.cameraRequested = false;
     }
 }

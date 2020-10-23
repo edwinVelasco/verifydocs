@@ -1,6 +1,8 @@
 import pyqrcode
 import datetime
 import PyPDF2
+import hashlib
+import base64
 
 from reportlab.graphics import renderPDF, renderPM
 from svglib.svglib import svg2rlg
@@ -9,9 +11,10 @@ from reportlab.lib.pagesizes import letter
 
 
 def createQR():
-    data = dict(token='Ay(/12'*6,
+    data = dict(token='b8f40e61aaf47a85eeba8ee3886294e7',
                 url='https://verifydocs.ufps.edu.co/verify/5/')
-    WEB_CLIENT_URL = 'https://authdocs.udes.edu.co/'
+    data2 = f"token={data['token']}\n{data['url']}"
+    WEB_CLIENT_URL = 'https://verifydocs.ufps.edu.co/'
     # xy = [170, 38, 480, 10]
     # xy = [160, 80, 500, 60]
     xy = [160, 80, 200, 250]
@@ -22,7 +25,7 @@ def createQR():
           f"{type_doc}"
 
     url = f'{WEB_CLIENT_URL}{ref}'
-
+    print(len(str(data)))
     qr2 = pyqrcode.create(str(data))
     qr2.svg(f'temp/{ref}.svg', scale=3)
 
@@ -62,5 +65,19 @@ def create_pdf_out(ref):
     resultFile.close()
 
 
+def sha_256_def(ref):
+    file = open(f'temp/{ref}.pdf', 'rb').read()
+    encoded = base64.b64encode(file)
+    print(encoded, '')
+    sha_256 = hashlib.sha256(encoded)
+    print(sha_256.hexdigest())
+    print(sha_256.digest())
+
+    md_5 = hashlib.md5(sha_256.digest())
+    print(md_5.digest())
+    print(md_5.hexdigest())
+
+
 ref = createQR()
+sha_256_def(ref=ref)
 # create_pdf_out(ref)

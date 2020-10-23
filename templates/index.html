@@ -172,15 +172,34 @@
                 </div>
             </div>
         </form>
-        <br>
+
         <div class="row" >
-            <div class="col-lg-6 col-md-6 col-sm-6 col-lg-offset-3 col-md-offset-3 col-sm-offset-3">
-                <div class="row text-center">
+            <br>
+            <div class="col-lg-12 text-center">
+                <h2>
+                    Otros métodos de verificación
+                </h2>
+                <div class="row text-center" ng-hide="!cameraRequested">
                     <br>
-                    <h2>Utilizar camara web</h2>
+                    <h2>Camara web</h2>
                     <p ng-show="cameraRequested">
                         Su navegador debe solicitar permiso para usar la cámara.
                     </p>
+                </div>
+                <div class="row" ng-hide="!cameraRequested">
+                    <div class="col-lg-6 col-lg-offset-3">
+                        <bc-qr-reader active="cameraRequested"
+                                on-result="processURLfromQR"
+                                on-error="onError" camera-status="cameraIsOn"
+                                ></bc-qr-reader>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6 col-sm-6 col-lg-offset-1 col-md-offset-3 col-sm-offset-3">
+                <div class="row text-center" ng-hide="cameraRequested">
+                    <br>
+                    <h2>Camara web</h2>
                 </div>
                 <div class="row" ng-hide="cameraRequested">
                    <div class="col-lg-2 col-lg-offset-5 col-md-2
@@ -191,15 +210,23 @@
                        </button>
                    </div>
                 </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6" ng-hide="cameraRequested">
+                <div class="row text-center">
+                    <br>
+                    <h2>Documento PDF</h2>
+                </div>
                 <div class="row">
-                    <div class="col-lg-6 col-lg-offset-2">
-                        <bc-qr-reader active="cameraRequested"
-                                on-result="processURLfromQR"
-                                on-error="onError" camera-status="cameraIsOn"
-                                ></bc-qr-reader>
-                    </div>
+                   <div class="col-lg-2 col-lg-offset-4 col-md-2
+                               col-md-offset-5 col-sm-4 col-sm-offset-4
+                                col-xs-2 col-xs-offset-5">
+                       <button ng-click="start()" class="btn btn-default">
+                           <i class="fa fa-file-pdf-o fa-4x"></i>
+                       </button>
+                   </div>
                 </div>
             </div>
+
 
         </div>
     </div>
