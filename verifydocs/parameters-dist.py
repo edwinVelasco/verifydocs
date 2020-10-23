@@ -1,4 +1,5 @@
 # Database config
+PG_ENGINE = ''
 PG_DBNAME = 'vdc'
 PG_DBUSER = ''
 PG_DBPASSWORD = ''
