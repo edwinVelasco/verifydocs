@@ -71,13 +71,17 @@ def sha_256_def(ref):
     print(encoded, '')
     sha_256 = hashlib.sha256(encoded)
     print(sha_256.hexdigest())
-    print(sha_256.digest())
+    #print(sha_256.digest())
+    # sha512
+    sha_512 = hashlib.sha512(sha_256.digest())
+    # print(md_5.digest())
+    print(sha_512.hexdigest())
 
-    md_5 = hashlib.md5(sha_256.digest())
-    print(md_5.digest())
+    md_5 = hashlib.md5(sha_512.digest())
+    #print(md_5.digest())
     print(md_5.hexdigest())
 
 
-ref = createQR()
-sha_256_def(ref=ref)
+#ref = createQR()
+#sha_256_def(ref=ref)
 # create_pdf_out(ref)

@@ -10,10 +10,11 @@ function DemoCtrl($scope) {
 
     $scope.processURLfromQR = function (url) {
 
-        $scope.url = url.replaceAll("'", '"');
-        $scope.document = JSON.parse($scope.url);
-        console.log($scope.document);
-        $('#id_code').val($scope.document.token);
+        //$scope.url = url.replaceAll("'", '"');
+        $scope.url = url;
+        //$scope.document = JSON.parse($scope.url);
+        //console.log($scope.document);
+        $('#id_code').val($scope.url);
         $scope.cameraRequested = false;
     }
 }
