@@ -12,8 +12,9 @@ function DemoCtrl($scope) {
 
         //$scope.url = url.replaceAll("'", '"');
         $scope.url = url;
+
         //$scope.document = JSON.parse($scope.url);
-        //console.log($scope.document);
+        console.log($scope.url);
         $('#id_code').val($scope.url);
         $scope.cameraRequested = false;
     }

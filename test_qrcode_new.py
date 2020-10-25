@@ -8,6 +8,7 @@ from reportlab.graphics import renderPDF, renderPM
 from svglib.svglib import svg2rlg
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
 
 
 def hash(file_bate64=None):
@@ -41,7 +42,8 @@ def createQR():
     ref = '1150535_1'
     qr2 = pyqrcode.create(data)
     qr2.svg(f'temp/{ref}.svg', scale=2)
-
+    print(letter)
+    print('letter')
     my_canvas = canvas.Canvas(f'temp/{ref}.pdf', pagesize=letter)
     drawing = svg2rlg(f'temp/{ref}.svg')
     renderPDF.draw(drawing, my_canvas, xy[2], xy[3])
@@ -85,17 +87,60 @@ def create_pdf_out(ref):
     return ref
 
 
+def create_pdf_watermark():
+
+
+    # my_canvas = canvas.Canvas(f'temp/1150535_watermark.pdf', pagesize=letter)
+    # drawing = svg2rlg('temp/watermark22.svg')
+
+    # renderPDF.draw(drawing, my_canvas, 80, 40)
+    # x = 1 * inch
+    # y = 1 * inch
+    # renderPDF.draw(drawing, my_canvas, x=x, y=y)
+    # my_canvas.save()
+
+    file = open('temp/1150535.pdf', 'rb')
+    reader = PyPDF2.PdfFileReader(file)
+    page = reader.getPage(0)
+    water = open('temp/watermark_page.pdf', 'rb')
+    reader2 = PyPDF2.PdfFileReader(water)
+
+    waterpage = reader2.getPage(0)
+    page.mergePage(waterpage)
+    writer = PyPDF2.PdfFileWriter()
+    writer.addPage(page)
+    for pageNum in range(1, reader.numPages):  # this will give length of book
+        pageObj = reader.getPage(pageNum)
+        writer.addPage(pageObj)
+    resultFile = open('temp/1150535_watermark_out.pdf', 'wb')  # here we are
+    # writing so
+    # 'wb' is for write binary
+
+    writer.write(resultFile)
+    file.close()
+    resultFile.close()
+
+
 def verify_docs(ref):
     file_out = open(f'temp/{ref}_out.pdf', 'rb').read()
     encoded = base64.b64encode(file_out)
     sha_256 = hash(file_bate64=encoded)
-    md_5 = hashlib.md5(sha_256)
+    # md_5 = hashlib.md5(sha_256)
     # print(md_5.digest())
-    print(md_5.hexdigest())
+    # print(md_5.hexdigest())
+
+
+def create_watermark():
+    my_canvas = canvas.Canvas(f'temp/watermark.pdf', pagesize=letter)
+    drawing = svg2rlg(f'temp/watermark.svg')
+    xy = [80, 30, 80, 40]
+    renderPDF.draw(drawing, my_canvas, xy[2], xy[3])
+    my_canvas.save()
 
 
 ref = createQR()
-ref = create_pdf_out(ref=ref)
+create_pdf_out(ref=ref)
+create_pdf_watermark()
 
 
 verify_docs(ref=ref)
