@@ -1,7 +1,7 @@
 Django==2.2.16
 celery==5.0.0
 djangorestframework==3.12.1
-psycopg2==2.8.6
+#psycopg2==2.8.6
 reportlab==3.5.12
 svglib==1.0.1
 PyPDF2==1.26.0
