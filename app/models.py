@@ -34,7 +34,7 @@ class Dependence(models.Model):
         self.save()
 
     def __str__(self):
-        return f'{self.name} - {self.acronym}'
+        return self.name.capitalize()
 
 
 class UserMail(models.Model):
@@ -69,10 +69,19 @@ class UserMail(models.Model):
 
 
 class DocumentType(models.Model):
-    name = models.CharField(max_length=200)
-    acronym = models.CharField(max_length=4, unique=True)
+    name = models.CharField(max_length=45, unique=True)
     days_validity = models.IntegerField(default=None, null=True, blank=True)
     active = models.BooleanField(default=True)
+    dependence = models.ForeignKey(Dependence, on_delete=models.PROTECT,
+                                   verbose_name='Dependencia', null=True,
+                                   blank=True,
+                                   related_name='dependence_docs_type')
+    updated = models.DateTimeField(auto_now=True,
+                                   null=False,
+                                   verbose_name='Última modificación')
+    created = models.DateTimeField(auto_now_add=True,
+                                   null=False,
+                                   verbose_name='Creado')
 
     def update_active(self):
         self.active = not self.active
@@ -85,4 +94,4 @@ class DocumentType(models.Model):
         db_table = 'verifydocs_document_type'
 
     def __str__(self):
-        return f'"{self.name} - {self.acronym}"'
+        return self.name.capitalize()

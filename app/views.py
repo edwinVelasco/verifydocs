@@ -199,7 +199,7 @@ class DocumentTypeListView(UserAdminMixin, ListView):
         # clear_data_session(self.request, 'filter')
         load_data_session(self.request, self.request.GET, 'filter')
         if self.request.GET.get('name', '') == '' and \
-                self.request.GET.get('acronym', '') == '' and \
+                self.request.GET.get('dependence', '') == '' and \
                 self.request.GET.get('is_active', '') == '':
             return self.model.objects.all()
         params = dict()
@@ -208,8 +208,8 @@ class DocumentTypeListView(UserAdminMixin, ListView):
         try:
             if self.request.GET.get('name', '') != '':
                 params['name__icontains'] = self.request.GET.get('name', '')
-            if self.request.GET.get('acronym', '') != '':
-                params['acronym__icontains'] = self.request.GET.get('acronym',
+            if self.request.GET.get('dependence', '') != '':
+                params['dependence_id'] = self.request.GET.get('dependence',
                                                               '')
             return self.model.objects.filter(**params)
         except ValueError:

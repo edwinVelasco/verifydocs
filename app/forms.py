@@ -22,9 +22,12 @@ class DocumentTypeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(DocumentTypeForm, self).__init__(*args, **kwargs)
         self.fields['name'].required = True
-        self.fields['acronym'].required = True
         self.fields['days_validity'].required = False
         self.fields['active'].required = False
+        self.fields['dependence'].required = True
+        self.fields['dependence'].queryset = Dependence.objects.filter(
+            active=True)
+        self.fields['dependence'].empty_label = '--Seleccione dependencia--'
 
     class Meta:
         model = DocumentType
@@ -33,10 +36,10 @@ class DocumentTypeForm(forms.ModelForm):
         error_messages = {
             'name': {
                 'required': "El nombre es requerido.",
+                'unique': 'El nombre ya se encuentra registrado'
             },
-            'acronym': {
-                'required': "El acrónimo es requerido.",
-                'unique': 'El acrónimo ya se encuentra registrado'
+            'dependence': {
+                'required': "La dependencia es requerida.",
             }
         }
 
@@ -45,8 +48,8 @@ class DocumentTypeForm(forms.ModelForm):
                 attrs={'class': 'form-control',
                        'placeholder': 'Nombre'}
             ),
-            'acronym': forms.TextInput(
-                attrs={'class': 'form-control', 'placeholder': 'Acrónimo'}
+            'dependence': forms.Select(
+                attrs={'class': 'form-control'}
             ),
             'days_validity': forms.NumberInput(
                 attrs={'class': 'form-control',
@@ -55,20 +58,8 @@ class DocumentTypeForm(forms.ModelForm):
             'active': forms.HiddenInput()
         }
 
-    def clean_acronym(self):
-        return self.cleaned_data.get('acronym', '').upper()
-
     def clean_name(self):
         return self.cleaned_data.get('name', '').capitalize()
-
-    def clean(self):
-        cleaned_data = super(DocumentTypeForm, self).clean()
-        acronym = cleaned_data.get('acronym', '')
-        if len(acronym) < 4:
-            self.add_error('acronym',
-                           'El acrónimo debe tener cuatro caracteres')
-
-        return cleaned_data
 
 
 class DocumentTypeSearchForm(forms.Form):
@@ -78,11 +69,13 @@ class DocumentTypeSearchForm(forms.Form):
             'autocomplete': 'off'
         })
     )
-    acronym = forms.CharField(
-        widget=forms.TextInput(attrs={
-            'class': 'form-control', 'placeholder': 'Acrónimo',
+    dependence = forms.ModelChoiceField(
+        queryset=Dependence.objects.all(),
+        widget=forms.Select(attrs={
+            'class': 'form-control',
             'autocomplete': 'off'
-        })
+        }),
+        empty_label='Dependencias',
     )
     is_active = forms.BooleanField(
         widget=forms.CheckboxInput()
