@@ -20,9 +20,6 @@
                 <div class="form-group">
                     {{ form_search.name }}
                 </div>
-                <div class="form-group">
-                    {{ form_search.acronym }}
-                </div>
                 <div class="checkbox">
                     <label>
                         {{ form_search.is_active }} Solo activos
@@ -49,7 +46,6 @@
                                     <th class="text-center col-md-1">Creación</th>
                                     <th class="text-center col-md-1">Última modificación</th>
                                     <th class="text-center col-md-7">Nombre</th>
-                                    <th class="text-center col-md-1">Siglas</th>
                                     <th class="text-center col-md-2">Gestión</th>
                                 </tr>
                             </thead>
@@ -62,7 +58,6 @@
                                     <td>{{ dependence.created|date:"SHORT_DATE_FORMAT" }}</td>
                                     <td>{{ dependence.updated|date:"SHORT_DATE_FORMAT" }}</td>
                                     <td>{{ dependence.name }}</td>
-                                    <td>{{ dependence.acronym }} </td>
                                     <td class="text-center">
                                         <a class="btn btn-outline btn-xs btn-primary"
                                            type="button" data-toggle="tooltip"
@@ -71,7 +66,7 @@
                                            href="{% url 'dependences_update' dependence.id %}">
                                                 <i class="fa fa-edit"></i>
                                         </a>
-                                        {% if not doc_type.active %}
+                                        {% if not dependence.active %}
                                             <a class="btn btn-outline btn-xs btn-primary"
                                                 type="button" data-toggle="tooltip"
                                                 data-placement="top"

@@ -21,16 +21,11 @@
                     {{ form_search.email }}
                 </div>
                 <div class="form-group">
-                    {{ form_search.dependence }}
+                    {{ form_search.role }}
                 </div>
                 <div class="checkbox">
                     <label>
                         {{ form_search.is_active }} Solo activos
-                    </label>
-                </div>
-                <div class="checkbox">
-                    <label>
-                        {{ form_search.is_staff }} Administrador
                     </label>
                 </div>
                 <div class="form-group">
@@ -54,7 +49,6 @@
                                     <th class="text-center col-md-1">Creación</th>
                                     <th class="text-center col-md-1">Última modificación</th>
                                     <th class="text-center col-md-3">Correo</th>
-                                    <th class="text-center col-md-3">Dependencia</th>
                                     <th class="text-center col-md-1">Rol</th>
                                     <th class="text-center col-md-1">Activo</th>
                                     <th class="text-center col-md-2">Gestión</th>
@@ -69,11 +63,18 @@
                                     <td>{{ allowed_user.created|date:"SHORT_DATE_FORMAT" }}</td>
                                     <td>{{ allowed_user.updated|date:"SHORT_DATE_FORMAT" }}</td>
                                     <td>{{ allowed_user.email }}</td>
-                                    <td>{{ allowed_user.dependence|default:"Sin depenedencia" }}</td>
                                     <td>
-                                        {% if allowed_user.is_staff %}
+                                        {% if allowed_user.role == 1 %}
                                         <i class="fa fa-cogs fa-lg text-success"
                                            data-toggle="tooltip" data-placement="bottom" title="Administrador"
+                                        ></i>
+                                        {% elif not allowed_user.role %}
+                                        <i class="fa fa-times-circle fa-lg text-danger"
+                                           data-toggle="tooltip" data-placement="bottom" title="Administrativo"
+                                        ></i>
+                                        {% elif allowed_user.role == 3 %}
+                                        <i class="fa fa-terminal fa-lg text-danger"
+                                           data-toggle="tooltip" data-placement="bottom" title="Administrativo"
                                         ></i>
                                         {% else %}
                                         <i class="fa fa-user fa-lg"

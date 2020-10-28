@@ -14,8 +14,6 @@ class Doc(models.Model):
 
 
 class Dependence(models.Model):
-    acronym = models.CharField(max_length=4, verbose_name='Acrónimo',
-                               unique=True)
     name = models.CharField(max_length=255, verbose_name='Nombre', unique=True)
     active = models.BooleanField(default=True, verbose_name='Activo')
 
@@ -38,15 +36,16 @@ class Dependence(models.Model):
 
 
 class UserMail(models.Model):
+    ROLES_CHOICE = (
+        (1, 'Administrador'),
+        (2, 'Administrativo'),
+        (3, 'Aplicación'),
+    )
     email = models.EmailField(
         validators=[validate_domainonly_email, ],
         unique=True, verbose_name='Correo')
-    dependence = models.ForeignKey(Dependence, on_delete=models.PROTECT,
-                                   verbose_name='Dependencia', null=True,
-                                   blank=True,
-                                   related_name='users_mail')
-    is_staff = models.BooleanField(default=False,
-                                   verbose_name='Es administrador')
+    role = models.IntegerField(choices=ROLES_CHOICE, null=True,
+                               verbose_name='Rol')
     active = models.BooleanField(default=True,
                                  verbose_name='Activo')
 
@@ -61,7 +60,7 @@ class UserMail(models.Model):
         db_table = 'verifydocs_user_email'
 
     def __str__(self):
-        return f'{self.email} - {self.dependence or "Sin dependencia"}'
+        return self.email
 
     def update_active(self):
         self.active = not self.active
