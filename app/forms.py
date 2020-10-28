@@ -107,6 +107,7 @@ class DependenceForm(forms.ModelForm):
         error_messages = {
             'name': {
                 'required': "El nombre es requerido.",
+                'unique': "Ya existe una dependencia con el mismo nombre.",
             },
         }
 

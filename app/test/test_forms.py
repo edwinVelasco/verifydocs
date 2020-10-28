@@ -8,7 +8,6 @@ class TestDependenceForm(TestCase):
     def test_dependence_form_valid(self):
         form = DependenceForm(data={
             'name': 'Dependencia 1',
-            'acronym': 'XXXX',
             'active': True,
         })
         self.assertTrue(form.is_valid())

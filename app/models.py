@@ -60,7 +60,7 @@ class UserMail(models.Model):
         db_table = 'verifydocs_user_email'
 
     def __str__(self):
-        return f'{self.email}'
+        return self.email
 
     def update_active(self):
         self.active = not self.active

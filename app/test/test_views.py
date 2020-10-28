@@ -25,7 +25,6 @@ class TestDependenceViews(TestCase):
 
     def test_create_dependence(self):
         response = self.client.post(self.create_url, {
-            'acronym': 'XXXX',
             'name': 'Test dependencia',
         })
         self.assertEquals(response.status_code, 302)
@@ -33,7 +32,6 @@ class TestDependenceViews(TestCase):
     def test_update_dependence(self):
         name = self.dependence.name
         response = self.client.post(self.update_url, {
-            'acronym': 'XXXX',
             'name': 'Dependencia 2',
         })
         self.assertEquals(response.status_code, 302)
