@@ -325,20 +325,17 @@ class UserMailListView(UserAdminMixin, ListView):
         # clear_data_session(self.request, 'filter')
         load_data_session(self.request, self.request.GET, 'filter')
         if self.request.GET.get('email', '') == '' and \
-                self.request.GET.get('dependence', '') == '' and \
-                self.request.GET.get('is_staff', '') == '' and \
+                self.request.GET.get('role', '') == '' and \
                 self.request.GET.get('is_active', '') == '':
             return self.model.objects.all()
         params = dict()
-        if 'is_staff' in self.request.GET:
-            params['is_staff'] = True
         if 'is_active' in self.request.GET:
             params['active'] = True
         try:
             if self.request.GET.get('email', '') != '':
                 params['email__icontains'] = self.request.GET.get('email', '')
-            if self.request.GET.get('dependence', '') != '':
-                params['dependence'] = self.request.GET.get('dependence', '')
+            if self.request.GET.get('role', '') != '':
+                params['role'] = self.request.GET.get('role', '')
             return self.model.objects.filter(**params)
         except ValueError:
             return self.model.objects.all()

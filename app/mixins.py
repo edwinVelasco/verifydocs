@@ -1,5 +1,4 @@
 from django.shortcuts import redirect, reverse
-from django.views.generic.base import ContextMixin
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import UserMail
@@ -14,13 +13,13 @@ class UserMixin(LoginRequiredMixin):
                                              active=True)
         if not user_email:
             messages.warning(request=request,
-                             message=f'El correo electrónico {request.user.email} no tiene acceso')
+                             message=f'El correo electrónico '
+                                     f'{request.user.email} no tiene acceso')
             return redirect(reverse('logout'))
         user_email = user_email.first()
-        if user_email.is_staff:
+        if user_email.role == 1:
             return redirect(reverse('admon'))
-        if not user_email.dependence:
-            return redirect(reverse('logout'))
+        return redirect(reverse('logout'))
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -34,9 +33,10 @@ class UserAdminMixin(LoginRequiredMixin):
                                              active=True)
         if not user_email:
             messages.warning(request=request,
-                             message=f'El correo electrónico "{request.user.email}" no tiene acceso')
+                             message=f'El correo electrónico "'
+                                     f'{request.user.email}" no tiene acceso')
             return redirect(reverse('logout'))
         user_email = user_email.first()
-        if not user_email.is_staff:
+        if not user_email.role == 1:
             return redirect(reverse('home'))
         return super().dispatch(request, *args, **kwargs)
