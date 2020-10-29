@@ -106,8 +106,10 @@ def create_pdf_watermark():
     reader2 = PyPDF2.PdfFileReader(water)
 
     waterpage = reader2.getPage(0)
+    #waterpage.mergePage(page)
     page.mergePage(waterpage)
     writer = PyPDF2.PdfFileWriter()
+    #writer.addPage(waterpage)
     writer.addPage(page)
     for pageNum in range(1, reader.numPages):  # this will give length of book
         pageObj = reader.getPage(pageNum)
