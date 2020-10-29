@@ -10,9 +10,9 @@ class DocAdmin(admin.ModelAdmin):
 
 
 class UserMailAdmin(admin.ModelAdmin):
-    fields = ('email', 'dependence', 'is_staff', 'updated', 'created')
+    fields = ('email', 'role', 'active', 'updated', 'created')
     readonly_fields = ('updated', 'created')
-    list_display = ['email', 'dependence', 'is_staff']
+    list_display = ['email', 'role', 'active']
 
 
 class DependenceAdmin(admin.ModelAdmin):

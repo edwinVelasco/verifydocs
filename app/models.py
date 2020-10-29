@@ -14,8 +14,6 @@ class Doc(models.Model):
 
 
 class Dependence(models.Model):
-    acronym = models.CharField(max_length=4, verbose_name='Acrónimo',
-                               unique=True)
     name = models.CharField(max_length=255, verbose_name='Nombre', unique=True)
     active = models.BooleanField(default=True, verbose_name='Activo')
 
@@ -34,19 +32,20 @@ class Dependence(models.Model):
         self.save()
 
     def __str__(self):
-        return f'{self.name} - {self.acronym}'
+        return self.name.capitalize()
 
 
 class UserMail(models.Model):
+    ROLES_CHOICE = (
+        (1, 'Administrador'),
+        (2, 'Administrativo'),
+        (3, 'Aplicación'),
+    )
     email = models.EmailField(
         validators=[validate_domainonly_email, ],
         unique=True, verbose_name='Correo')
-    dependence = models.ForeignKey(Dependence, on_delete=models.PROTECT,
-                                   verbose_name='Dependencia', null=True,
-                                   blank=True,
-                                   related_name='users_mail')
-    is_staff = models.BooleanField(default=False,
-                                   verbose_name='Es administrador')
+    role = models.IntegerField(choices=ROLES_CHOICE, null=True,
+                               verbose_name='Rol')
     active = models.BooleanField(default=True,
                                  verbose_name='Activo')
 
@@ -61,7 +60,7 @@ class UserMail(models.Model):
         db_table = 'verifydocs_user_email'
 
     def __str__(self):
-        return f'{self.email} - {self.dependence or "Sin dependencia"}'
+        return self.email
 
     def update_active(self):
         self.active = not self.active
@@ -69,10 +68,19 @@ class UserMail(models.Model):
 
 
 class DocumentType(models.Model):
-    name = models.CharField(max_length=200)
-    acronym = models.CharField(max_length=4, unique=True)
+    name = models.CharField(max_length=45, unique=True)
     days_validity = models.IntegerField(default=None, null=True, blank=True)
     active = models.BooleanField(default=True)
+    dependence = models.ForeignKey(Dependence, on_delete=models.PROTECT,
+                                   verbose_name='Dependencia', null=True,
+                                   blank=True,
+                                   related_name='dependence_docs_type')
+    updated = models.DateTimeField(auto_now=True,
+                                   null=False,
+                                   verbose_name='Última modificación')
+    created = models.DateTimeField(auto_now_add=True,
+                                   null=False,
+                                   verbose_name='Creado')
 
     def update_active(self):
         self.active = not self.active
@@ -85,4 +93,4 @@ class DocumentType(models.Model):
         db_table = 'verifydocs_document_type'
 
     def __str__(self):
-        return f'"{self.name} - {self.acronym}"'
+        return self.name.capitalize()

@@ -21,7 +21,7 @@
                     {{ form_search.name }}
                 </div>
                 <div class="form-group">
-                    {{ form_search.acronym }}
+                    {{ form_search.dependence }}
                 </div>
                 <div class="checkbox">
                     <label>
@@ -47,7 +47,7 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">Nombre</th>
-                                    <th class="text-center">Siglas</th>
+                                    <th class="text-center">Dependencia</th>
                                     <th class="text-center">Días de vigencia</th>
                                     <th class="text-center">Gestión</th>
                                 </tr>
@@ -59,7 +59,7 @@
                                     class="danger"
                                     {% endif %} >
                                     <td>{{ doc_type.name }}</td>
-                                    <td>{{ doc_type.acronym }} </td>
+                                    <td>{{ doc_type.dependence }} </td>
                                     <td>
                                         {% if doc_type.days_validity %}
                                             {{ doc_type.days_validity }}
