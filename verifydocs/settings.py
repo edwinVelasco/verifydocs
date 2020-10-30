@@ -64,7 +64,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, "templates"),
+            f'{DJ_URL_PROJECT}/templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -168,10 +168,10 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "./app/static/")
 ]
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = f'{DJ_URL_PROJECT}/static'
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = f'{DJ_URL_PROJECT}/media'
 MEDIA_URL = '/media/'
 
 
@@ -183,5 +183,5 @@ CELERY_RESULT_BACKEND = 'django-db'
 # Google Drive Storage Settings
 #
 
-GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = 'tools/storage_key_file.json'
+GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = f'{DJ_URL_PROJECT}/tools/storage_key_file.json'
 GOOGLE_DRIVE_STORAGE_MEDIA_ROOT = '<base google drive path for file uploads>' # OPTIONAL
