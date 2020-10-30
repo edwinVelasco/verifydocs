@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_index.html" %}
 
 {% load socialaccount %}
 {% load static %}
@@ -142,9 +142,14 @@
 
     <div style="clear:both;"></div>
     {% include 'includes/messages.html' %}
+    <div ng-show="url" class="messages">
+        <div class="text-center alert alert-primary alert-success">
+            <strong>Codigo QR Detectado!</strong>
+        </div>
+    </div>
 
     <div class="container" >
-        <form method="POST">
+        <form method="POST" ng-hide="cameraRequested">
             {% csrf_token %}
             <div class="col-lg-6 col-md-6 col-sm-12 col-lg-offset-3 col-md-offset-3">
                 <div class="row">
@@ -155,11 +160,6 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="input-group">
-                            {% comment %}<input type="text" class="form-control"
-                                   placeholder="Código de verificación"
-                                   name="code"
-                                   id="code"
-                                   style="border-top-left-radius: 4px;border-bottom-left-radius: 4px;">{% endcomment %}
                             {{ form.code }}
                             <span class="input-group-btn">
                                 <button class="btn btn-default" type="submit"
@@ -172,6 +172,63 @@
                 </div>
             </div>
         </form>
+
+        <div class="row" >
+            <br>
+            <div class="col-lg-12 text-center">
+                <h2>
+                    Otros métodos de verificación
+                </h2>
+                <div class="row text-center" ng-hide="!cameraRequested">
+                    <br>
+                    <h2>Camara web</h2>
+                    <p ng-show="cameraRequested">
+                        Su navegador debe solicitar permiso para usar la cámara.
+                    </p>
+                </div>
+                <div class="row" ng-hide="!cameraRequested">
+                    <div class="col-lg-6 col-lg-offset-3">
+                        <bc-qr-reader active="cameraRequested"
+                                on-result="processURLfromQR"
+                                on-error="onError" camera-status="cameraIsOn"
+                                ></bc-qr-reader>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6 col-sm-6 col-lg-offset-1 col-md-offset-3 col-sm-offset-3">
+                <div class="row text-center" ng-hide="cameraRequested">
+                    <br>
+                    <h2>Camara web</h2>
+                </div>
+                <div class="row" ng-hide="cameraRequested">
+                   <div class="col-lg-2 col-lg-offset-5 col-md-2
+                               col-md-offset-5 col-sm-4 col-sm-offset-4
+                                col-xs-2 col-xs-offset-5">
+                       <button ng-click="start()" class="btn btn-default">
+                           <i class="fa fa-qrcode fa-4x"></i>
+                       </button>
+                   </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6" ng-hide="cameraRequested">
+                <div class="row text-center">
+                    <br>
+                    <h2>Documento PDF</h2>
+                </div>
+                <div class="row">
+                   <div class="col-lg-2 col-lg-offset-4 col-md-2
+                               col-md-offset-5 col-sm-4 col-sm-offset-4
+                                col-xs-2 col-xs-offset-5">
+                       <button ng-click="start()" class="btn btn-default">
+                           <i class="fa fa-file-pdf-o fa-4x"></i>
+                       </button>
+                   </div>
+                </div>
+            </div>
+
+
+        </div>
     </div>
 
     <div class="footer-v1 off-container" style="bottom: 60px !important;
@@ -240,3 +297,7 @@
     </div>
 {% endblock %}
 
+{% block javascript %}
+    {{ block.super }}
+
+{% endblock %}

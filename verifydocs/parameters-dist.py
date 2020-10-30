@@ -1,4 +1,5 @@
 # Database config
+PG_ENGINE = 'django.db.backends.postgresql_psycopg2'
 PG_DBNAME = 'vdc'
 PG_DBUSER = ''
 PG_DBPASSWORD = ''
