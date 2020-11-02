@@ -4,20 +4,21 @@ from django.urls.base import reverse_lazy
 from django.urls import reverse as urls_reverse
 from urllib.parse import urlencode
 from django.shortcuts import redirect, HttpResponse, render
-from django.views.generic import CreateView, ListView, DeleteView
+from django.views.generic import CreateView, ListView, DeleteView, FormView
 from django.views.generic import UpdateView, TemplateView
 from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from django.core.paginator import Paginator, InvalidPage
 from django.db.models import Q
-from django.http import Http404
+from django.http import Http404, FileResponse
 from django.utils.translation import gettext as _
 
 from app.forms import VerifyDocsForm, DependenceForm, UserMailForm, \
-    UserMailSearchForm, DependenceSearchForm
+    UserMailSearchForm, DependenceSearchForm, DocumentTypeQRForm
 from app.models import DocumentType, Dependence, UserMail
 from app.forms import DocumentTypeSearchForm, DocumentTypeForm
 # Create your views here.
+from tools.PDFTools import PDFTools
 
 from .mixins import UserAdminMixin, UserMixin
 
@@ -273,6 +274,37 @@ class DocumentTypeUpdateView(UserAdminMixin, UpdateView):
                          'Tipo de documento actualizado correctamente')
         return get_url_to_redirect(self.request, 'filter',
                                   'documents_type')
+
+
+class DocumentTypeSettingQRView(UserAdminMixin, UpdateView):
+    model = DocumentType
+    template_name = 'document_type/setting_qr.html'
+    form_class = DocumentTypeQRForm
+
+    def get_success_url(self):
+        messages.success(self.request,
+                         'Tipo de documento actualizado correctamente')
+        return get_url_to_redirect(self.request, 'filter',
+                                  'documents_type')
+
+
+class DocumentTypeSettingQRPreviewView(UserAdminMixin, View):
+    model = DocumentType
+    template_name = 'document_type/setting_qr.html'
+    form_class = DocumentTypeQRForm
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(data=request.POST, files=request.FILES)
+        default_file = None
+        if form.is_valid():
+            if form.files.get('file'):
+                default_file = form.files.get('file').file
+            response = HttpResponse(content_type='application/pdf')
+            pdf = PDFTools(form.instance.pos_x, form.instance.pos_y).\
+                generate_pdf_blanck(default_file)
+            response.write(pdf)
+            return response
+        return render(request, self.template_name, {'form': form})
 
 
 class DocumentTypeUpdateActiveView(UserAdminMixin, TemplateView):

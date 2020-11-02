@@ -31,7 +31,7 @@ class DocumentTypeForm(forms.ModelForm):
 
     class Meta:
         model = DocumentType
-        fields = ('__all__')
+        fields = ('name', 'days_validity', 'active', 'dependence')
 
         error_messages = {
             'name': {
@@ -60,6 +60,50 @@ class DocumentTypeForm(forms.ModelForm):
 
     def clean_name(self):
         return self.cleaned_data.get('name', '').capitalize()
+
+
+class DocumentTypeQRForm(forms.ModelForm):
+
+    file = forms.FileField(widget=forms.FileInput(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(DocumentTypeQRForm, self).__init__(*args, **kwargs)
+
+
+
+    class Meta:
+        model = DocumentType
+        fields = ('pos_x', 'pos_y')
+
+        error_messages = {
+            'pos_x': {
+                'required': "La posición X es requerida.",
+                'blank': 'Este valor no puede ser vacio'
+            },
+            'pos_y': {
+                'required': "La posición Y es requerida.",
+                'blank': 'Este valor no puede ser vacio'
+            }
+        }
+
+        widgets = {
+            'pos_x': forms.NumberInput(
+                attrs={'class': 'form-control',
+                       'value': '0', 'min': 0, 'step': 1}
+            ),
+            'pos_y': forms.NumberInput(
+                attrs={'class': 'form-control',
+                       'value': '0', 'min': 0, 'step': 1}
+            ),
+        }
+
+    def clean(self):
+        pos_y = self.cleaned_data['pos_y']
+        if pos_y < 0:
+            self.add_error('pos_y', 'El valor no puede ser inferior a 0')
+        pos_x = self.cleaned_data['pos_x']
+        if pos_x < 0:
+            self.add_error('pos_x', 'El valor no puede ser inferior a 0')
 
 
 class DocumentTypeSearchForm(forms.Form):
