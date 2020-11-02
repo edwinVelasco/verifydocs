@@ -75,6 +75,13 @@
                                            href="{% url 'documents_type_update' doc_type.id %}">
                                                 <i class="fa fa-edit"></i>
                                         </a>
+                                        <a class="btn btn-outline btn-xs btn-primary"
+                                           type="button" data-toggle="tooltip"
+                                           data-placement="top"
+                                           title data-original-title="Configuración QR"
+                                           href="{% url 'documents_type_setting_qr' doc_type.id %}">
+                                                <i class="fa fa-qrcode"></i>
+                                        </a>
                                         {% if not doc_type.active %}
                                             <a class="btn btn-outline btn-xs btn-primary"
                                                 type="button" data-toggle="tooltip"
