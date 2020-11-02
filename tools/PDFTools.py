@@ -3,9 +3,11 @@ from io import BytesIO
 
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from django.conf import settings
-from reportlab.lib.pagesizes import A4, letter
+from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
+
+from verifydocs.parameters import WEB_CLIENT_URL
 
 
 class PDFTools:
@@ -43,13 +45,12 @@ class PDFTools:
             return encoded_string
         return base64.b64encode(buffer.getvalue())
 
-
     def add_img(self, img, pdf):
         pdf.drawImage(f'{settings.STATIC_ROOT}/app/rsc/img/QR.png',
                       self.pos_x,
                       self.pos_y, self.width, self.height)
         text = 'Verifique el documento en'
-        url = 'https://albertove.pythonanywhere.com'
+        url = WEB_CLIENT_URL
         self.add_text(pdf, text, self.pos_y-8)
         self.add_text(pdf, url, self.pos_y-16)
 

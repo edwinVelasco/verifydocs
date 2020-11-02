@@ -95,7 +95,11 @@
         </div>
     </div>
 {% endblock %}
-{% block extrascripts %}
+{% block javascript %}
+    {{ block.super }}
+
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.js"></script>
+    <script  src="{% static 'app/js/verifydocs.js' %}"></script>
     <script>
         previewDocument('{% url 'documents_type_setting_qr_preview' object.id %}')
     </script>

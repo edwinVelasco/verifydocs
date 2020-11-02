@@ -41,7 +41,7 @@ def createQR():
     # xy = [160, 80, 200, 250]
     ref = '1150535_1'
     qr2 = pyqrcode.create(data)
-    qr2.svg(f'temp/{ref}.svg', scale=2)
+    qr2.svg(f'temp/{ref}.svg', scale=1)
     print(letter)
     print('letter')
     my_canvas = canvas.Canvas(f'temp/{ref}.pdf', pagesize=letter)
