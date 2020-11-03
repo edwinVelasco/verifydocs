@@ -1,16 +1,17 @@
 from django.contrib import admin
-from app.models import Doc, UserMail, Dependence
+from app.models import UserMail, Dependence, Document
 
 
 # Register your models here.
 
 
-class DocAdmin(admin.ModelAdmin):
-    fields = ('name', 'file')
+class DocumentAdmin(admin.ModelAdmin):
+    fields = ('identification_applicant', 'name_applicant', 'email_applicant',
+              'expedition', 'file_original', 'document_type', 'enable')
 
 
 class UserMailAdmin(admin.ModelAdmin):
-    fields = ('email', 'role', 'active', 'updated', 'created')
+    fields = ('email', 'role', 'active', 'updated', 'created', 'document_types')
     readonly_fields = ('updated', 'created')
     list_display = ['email', 'role', 'active']
 
@@ -19,7 +20,7 @@ class DependenceAdmin(admin.ModelAdmin):
     fields = ('name',)
 
 
-admin.site.register(Doc, DocAdmin)
+admin.site.register(Document, DocumentAdmin)
 admin.site.register(UserMail, UserMailAdmin)
 admin.site.register(Dependence, DependenceAdmin)
 

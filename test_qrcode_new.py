@@ -102,7 +102,7 @@ def create_pdf_watermark():
     file = open('temp/1150535.pdf', 'rb')
     reader = PyPDF2.PdfFileReader(file)
     page = reader.getPage(0)
-    water = open('temp/watermark_page.pdf', 'rb')
+    water = open('tools/watermark_page.pdf', 'rb')
     reader2 = PyPDF2.PdfFileReader(water)
 
     waterpage = reader2.getPage(0)

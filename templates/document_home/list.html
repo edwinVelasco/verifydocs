@@ -1,0 +1,114 @@
+{% extends "home.html" %}
+{% load static %}
+{% block container %}
+    <div class="row">
+        <div class="headline-center-v2-dark col-md-12">
+            <div class="shop-h1 col-md-6 col-sm-6 col-xs-6"
+                style="font-size: 30px;"><b>Documentos</b></div>
+            <div class="col-md-6 col-sm-6 col-xs-6 text-right">
+                <a class="btn btn-primary"
+                   style="margin-top: 14px !important;"
+                   href="{% url 'document_create' %}" role="button">
+                    <i class="fa fa-plus"></i> Agregar
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form class="form-inline" method="GET" novalidate>
+                <div class="form-group">
+                    {{ form_search.applicant }}
+                </div>
+                <div class="form-group">
+                    {{ form_search.document_type }}
+                </div>
+                <div class="form-group">
+                    {{ form_search.expedition }}
+                </div>
+
+                <div class="checkbox">
+                    <label>
+                        {{ form_search.is_enable }} Solo habilitados
+                    </label>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fa fa-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row equal-height-columns margin-bottom-10">
+                <div class="container">
+                    <br>
+                {% if document_list %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover text-center">
+                            <thead>
+                                <tr>
+                                    <th class="text-center col-md-1">Creación</th>
+                                    <th class="text-center col-md-1">Expedición</th>
+                                    <th class="text-center col-md-2">Solicitante</th>
+                                    <th class="text-center col-md-3">Email</th>
+                                    <th class="text-center col-md-3">Tipo de documento</th>
+                                    <th class="text-center col-md-2">Gestión</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for document in document_list %}
+                                <tr
+                                    {% if not document.enable %}
+                                    style="background: #d0d0d0"
+                                    {% endif %} >
+                                    <td>{{ document.created|date:"SHORT_DATE_FORMAT" }}</td>
+                                    <td>{{ document.expedition|date:"SHORT_DATE_FORMAT" }}</td>
+                                    <td>{{ document.identification_applicant }} - {{ document.name_applicant  }}</td>
+                                    <td>{{ document.email_applicant }} {{ document.email_applicant }}</td>
+                                    <td>{{ document.document_type.name }}</td>
+                                    <td class="text-center">
+                                        <a class="btn btn-outline btn-xs btn-primary"
+                                           type="button" data-toggle="tooltip"
+                                           data-placement="top"
+                                           title data-original-title="Descargar copia {{ document.file_original }}"
+                                           href="{{ document.file_qr.url }}">
+                                            <i class="fa fa-download"></i>
+                                        </a>
+                                        {% if not document.active %}
+                                            <a class="btn btn-outline btn-xs btn-primary"
+                                                type="button" data-toggle="tooltip"
+                                                data-placement="top"
+                                                title data-original-title="Habilitar"
+                                                href="#">
+                                                    <i class="fa fa-check fa-lg"></i>
+                                            </a>
+                                        {% else %}
+                                            <a class="btn btn-outline btn-xs btn-primary"
+                                                type="button" data-toggle="tooltip"
+                                                data-placement="top"
+                                                title data-original-title="Desabilitar"
+                                                href="#">
+                                                    <i class="fa fa-times fa-lg"></i>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% include 'includes/pagination.html' %}
+                {% else %}
+                    <div class="alert alert-info text-center">
+                        <h3>No hay documentos.</h3>
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

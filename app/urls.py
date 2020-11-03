@@ -1,13 +1,14 @@
 from django.urls import path
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LogoutView
-from app.views import HomeView, IndexView, AdminHomeView, \
-    DocumentTypeSettingQRView, DocumentTypeSettingQRPreviewView
-from app.views import DocumentTypeListView, DocumentTypeCreateView, \
-    DocumentTypeUpdateActiveView, DocumentTypeUpdateView, DependenceListView, \
-    DependenceCreateView, DependenceUpdateView, DependenceActiveView,\
-    UserMailUpdateView, UserMailListView, UserMailCreateView, \
-    UserMailActiveView
+from app.views import HomeView, IndexView, AdminHomeView
+from app.views import DocumentTypeSettingQRView, DependenceListView
+from app.views import DocumentTypeListView, DocumentTypeCreateView
+from app.views import DocumentTypeUpdateActiveView, DocumentTypeUpdateView
+from app.views import DependenceCreateView, DependenceUpdateView
+from app.views import UserMailUpdateView, UserMailListView, UserMailCreateView
+from app.views import UserMailActiveView, DocumentListView, DocumentCreateView
+from app.views import DocumentTypeSettingQRPreviewView, DependenceActiveView
 
 urlpatterns = [
     path('', IndexView.as_view(),
@@ -60,5 +61,10 @@ urlpatterns = [
     # logout_then_login
     path('logout/', LogoutView.as_view(), name='logout'),
 
+    # documents
+    # administrativos
+    path('documents/', DocumentListView.as_view(), name='documents_home'),
+    path('document_create/', DocumentCreateView.as_view(),
+         name='document_create'),
 
 ]

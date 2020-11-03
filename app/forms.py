@@ -3,7 +3,7 @@ from django.forms import ModelForm as BaseModelForm
 
 from app.models import Dependence, UserMail
 
-from app.models import DocumentType
+from app.models import DocumentType, Document
 
 
 class VerifyDocsForm(forms.Form):
@@ -176,10 +176,13 @@ class UserMailForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(UserMailForm, self).__init__(*args, **kwargs)
         self.fields['email'].required = True
+        self.fields['document_types'].required = False
+        self.fields['document_types'].queryset = DocumentType.objects.filter(
+            active=True)
 
     class Meta:
         model = UserMail
-        fields = ('email', 'role', 'active')
+        fields = ('email', 'role', 'active', 'document_types')
 
         error_messages = {
             'email': {
@@ -201,11 +204,26 @@ class UserMailForm(forms.ModelForm):
             'role': forms.Select(
                 attrs={'class': 'form-control'}
             ),
-            'active': forms.HiddenInput()
+            'active': forms.HiddenInput(),
+            'document_types': forms.SelectMultiple(
+                attrs={'class': 'chosen-select',
+                       'multiple': 'multiple',
+                       'data-placeholder': 'Seleccionar Tipos de documentos'},
+
+            )
         }
 
     def clean_email(self):
         return self.cleaned_data.get('email', '').lower()
+
+    def clean(self):
+        cleaned_data = super(UserMailForm, self).clean()
+        document_types = cleaned_data.get("document_types")
+        role = cleaned_data.get("role")
+        if int(role) == 1 and document_types:
+            self.add_error('document_types',
+                           'El usuario administrador no debe tener documentos')
+        return cleaned_data
 
 
 class UserMailSearchForm(forms.Form):
@@ -231,3 +249,120 @@ class UserMailSearchForm(forms.Form):
     is_active = forms.BooleanField(
         widget=forms.CheckboxInput()
     )
+
+
+class DocumentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(DocumentForm, self).__init__(*args, **kwargs)
+        self.fields['identification_applicant'].required = True
+        self.fields['name_applicant'].required = True
+        self.fields['email_applicant'].required = True
+        self.fields['expedition'].required = True
+        self.fields['file_original'].required = True
+
+        self.fields['token'].required = False
+        self.fields['hash'].required = False
+        self.fields['file_qr'].required = False
+
+        self.fields['document_type'].required = True
+        self.fields['document_type'].empty_label = 'Seleccione tipo de documento'
+
+    class Meta:
+        model = Document
+        fields = ('identification_applicant', 'name_applicant',
+                  'email_applicant', 'expedition', 'file_original',
+                  'document_type', 'user_mail', 'token', 'hash', 'file_qr')
+
+        error_messages = {
+            'identification_applicant': {
+                'required': "La identificación del solicitante es requerida."
+            },
+            'name_applicant': {
+                'required': "El nombre del solicitante es requerido.",
+            },
+            'email_applicant': {
+                'required': "El correo electrónico del solicitante "
+                            "es requerido.",
+            },
+            'expedition': {
+                'required': "La fecha de expedición es requerida.",
+            },
+            'file_original': {
+                'required': "El documento en PDF es requerido.",
+            },
+            'document_type': {
+                'required': "El tipo de documento es requerido.",
+            }
+        }
+
+        widgets = {
+            'identification_applicant': forms.TextInput(
+                attrs={'class': 'form-control',
+                       'placeholder': 'Código estudiante / Identificación'}
+            ),
+            'name_applicant': forms.TextInput(
+                attrs={'class': 'form-control',
+                       'placeholder': 'Nombre'}
+            ),
+            'email_applicant': forms.EmailInput(
+                attrs={'class': 'form-control',
+                       'placeholder': 'Correo electrónico'}
+            ),
+            'expedition': forms.DateInput(
+                attrs={'class': 'form-control', 'placeholder': 'Fecha',
+                       'readonly': ''}
+            ),
+            'file_original': forms.FileInput(
+                attrs={'accept': '.pdf,.PDF'}
+            ),
+            'document_type': forms.Select(
+                attrs={'class': 'form-control chosen-select'}
+            ),
+            'enable': forms.HiddenInput(),
+            'user_mail': forms.HiddenInput(),
+            'token': forms.HiddenInput(),
+            'hash': forms.HiddenInput(),
+            'file_qr': forms.FileInput(
+                attrs={'accept': '.pdf,.PDF'}
+            ),
+        }
+
+    def clean_name(self):
+        return self.cleaned_data.get('name', '').capitalize()
+
+
+class DocumentSearchForm(forms.Form):
+
+    applicant = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control', 'placeholder': 'Solicitante',
+            'autocomplete': 'off'
+        })
+    )
+    expedition = forms.DateField(
+        widget=forms.DateInput(attrs={'class': 'form-control',
+                                      'placeholder': 'Expedición',
+                                      'readonly': ''}
+                               )
+    )
+    dependence = forms.ModelChoiceField(
+        queryset=Dependence.objects.all(),
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'autocomplete': 'off'
+        }),
+        empty_label='Dependencias',
+    )
+    document_type = forms.ModelChoiceField(
+        queryset=Dependence.objects.all(),
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'autocomplete': 'off'
+        }),
+        empty_label='Tipos de documento',
+    )
+    is_enable = forms.BooleanField(
+        widget=forms.CheckboxInput()
+    )
+
+
