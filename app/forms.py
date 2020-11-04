@@ -11,7 +11,7 @@ class VerifyDocsForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 'class': 'form-control',
-                'placeholder': 'Código de verificación',
+                'placeholder': 'Código seguro de verificación',
                 'style': 'border-top-left-radius: 4px;border-bottom-left-radius: 4px;'
             }
         )
@@ -262,6 +262,7 @@ class DocumentForm(forms.ModelForm):
 
         self.fields['token'].required = False
         self.fields['hash'].required = False
+        self.fields['hash_qr'].required = False
         self.fields['file_qr'].required = False
 
         self.fields['document_type'].required = True
@@ -271,7 +272,8 @@ class DocumentForm(forms.ModelForm):
         model = Document
         fields = ('identification_applicant', 'name_applicant',
                   'email_applicant', 'expedition', 'file_original',
-                  'document_type', 'user_mail', 'token', 'hash', 'file_qr')
+                  'document_type', 'user_mail', 'token', 'hash', 'file_qr',
+                  'hash_qr')
 
         error_messages = {
             'identification_applicant': {
@@ -292,7 +294,17 @@ class DocumentForm(forms.ModelForm):
             },
             'document_type': {
                 'required': "El tipo de documento es requerido.",
+            },
+            'hash_qr': {
+                'unique': 'El documento ya se encuentra registrado'
+            },
+            'hash': {
+                'unique': 'El documento ya se encuentra registrado'
+            },
+            'token': {
+                'unique': 'El documento ya se encuentra registrado'
             }
+
         }
 
         widgets = {
@@ -322,6 +334,7 @@ class DocumentForm(forms.ModelForm):
             'user_mail': forms.HiddenInput(),
             'token': forms.HiddenInput(),
             'hash': forms.HiddenInput(),
+            'hash_qr': forms.HiddenInput(),
             'file_qr': forms.FileInput(
                 attrs={'accept': '.pdf,.PDF'}
             ),
@@ -329,6 +342,17 @@ class DocumentForm(forms.ModelForm):
 
     def clean_name(self):
         return self.cleaned_data.get('name', '').capitalize()
+
+    def clean(self):
+        cleaned_data = super(DocumentForm, self).clean()
+        identification = cleaned_data.get("identification_applicant")
+        try:
+            identification = int(identification)
+        except Exception as e:
+            self.add_error('identification_applicant',
+                           'La identificación del solicitante debe ser '
+                           'numerica')
+        return cleaned_data
 
 
 class DocumentSearchForm(forms.Form):

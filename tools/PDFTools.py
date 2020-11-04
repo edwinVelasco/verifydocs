@@ -9,11 +9,7 @@ import hashlib
 import base64
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
-
-from reportlab.graphics import renderPDF, renderPM
-from svglib.svglib import svg2rlg
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from django.conf import settings
 from reportlab.lib.pagesizes import letter
@@ -21,11 +17,14 @@ from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
 
 from verifydocs.parameters import WEB_CLIENT_URL, DJ_URL_PROJECT
+from security.app import SecurityApp
 
 
 class PDFTools:
     width = 41
+    # width = 61.5
     height = 41
+    # height = 61.5
 
     def __init__(self, pos_x, pos_y):
         self.pos_x = float(pos_x)
@@ -64,10 +63,10 @@ class PDFTools:
                       self.pos_y, self.width, self.height)
         text = 'Verifique el documento en'
         url = WEB_CLIENT_URL
-        self.__add_text(pdf, text, self.pos_y-8)
-        self.__add_text(pdf, url, self.pos_y-16)
+        self.add_text(pdf, text, self.pos_y-8)
+        self.add_text(pdf, url, self.pos_y-16)
 
-    def __add_text(self, pdf, line, pos_y):
+    def add_text(self, pdf, line, pos_y):
         text_size = stringWidth(line, "Helvetica", 6)
         text = pdf.beginText(self.pos_x + (self.width / 2 - text_size / 2),
                              pos_y)
@@ -75,46 +74,19 @@ class PDFTools:
         text.textOut(line)
         pdf.drawText(text)
 
-    def hash(self, file_base64=None):
-        try:
-            sha_512 = hashlib.sha512(file_base64)
-            # print(sha_512.hexdigest())
-            sha_256 = hashlib.sha256(sha_512.digest())
-            # print(sha_256.hexdigest())
-            # md_5 = hashlib.md5(sha_256.digest())
-            return sha_256
-        except Exception as e:
-            print(e)
-            print('hash')
-            return None
-
-    def __createQR(self, file=None, ref=None):
-        try:
-            file = base64.b64encode(file)
-            sha_256 = self.hash(file_base64=file)
-            md_5 = hashlib.md5(sha_256.digest())
-
-            qr2 = pyqrcode.create(md_5.hexdigest())
-            qr2.svg(f'{DJ_URL_PROJECT}/temp/{ref}.svg', scale=1)
-            my_canvas = canvas.Canvas(f'{DJ_URL_PROJECT}/temp/{ref}.pdf',
-                                      pagesize=letter)
-            drawing = svg2rlg(f'{DJ_URL_PROJECT}/temp/{ref}.svg')
-            renderPDF.draw(drawing, my_canvas, self.pos_x, self.pos_y)
-            self.__add_text(my_canvas, 'Verifique el documento en',
-                            self.pos_y - 8)
-            self.__add_text(my_canvas, WEB_CLIENT_URL, self.pos_y - 16)
-            my_canvas.save()
-            return ref, sha_256.hexdigest(), md_5.hexdigest()
-        except Exception as e:
-            print(e)
-            print('__createQR')
-            return None
+    def __remove_files_temp(self, ref=None, qr=False):
+        patch_media_tmp = f'{settings.MEDIA_ROOT}/tmp'
+        os.remove(f'{patch_media_tmp}/{ref}_original.pdf')
+        if qr:
+            os.remove(f'{patch_media_tmp}/{ref}_out.pdf')
+            os.remove(f'{patch_media_tmp}/{ref}.pdf')
+            os.remove(f'{patch_media_tmp}/{ref}.svg')
 
     def __create_pdf_file_qr(self, ref, file):
         try:
             reader = PyPDF2.PdfFileReader(file)
             page = reader.getPage(0)
-            water = open(f'{DJ_URL_PROJECT}/temp/{ref}.pdf', 'rb')
+            water = open(f'{settings.MEDIA_ROOT}/tmp/{ref}.pdf', 'rb')
             reader2 = PyPDF2.PdfFileReader(water)
             waterpage = reader2.getPage(0)
             page.mergePage(waterpage)
@@ -156,26 +128,45 @@ class PDFTools:
         # resultFile.close()
         return resultFile
 
-    def create_main_qr(self, file_doc):
-        ref = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    def __create_file_disk(self, file_doc=None, user=None):
+        str_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+        ref = f'{str_time}-{user}'
         path = default_storage.save(f'tmp/{ref}_original.pdf',
                                     ContentFile(file_doc.read()))
         tmp_file = os.path.join(settings.MEDIA_ROOT, path)
         file = open(f'{settings.MEDIA_ROOT}/tmp/{ref}_original.pdf', 'rb')
-        ref, sha_256, token = self.__createQR(file=file.read(), ref=ref)
-        out_file = self.__create_pdf_file_qr(ref=ref, file=file)
-        if out_file:
-            # out_file = open(f'{DJ_URL_PROJECT}/temp/{ref}_out.pdf', 'rb').read()
-            fv = open(default_storage.path(
-                f'{settings.MEDIA_ROOT}/tmp/{ref}_out.pdf'), 'rb').read()
-            stream_str = io.BytesIO(fv)
-            text_file = InMemoryUploadedFile(
-                stream_str, 'file_qr', f'{file_doc}', 'application/pdf', stream_str.getvalue().__sizeof__(), None
-            )
-            return text_file, sha_256, token
 
+        return ref, file
 
+    def create_main_qr(self, file_doc=None, user=None):
+        try:
+            ref, file = self.__create_file_disk(file_doc=file_doc, user=user)
 
+            security_app = SecurityApp(pdf_tools=self)
+            sha_256, token = security_app.autenticate_document(
+                file=file.read(), ref=ref)
+
+            out_file = self.__create_pdf_file_qr(ref=ref, file=file)
+            if out_file:
+                fv = open(default_storage.path(
+                    f'{settings.MEDIA_ROOT}/tmp/{ref}_out.pdf'), 'rb').read()
+                stream_str = io.BytesIO(fv)
+                text_file = InMemoryUploadedFile(
+                    stream_str, 'file_qr', f'{file_doc}', 'application/pdf',
+                    stream_str.getvalue().__sizeof__(), None, dict()
+                )
+                self.__remove_files_temp(ref=ref, qr=True)
+                return text_file, sha_256, token
+        except Exception as e:
+            print(e)
+            print('create_main_qr')
+            return None
+
+    def create_hash_qr(self, file_doc, user=None):
+        ref, file = self.__create_file_disk(file_doc=file_doc, user=user)
+        security_app = SecurityApp(pdf_tools=self)
+        self.__remove_files_temp(ref=ref)
+        return security_app.create_hash_256_qr(file=file.read())
 
 
 

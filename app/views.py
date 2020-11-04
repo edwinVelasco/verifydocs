@@ -501,8 +501,9 @@ class DocumentCreateView(UserMixin, CreateView):
     form_class = DocumentForm
 
     def get_success_url(self):
+        doc = self.model.objects.last()
         messages.success(self.request,
-                         'Documento registrado correctamente')
+                         f'Documento con ID {doc.id} registrado correctamente')
         return get_url_to_redirect(self.request, 'filter',
                                    'documents_home')
 
@@ -520,38 +521,39 @@ class DocumentCreateView(UserMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        try:
-            data_post = {
-                'encoding': 'utf-8',
-                'csrfmiddlewaretoken': self.request.POST['csrfmiddlewaretoken'],
-                'user_mail': self.request.POST['user_mail'],
-                'identification_applicant': self.request.POST['identification_applicant'],
-                'name_applicant': self.request.POST['name_applicant'],
-                'email_applicant': self.request.POST['email_applicant'],
-                'expedition': self.request.POST['expedition'],
-                'document_type': self.request.POST['document_type'],
-            }
-            doc_type = DocumentType.objects.get(id=int(data_post['document_type']))
-            files = dict()
-            if 'file_original' in self.request.FILES:
-                files['file_original'] = self.request.FILES['file_original']
+        data_post = {
+            'encoding': 'utf-8',
+            'csrfmiddlewaretoken': self.request.POST['csrfmiddlewaretoken'],
+            'user_mail': self.request.POST['user_mail'],
+            'identification_applicant': self.request.POST['identification_applicant'],
+            'name_applicant': self.request.POST['name_applicant'],
+            'email_applicant': self.request.POST['email_applicant'],
+            'expedition': self.request.POST['expedition'],
+            'document_type': self.request.POST['document_type']
+        }
+        doc_type = DocumentType.objects.get(id=int(data_post['document_type']))
+        files = dict()
+        if 'file_original' in self.request.FILES:
+            files['file_original'] = self.request.FILES['file_original']
 
-                pdf_tool = PDFTools(pos_x=doc_type.pos_x, pos_y=doc_type.pos_y)
-                out_file, sha_256, token = pdf_tool.create_main_qr(
-                    file_doc=self.request.FILES['file_original'])
+            pdf_tool = PDFTools(pos_x=doc_type.pos_x, pos_y=doc_type.pos_y)
+            out_file, sha_256, token = pdf_tool.create_main_qr(
+                file_doc=self.request.FILES['file_original'],
+                user=self.request.user.id)
 
-                data_post['token'] = token
-                data_post['hash'] = sha_256
-                # data_post['hash_qr'] = pdf_tool.hash(file_base64=out_file).hexdigest()
+            data_post['token'] = token
+            data_post['hash'] = sha_256
+            data_post['hash_qr'] = pdf_tool.create_hash_qr(
+                file_doc=out_file, user=self.request.user.id)
 
-                files['file_qr'] = out_file
-            form_extra = DocumentForm(data=data_post, files=files)
+            files['file_qr'] = out_file
+        form_extra = DocumentForm(data=data_post, files=files)
+        if form_extra.is_valid():
             return super(DocumentCreateView, self).form_valid(form_extra)
-        except Exception as e:
-            print(e)
-            print(e.__class__)
-            print(traceback.format_exc())
-            messages.warning(self.request,
-                             'El documento no se ha podido registrar')
-            return get_url_to_redirect(self.request, 'filter',
-                                       'documents_home')
+
+        messages.error(self.request,
+                         'El documento ya se encuantra registrado')
+        return render(self.request, self.template_name, {'user': self.request.user,
+                                                         'form': form})
+        # return redirect(reverse_lazy('document_create'), form=form)
+

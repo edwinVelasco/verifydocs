@@ -104,9 +104,12 @@ class Document(models.Model):
     file_original = models.FileField(upload_to='docs_original',
                                      storage=gd_storage)
 
-    token = models.CharField(max_length=32, null=False, blank=False)
-    hash = models.CharField(max_length=64, null=False, blank=False)
-    # hash_qr = models.CharField(max_length=64, null=False, blank=False)
+    token = models.CharField(max_length=32, null=False, blank=False,
+                             unique=True)
+    hash = models.CharField(max_length=64, null=False, blank=False,
+                            unique=True)
+    hash_qr = models.CharField(max_length=64, null=False, blank=False,
+                               unique=True)
     expiration = models.DateField(null=True, blank=True, default=None)
     file_qr = models.FileField(upload_to='docs_qr', storage=gd_storage)
 
@@ -121,6 +124,6 @@ class Document(models.Model):
     class Meta:
         verbose_name = 'Documento'
         verbose_name_plural = 'Documentos'
-        ordering = ('id',)
+        ordering = ('-id',)
         db_table = 'verifydocs_document'
 
