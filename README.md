@@ -1,4 +1,4 @@
-![Verifydocs](https://ucdb94fe13d9592d231ce14f1cf6.dl.dropboxusercontent.com/cd/0/get/BCr0wvsDoAwzbvKZpSdS7ZDEzpEiAro-HwX-_AefL95sPNti6xG_de_R2_K8JUXm3nQYdIq6s8soN3hspiG6IlphYvkm5rl_f5JQ--F91LI4ufGEZLQlVkvbnjocjFjnZ-o/file?_download_id=8092854901454845999159113084193445394528382896175854567170748172&_notify_domain=www.dropbox.com&dl=1)
+![Verifydocs](https://dl.dropboxusercontent.com/s/9ssp4wx8o079bsh/readme_banner.png?dl=0)
 # VerifyDocs 
 ### Nombre del proyecto:
 #### Aplicativo web para verificar los documentos expedidos por las diferentes dependencias de la UFPS
@@ -165,8 +165,8 @@ Para ver el demo de la aplicación puede dirigirse a: [VerifyDocs](https://alber
 ***
 ### Autores
 Proyecto desarrollado por:
- - Edwin Velasco [![git](https://ucc369a35be597189b31d8e4f331.dl.dropboxusercontent.com/cd/0/get/BCpj5Lg4x5ifMjS481b1HB0YEggeLg8EKR-ar7xM9LFKtobCUSB_21qDwSlzlcM3CXXvRaZJoiGW0z90OKkBHjfSzXs01eRHZ2nySvCZQ3Ly5B1E2HhgFavCMU-0Eoo-R54/file?_download_id=9568804072349331042274211886759505759415927615930644992703173029747&_notify_domain=www.dropbox.com&dl=1)](https://github.com/edwinVelasco) [LinkedIn](www.linkedin.com/in/edwin-alberto-velasco-2396891a7)
- - Denis González [![git](https://ucc369a35be597189b31d8e4f331.dl.dropboxusercontent.com/cd/0/get/BCpj5Lg4x5ifMjS481b1HB0YEggeLg8EKR-ar7xM9LFKtobCUSB_21qDwSlzlcM3CXXvRaZJoiGW0z90OKkBHjfSzXs01eRHZ2nySvCZQ3Ly5B1E2HhgFavCMU-0Eoo-R54/file?_download_id=9568804072349331042274211886759505759415927615930644992703173029747&_notify_domain=www.dropbox.com&dl=1)](https://github.com/dexer13) [LinkedIn](www.linkedin.com/in/edwin-alberto-velasco-2396891a7)
+ - Edwin Velasco [![GitHub](https://dl.dropboxusercontent.com/s/vbo2c737accjo6d/github.png?dl=0)](https://github.com/edwinVelasco) [LinkedIn](www.linkedin.com/in/edwin-alberto-velasco-2396891a7)
+ - Denis González [![GitHub](https://dl.dropboxusercontent.com/s/vbo2c737accjo6d/github.png?dl=0)](https://github.com/dexer13) [LinkedIn](www.linkedin.com/in/edwin-alberto-velasco-2396891a7)
 
 
 ***
