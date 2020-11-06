@@ -165,8 +165,8 @@ Para ver el demo de la aplicación puede dirigirse a: [VerifyDocs](https://alber
 ***
 ### Autores
 Proyecto desarrollado por:
- - Edwin Velasco [GitHub](https://github.com/edwinVelasco) [LinkedIn](www.linkedin.com/in/edwin-alberto-velasco-2396891a7)
- - Denis González [GitBub](https://github.com/dexer13) [LinkedIn](www.linkedin.com/in/edwin-alberto-velasco-2396891a7)
+ - Edwin Velasco [![git](https://ucc369a35be597189b31d8e4f331.dl.dropboxusercontent.com/cd/0/get/BCpj5Lg4x5ifMjS481b1HB0YEggeLg8EKR-ar7xM9LFKtobCUSB_21qDwSlzlcM3CXXvRaZJoiGW0z90OKkBHjfSzXs01eRHZ2nySvCZQ3Ly5B1E2HhgFavCMU-0Eoo-R54/file?_download_id=9568804072349331042274211886759505759415927615930644992703173029747&_notify_domain=www.dropbox.com&dl=1)](https://github.com/edwinVelasco) [LinkedIn](www.linkedin.com/in/edwin-alberto-velasco-2396891a7)
+ - Denis González [![git](https://ucc369a35be597189b31d8e4f331.dl.dropboxusercontent.com/cd/0/get/BCpj5Lg4x5ifMjS481b1HB0YEggeLg8EKR-ar7xM9LFKtobCUSB_21qDwSlzlcM3CXXvRaZJoiGW0z90OKkBHjfSzXs01eRHZ2nySvCZQ3Ly5B1E2HhgFavCMU-0Eoo-R54/file?_download_id=9568804072349331042274211886759505759415927615930644992703173029747&_notify_domain=www.dropbox.com&dl=1)](https://github.com/dexer13) [LinkedIn](www.linkedin.com/in/edwin-alberto-velasco-2396891a7)
 
 
 ***
