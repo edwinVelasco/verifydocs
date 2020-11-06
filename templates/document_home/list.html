@@ -15,8 +15,12 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-12">
-            <form class="form-inline" method="GET" novalidate>
+
+        <form class="form-inline" method="GET" novalidate>
+            <div class="col-md-12">
+                <div class="form-group">
+                    {{ form_search.id }}
+                </div>
                 <div class="form-group">
                     {{ form_search.applicant }}
                 </div>
@@ -37,8 +41,9 @@
                         <i class="fa fa-search"></i> Buscar
                     </button>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
+
     </div>
     <div class="row">
         <div class="col-md-12">
@@ -51,7 +56,6 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">ID</th>
-                                    <th class="text-center col-md-1">Creación</th>
                                     <th class="text-center col-md-1">Expedición</th>
                                     <th class="text-center col-md-2">Solicitante</th>
                                     <th class="text-center col-md-3">Email</th>
@@ -66,7 +70,6 @@
                                     style="background: #d0d0d0"
                                     {% endif %} >
                                     <td>{{ document.id }}</td>
-                                    <td>{{ document.created|date:"SHORT_DATE_FORMAT" }}</td>
                                     <td>{{ document.expedition|date:"SHORT_DATE_FORMAT" }}</td>
                                     <td>{{ document.identification_applicant }} - {{ document.name_applicant  }}</td>
                                     <td>{{ document.email_applicant }}</td>
@@ -79,23 +82,6 @@
                                            href="{{ document.file_qr.url }}">
                                             <i class="fa fa-download"></i>
                                         </a>
-                                        {% if not document.active %}
-                                            <a class="btn btn-outline btn-xs btn-primary"
-                                                type="button" data-toggle="tooltip"
-                                                data-placement="top"
-                                                title data-original-title="Habilitar"
-                                                href="#">
-                                                    <i class="fa fa-check fa-lg"></i>
-                                            </a>
-                                        {% else %}
-                                            <a class="btn btn-outline btn-xs btn-primary"
-                                                type="button" data-toggle="tooltip"
-                                                data-placement="top"
-                                                title data-original-title="Desabilitar"
-                                                href="#">
-                                                    <i class="fa fa-times fa-lg"></i>
-                                            </a>
-                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -113,4 +99,26 @@
         </div>
     </div>
 {% endblock %}
-
+{% block css %}
+    {{ block.super }}
+    <link href="{% static 'app/css/datapicker/datepicker3.css' %}" rel="stylesheet">
+{% endblock %}
+{% block javascript %}
+    {{ block.super }}
+    <script  src="{% static 'app/js/datapicker/bootstrap-datepicker.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+            var date_init = {
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                calendarWeeks: true,
+                autoclose: true,
+                language: 'es',
+                format: 'dd/mm/yyyy',
+                endDate: new Date()
+            };
+            $('#id_expedition').datepicker(date_init);
+        });
+    </script>
+{% endblock %}

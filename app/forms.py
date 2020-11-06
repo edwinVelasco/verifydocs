@@ -356,6 +356,14 @@ class DocumentForm(forms.ModelForm):
 
 
 class DocumentSearchForm(forms.Form):
+    id = forms.CharField(
+        widget=forms.NumberInput(
+            attrs={
+                'class': 'form-control col-md-2', 'placeholder': 'ID',
+                'autocomplete': 'off'
+            }
+        )
+    )
 
     applicant = forms.CharField(
         widget=forms.TextInput(attrs={
@@ -369,16 +377,8 @@ class DocumentSearchForm(forms.Form):
                                       'readonly': ''}
                                )
     )
-    dependence = forms.ModelChoiceField(
-        queryset=Dependence.objects.all(),
-        widget=forms.Select(attrs={
-            'class': 'form-control',
-            'autocomplete': 'off'
-        }),
-        empty_label='Dependencias',
-    )
     document_type = forms.ModelChoiceField(
-        queryset=Dependence.objects.all(),
+        queryset=DocumentType.objects.all(),
         widget=forms.Select(attrs={
             'class': 'form-control',
             'autocomplete': 'off'

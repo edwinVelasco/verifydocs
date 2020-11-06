@@ -1,5 +1,4 @@
 ![Verifydocs](https://dl.dropboxusercontent.com/s/9ssp4wx8o079bsh/readme_banner.png?dl=0)
-# VerifyDocs 
 ### Nombre del proyecto:
 #### Aplicativo web para verificar los documentos expedidos por las diferentes dependencias de la UFPS
 ***
@@ -145,7 +144,7 @@ Creación y ejecución de las migraciones y la agrupación del los archivos esta
 ```shell script
 $ python manage.py makemigrations
 $ python manage.py migrate
-$ mkdir static
+$ mkdir static & mkdir temp & mkdir media & mkdir media/tmp/
 $ python manage.py collectstatic
 ```
 
@@ -171,7 +170,6 @@ Proyecto desarrollado por:
  - Edwin Velasco [GitHub](https://github.com/edwinVelasco) [LinkedIn](www.linkedin.com/in/edwin-alberto-velasco-2396891a7)
  - Denis González [GitHub](https://github.com/dexer13) [LinkedIn](www.linkedin.com/in/edwin-alberto-velasco-2396891a7)
 
-https://dl.dropboxusercontent.com/s/kxehcjuinpkh4qb/linkedin.png?dl=0
 ***
 ### Institución Académica   
 Proyecto desarrollado para el curso de profundización en desarrollo de software del [Programa de Ingeniería de Sistemas] de la [Universidad Francisco de Paula Santander]

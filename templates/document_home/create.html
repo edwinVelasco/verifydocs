@@ -16,9 +16,6 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            {{ form.token.errors }}
-            {{ form.hash.errors }}
-            {{ form.hash_qr.errors }}
             <br>
             <p class="text-muted text-center">
                 <span style="color: red">*</span> Datos requeridos para el formulario
@@ -120,15 +117,12 @@
 {% block css %}
     {{ block.super }}
     <link href="{% static 'app/css/datapicker/datepicker3.css' %}" rel="stylesheet">
-    <link href="{% static 'app/css/chosen/bootstrap-chosen.css' %}" rel="stylesheet">
 {% endblock %}
 {% block javascript %}
     {{ block.super }}
     <script  src="{% static 'app/js/datapicker/bootstrap-datepicker.js' %}"></script>
-    <script  src="{% static 'app/js/chosen/chosen.jquery.js' %}"></script>
     <script>
         $(document).ready(function(){
-            $('.chosen-select').chosen({width: "100%"});
             var date_init = {
                 todayBtn: "linked",
                 keyboardNavigation: false,

@@ -437,18 +437,40 @@ class DocumentListView(UserMixin, ListView):
     def get_queryset(self):
         # clear_data_session(self.request, 'filter')
         load_data_session(self.request, self.request.GET, 'filter')
-        if self.request.GET.get('email', '') == '' and \
-                self.request.GET.get('role', '') == '' and \
-                self.request.GET.get('is_active', '') == '':
+        if self.request.GET.get('id', '') == '' and \
+                self.request.GET.get('document_type', '') == '' and \
+                self.request.GET.get('is_active', '') == '' and \
+                self.request.GET.get('applicant', '') == '' and \
+                self.request.GET.get('expedition', '') == '':
             return self.model.objects.all()
         params = dict()
         if 'is_enable' in self.request.GET:
             params['enable'] = True
         try:
-            if self.request.GET.get('email', '') != '':
-                params['email__icontains'] = self.request.GET.get('email', '')
-            if self.request.GET.get('role', '') != '':
-                params['role'] = self.request.GET.get('role', '')
+            docs = None
+            if self.request.GET.get('applicant', '') != '':
+                docs = self.model.objects.filter(
+                    Q(name_applicant__icontains=self.request.GET.get(
+                        'applicant', '')) |
+                    Q(identification_applicant__icontains=self.request.GET.get(
+                    'applicant', '')) |
+                    Q(email_applicant__icontains=self.request.GET.get(
+                        'applicant', ''))
+                )
+            if self.request.GET.get('expedition', '') != '':
+                # '2020-11-05'
+                date = self.request.GET['expedition'].split('/')
+                params['expedition__day'] = int(date[0])
+                params['expedition__month'] = int(date[1])
+                params['expedition__year'] = int(date[2])
+
+            if self.request.GET.get('id', '') != '':
+                params['id'] = self.request.GET.get('id', '')
+            if self.request.GET.get('document_type', '') != '':
+                params['document_type_id'] = int(self.request.GET.get(
+                    'document_type', ''))
+            if docs:
+                return docs.filter(**params)
             return self.model.objects.filter(**params)
         except ValueError:
             return self.model.objects.all()

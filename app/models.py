@@ -58,7 +58,7 @@ class DocumentType(models.Model):
         db_table = 'verifydocs_document_type'
 
     def __str__(self):
-        return f'{self.name.capitalize()} ({self.dependence})'
+        return f'{self.name.capitalize()}'
 
 
 class UserMail(models.Model):
