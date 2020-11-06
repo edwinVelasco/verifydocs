@@ -1,4 +1,6 @@
 from django.shortcuts import render
+import traceback
+from django import forms
 from django.views.generic.base import View
 from django.urls.base import reverse_lazy
 from django.urls import reverse as urls_reverse
@@ -13,10 +15,14 @@ from django.db.models import Q
 from django.http import Http404, FileResponse
 from django.utils.translation import gettext as _
 
-from app.forms import VerifyDocsForm, DependenceForm, UserMailForm, \
-    UserMailSearchForm, DependenceSearchForm, DocumentTypeQRForm
-from app.models import DocumentType, Dependence, UserMail
+
+from app.forms import VerifyDocsForm, DependenceForm, UserMailForm
+from app.forms import UserMailSearchForm, DependenceSearchForm
 from app.forms import DocumentTypeSearchForm, DocumentTypeForm
+from app.forms import DocumentSearchForm, DocumentTypeQRForm, DocumentForm
+
+from app.models import DocumentType, Dependence, UserMail, Document
+
 # Create your views here.
 from tools.PDFTools import PDFTools
 
@@ -420,4 +426,156 @@ class UserMailActiveView(UserAdminMixin, UpdateView):
                          f'Usuario {obj} ha sido actualizado')
         return redirect(get_url_to_redirect(self.request, 'filter',
                                             'allowed_users'))
+
+
+class DocumentListView(UserMixin, ListView):
+    model = Document
+    template_name = 'document_home/list.html'
+    context_object_name = 'document_list'
+    paginate_by = 5
+
+    def get_queryset(self):
+        # clear_data_session(self.request, 'filter')
+        load_data_session(self.request, self.request.GET, 'filter')
+        if self.request.GET.get('id', '') == '' and \
+                self.request.GET.get('document_type', '') == '' and \
+                self.request.GET.get('is_active', '') == '' and \
+                self.request.GET.get('applicant', '') == '' and \
+                self.request.GET.get('expedition', '') == '':
+            return self.model.objects.all()
+        params = dict()
+        if 'is_enable' in self.request.GET:
+            params['enable'] = True
+        try:
+            docs = None
+            if self.request.GET.get('applicant', '') != '':
+                docs = self.model.objects.filter(
+                    Q(name_applicant__icontains=self.request.GET.get(
+                        'applicant', '')) |
+                    Q(identification_applicant__icontains=self.request.GET.get(
+                    'applicant', '')) |
+                    Q(email_applicant__icontains=self.request.GET.get(
+                        'applicant', ''))
+                )
+            if self.request.GET.get('expedition', '') != '':
+                # '2020-11-05'
+                date = self.request.GET['expedition'].split('/')
+                params['expedition__day'] = int(date[0])
+                params['expedition__month'] = int(date[1])
+                params['expedition__year'] = int(date[2])
+
+            if self.request.GET.get('id', '') != '':
+                params['id'] = self.request.GET.get('id', '')
+            if self.request.GET.get('document_type', '') != '':
+                params['document_type_id'] = int(self.request.GET.get(
+                    'document_type', ''))
+            if docs:
+                return docs.filter(**params)
+            return self.model.objects.filter(**params)
+        except ValueError:
+            return self.model.objects.all()
+
+    def paginate_queryset(self, queryset, page_size):
+        """Paginate the queryset, if needed."""
+        paginator = self.get_paginator(
+            queryset, self.paginate_by, orphans=self.get_paginate_orphans(),
+            allow_empty_first_page=self.get_allow_empty())
+        page_kwarg = self.page_kwarg
+        page = self.kwargs.get(page_kwarg) or self.request.GET.get(
+            page_kwarg) or 1
+        try:
+            page_number = int(page)
+        except ValueError:
+            if page == 'last':
+                page_number = paginator.num_pages
+            else:
+                raise Http404(_(
+                    "Page is not 'last', nor can it be converted to an int."))
+        try:
+            page = paginator.page(page_number)
+            if page.number < page_number:
+                page = paginator.page(page_number - 1)
+                return (
+                paginator, page, page.object_list, page.has_other_pages())
+            return (paginator, page, page.object_list, page.has_other_pages())
+        except InvalidPage as e:
+            page = paginator.page(page_number - 1)
+            return (paginator, page, page.object_list, page.has_other_pages())
+
+    def get_context_data(self, **kwargs):
+        context = super(DocumentListView, self) \
+            .get_context_data(**kwargs)
+        context['form_search'] = DocumentSearchForm(data=self.request.GET)
+        context['paginator_params'] = self.get_params_pagination()
+        return context
+
+    def get_params_pagination(self):
+        params = ""
+        for key in self.request.GET:
+            if self.request.GET[key] != '' and key != 'page':
+                params += "&" + key + "=" + self.request.GET[key]
+        return params
+
+
+class DocumentCreateView(UserMixin, CreateView):
+    model = Document
+    template_name = 'document_home/create.html'
+    form_class = DocumentForm
+
+    def get_success_url(self):
+        doc = self.model.objects.last()
+        messages.success(self.request,
+                         f'Documento con ID {doc.id} registrado correctamente')
+        return get_url_to_redirect(self.request, 'filter',
+                                   'documents_home')
+
+    def get_context_data(self, **kwargs):
+        user_email = UserMail.objects.filter(email=self.request.user.email,
+                                             active=True).last()
+        context = super(DocumentCreateView, self).get_context_data(**kwargs)
+        context['form'].fields['document_type'] = forms.ModelChoiceField(
+            widget=forms.Select(
+                attrs={'class': 'form-control'}
+            ),
+            queryset=user_email.document_types.filter(active=True),
+            empty_label='Seleccione tipo de documento'
+        )
+        return context
+
+    def form_valid(self, form):
+        data_post = {
+            'encoding': 'utf-8',
+            'csrfmiddlewaretoken': self.request.POST['csrfmiddlewaretoken'],
+            'user_mail': self.request.POST['user_mail'],
+            'identification_applicant': self.request.POST['identification_applicant'],
+            'name_applicant': self.request.POST['name_applicant'],
+            'email_applicant': self.request.POST['email_applicant'],
+            'expedition': self.request.POST['expedition'],
+            'document_type': self.request.POST['document_type']
+        }
+        doc_type = DocumentType.objects.get(id=int(data_post['document_type']))
+        files = dict()
+        if 'file_original' in self.request.FILES:
+            files['file_original'] = self.request.FILES['file_original']
+
+            pdf_tool = PDFTools(pos_x=doc_type.pos_x, pos_y=doc_type.pos_y)
+            out_file, sha_256, token = pdf_tool.create_main_qr(
+                file_doc=self.request.FILES['file_original'],
+                user=self.request.user.id)
+
+            data_post['token'] = token
+            data_post['hash'] = sha_256
+            data_post['hash_qr'] = pdf_tool.create_hash_qr(
+                file_doc=out_file, user=self.request.user.id)
+
+            files['file_qr'] = out_file
+        form_extra = DocumentForm(data=data_post, files=files)
+        if form_extra.is_valid():
+            return super(DocumentCreateView, self).form_valid(form_extra)
+
+        messages.error(self.request,
+                         'El documento ya se encuantra registrado')
+        return render(self.request, self.template_name, {'user': self.request.user,
+                                                         'form': form})
+        # return redirect(reverse_lazy('document_create'), form=form)
 

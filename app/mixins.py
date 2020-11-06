@@ -19,7 +19,6 @@ class UserMixin(LoginRequiredMixin):
         user_email = user_email.first()
         if user_email.role == 1:
             return redirect(reverse('admon'))
-        return redirect(reverse('logout'))
         return super().dispatch(request, *args, **kwargs)
 
 

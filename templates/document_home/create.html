@@ -1,0 +1,139 @@
+{% extends "home.html" %}
+{% load static %}
+{% block container %}
+    <div class="row">
+        <div class="headline-center-v2-dark col-md-12">
+            <div class="shop-h1 col-md-6 col-sm-6 col-xs-6"
+                style="font-size: 30px;">
+                <b>
+                Documento
+                <p class="text-success text-center">
+                    Creación
+                </p>
+                </b>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <br>
+            <p class="text-muted text-center">
+                <span style="color: red">*</span> Datos requeridos para el formulario
+            </p>
+            <div class="row equal-height-columns margin-bottom-10">
+
+                <div class="container">
+                    <form class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form.enable }}
+                        <input type="hidden" name="user_mail" id="id_user_mail" value="{{ user.email }}">
+                        <div class="form-group">
+
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-4 col-sm-4 col-xs-12">
+								<label>
+									<span style="color: red">*</span> Identificación del solicitante:
+								</label>
+								{{ form.identification_applicant }}
+								<label>
+									{{ form.identification_applicant.errors }}
+								</label>
+							</div>
+							<div class="col-md-4 col-sm-6 col-xs-12">
+								<label>
+									<span style="color: red">*</span> Nombre del solicitante:
+								</label>
+								{{ form.name_applicant }}
+								<label>
+									{{ form.name_applicant.errors }}
+								</label>
+							</div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-4 col-sm-4 col-xs-12">
+								<label>
+									<span style="color: red">*</span> Correo del solicitante:
+								</label>
+								{{ form.email_applicant }}
+								<label>
+									{{ form.email_applicant.errors }}
+								</label>
+							</div>
+							<div class="col-md-4 col-sm-6 col-xs-12">
+								<label>
+									<span style="color: red">*</span> Fecha de expedición:
+								</label>
+								{{ form.expedition }}
+								<label>
+									{{ form.expedition.errors }}
+								</label>
+							</div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-4 col-sm-4 col-xs-12">
+								<label>
+									<span style="color: red">*</span>Tipo de documento:
+								</label>
+								{{ form.document_type }}
+								<label>
+									{{ form.document_type.errors }}
+								</label>
+							</div>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+								<label>
+									<span style="color: red">*</span>
+                                    Documento:
+								</label>
+								{{ form.file_original }}
+                                <p class="text-info">Solamente documentos en PDF</p>
+								<label>
+									{{ form.file_original.errors }}
+								</label>
+							</div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-8 text-right">
+                                <a href="{% url 'documents_home' %}" class="btn
+                                btn-default">
+                                    <i class="fa fa-angle-double-left"></i>
+                                    Volver
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-floppy-o"></i>
+                                    Guardar
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block css %}
+    {{ block.super }}
+    <link href="{% static 'app/css/datapicker/datepicker3.css' %}" rel="stylesheet">
+{% endblock %}
+{% block javascript %}
+    {{ block.super }}
+    <script  src="{% static 'app/js/datapicker/bootstrap-datepicker.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+            var date_init = {
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                calendarWeeks: true,
+                autoclose: true,
+                language: 'es',
+                format: 'yyyy-mm-dd',
+                endDate: new Date()
+            };
+            $('#id_expedition').datepicker(date_init);
+        });
+    </script>
+{% endblock %}

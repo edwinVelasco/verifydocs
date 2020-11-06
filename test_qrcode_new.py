@@ -41,7 +41,7 @@ def createQR():
     # xy = [160, 80, 200, 250]
     ref = '1150535_1'
     qr2 = pyqrcode.create(data)
-    qr2.svg(f'temp/{ref}.svg', scale=2)
+    qr2.svg(f'temp/{ref}.svg', scale=1)
     print(letter)
     print('letter')
     my_canvas = canvas.Canvas(f'temp/{ref}.pdf', pagesize=letter)
@@ -102,7 +102,7 @@ def create_pdf_watermark():
     file = open('temp/1150535.pdf', 'rb')
     reader = PyPDF2.PdfFileReader(file)
     page = reader.getPage(0)
-    water = open('temp/watermark_page.pdf', 'rb')
+    water = open('tools/watermark_page.pdf', 'rb')
     reader2 = PyPDF2.PdfFileReader(water)
 
     waterpage = reader2.getPage(0)
