@@ -1,4 +1,4 @@
-![Pizzería](http://www.madarme.co/portada-web.png)
+![Verifydocs](https://ucdb94fe13d9592d231ce14f1cf6.dl.dropboxusercontent.com/cd/0/get/BCr0wvsDoAwzbvKZpSdS7ZDEzpEiAro-HwX-_AefL95sPNti6xG_de_R2_K8JUXm3nQYdIq6s8soN3hspiG6IlphYvkm5rl_f5JQ--F91LI4ufGEZLQlVkvbnjocjFjnZ-o/file?_download_id=8092854901454845999159113084193445394528382896175854567170748172&_notify_domain=www.dropbox.com&dl=1)
 # VerifyDocs 
 ### Nombre del proyecto:
 #### Aplicativo web para verificar los documentos expedidos por las diferentes dependencias de la UFPS
@@ -10,7 +10,7 @@
 4. [IDE](#ide)
 5. [Instalación](#instalación)
 6. [Demo](#demo)
-7. [Autor(es)](#autores)
+7. [Autores](#autores)
 8. [Institución Académica](#institución-académica)
 ***
 
@@ -134,9 +134,11 @@ Llave unica por instancia instala
 ```python
 DJ_SECRET_KEY = ''
 ```
-Ejecutar el siguiente comando para crear la llave unica, retorna una cadena, asignarla completa a la variable DJ_SECRET_KEY
+Ejecutar el siguiente comando para crear la llave unica, retorna una cadena
 ```shell script
 $ openssl rand -base64 32
+HuUk7oOLlxgdA0rw2J5qF+Et9kYW1+MwBTtMeFUHN8M=
+$ # copiar el texto generado a la variable DJ_SECRET_KEY
 ```
 
 Creación y ejecución de las migraciones y la agrupación del los archivos estaticos de la aplicación
