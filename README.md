@@ -39,11 +39,13 @@ Usted puede ver el siguiente marco conceptual sobre la API fetch:
   - El proyecto se desarrolla con [PyCharm](https://www.jetbrains.com/es-es/pycharm/) con [licencia de estudiante](https://www.jetbrains.com/es-es/community/education/#students)
 
 ***
-#### Instalación
+### Instalación
 
  - Intalar y configurar [postgresql](https://www.postgresql.org/), preferiblemente la versión mas reciente
  - Instalar [supervisor](http://supervisord.org/installing.html)
  - Instalar [node](https://nodejs.org/es/) y [bower](https://bower.io/)
+ - Instalar [gunicorn](https://docs.gunicorn.org/en/stable/install.html#ubuntu)
+ - Instalar [nginx](https://ubuntu.com/tutorials/install-and-configure-nginx#1-overview)
 
 Creación del entorno virtual en el sistema operativo con [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) usando python 3.6 o superior
 
@@ -51,7 +53,7 @@ Creación del entorno virtual en el sistema operativo con [virtualenvwrapper](ht
  $ mkvirtualenv verifydocs -p /usr/bin/python3.x
  $ workon verifydocs
 ```
-Clonación del repositorio privado desde GitHub
+Clonar el repositorio privado desde GitHub
 ```shell script
  $ git clone https://github.com/edwinVelasco/verifydocs.git verifydocs
  $ cd verifydocs
@@ -140,7 +142,7 @@ HuUk7oOLlxgdA0rw2J5qF+Et9kYW1+MwBTtMeFUHN8M=
 $ # copiar el texto generado a la variable DJ_SECRET_KEY
 ```
 
-Creación y ejecución de las migraciones y la agrupación del los archivos estaticos de la aplicación
+Creación y ejecución de las migraciones, y la agrupación del los archivos estaticos de la aplicación
 ```shell script
 $ python manage.py makemigrations
 $ python manage.py migrate
@@ -154,7 +156,93 @@ $ cd static/app/
 $ bower install --save blockchain/bc-qr-reader
 $ cd ../../
 ```
+Crear el archivo verifydocs.conf en supervisorctl
+```shell script
+$ sudo mkdir /var/log/verifydocs
+$ sudo nano /etc/supervisor/conf.d/verifydocs.conf
+```
+Copiar el siguiente texto en el archivo de configuración
+```text
+[program:verifydocs_gunicorn]
+directory=/home/<usuario>/verifydocs
+command=/home/<usuario>/.virtualenvs/verifydocs/bin/gunicorn --workers 2 --bind unix:/home/<usuario>/verifydocs/verifydocs.sock verifydocs.wsgi:appl$
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/verifydocs/gunicorn.out.log
+stdout_logfile=/var/log/verifydocs/gunicorn.err.log
+user=<usuario>
+group=www-data
+environment=LANG=en_US.UTF-8,LC_ALL=en_US.UTF-8
 
+[group:guni]
+programs:verifydocs_gunicorn
+```
+Activar la configuracion de supervisorctl y revisar el estado de ejecución de la tarea
+```shell script
+$ sudo supervisorctl reread
+$ sudo supervisorctl update
+$ sudo supervisorctl status
+```
+Se debe tener en la carpeta /home/usuario/ssl/ los archivos del cerificado de seguridad SSL
+
+Crear archivo de configuración del virtualhost en Nginx
+```shell script
+$ sudo nano /etc/nginx/sites-available/verifydocs
+```
+Copiar el siguiente texto en el archivo de configuración
+```text
+log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+              '$status $body_bytes_sent "$http_referer" '
+              '"$http_user_agent" "$http_x_forwarded_for"';
+access_log  /var/log/nginx/access.log  main;
+
+server {
+    listen      443 ssl;
+    listen [::]:443 default_server ipv6only=on;
+
+    server_name verifydocs.ufps.edu.co;
+    include /etc/nginx/default.d/*.conf;
+
+    ssl on;
+    ssl_protocols  TLSv1 TLSv1.1 TLSv1.2;
+    ssl_certificate /home/<usuario>/ssl/ufps.edu.co.crt;
+    ssl_certificate_key /home/<usuario>/ssl/ufps.edu.co.key;
+    ssl_session_cache shared:SSL:10m; 
+    ssl_session_timeout 10m;
+
+    location / {
+        include proxy_params;
+        proxy_pass https://unix:/home/<usuario>/verifydocs/verifydocs.sock;
+    }
+
+    location /static/ {
+        root /home/<usuario>/verifydocs;
+    }
+    location /media/ {
+        root /home/<usuario>/verifydocs;
+    }
+
+    error_page 404 /404.html;
+        location = /40x.html {
+    }
+
+    error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+    }
+}
+```
+Crear el enlace en la carpeta sites-enabled/
+```shell script
+$ sudo ln -s /etc/nginx/sites-available/verifydocs /etc/nginx/sites-enabled
+```
+Ejecutar pruebas de configuración en nginx
+```shell script
+$ nginx -t
+```
+Si todo parece estar correcto reicniar nginx
+```shell script
+$ sudo systemctl restart nginx
+```
 
 ***
 ### Demo
@@ -177,8 +265,4 @@ Proyecto desarrollado para el curso de profundización en desarrollo de software
 
    [Programa de Ingeniería de Sistemas]:<https://ingsistemas.cloud.ufps.edu.co/>
    [Universidad Francisco de Paula Santander]:<https://ww2.ufps.edu.co/>
-   
 
-
-# verifydocs
-The application includes the development of a module in charge of registering dependencies and users, uploading and downloading of authenticated documents through the web, public viewing of documents through a QR code and loading and unloading of documents.
