@@ -30,7 +30,7 @@ function previewDocument(endpoint){
         processData: false,
         data: formdata,
         success : function (response){
-            $('#id_embed').attr('src', 'data:application/pdf;base64,'+response+'#zoom=40');
+            $('#id_embed').attr('src', 'data:application/pdf;base64;headers=filename,'+response+'#zoom=40');
         }
     })
 }

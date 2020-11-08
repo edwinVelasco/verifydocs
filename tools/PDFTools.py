@@ -26,15 +26,18 @@ class PDFTools:
     height = 41
     # height = 61.5
 
-    def __init__(self, pos_x, pos_y):
+    def __init__(self, pos_x, pos_y, scale=42):
         self.pos_x = float(pos_x)
         self.pos_y = float(pos_y)
+        self.width = float(scale or 42)
+        self.height = float(scale or 42)
 
     def generate_pdf_blanck(self, another_file=None):
 
         buffer = BytesIO()
         pdf = canvas.Canvas(buffer, pagesize=letter)
         self.add_img(None, pdf)
+        pdf.setTitle('Ejemplo')
         pdf.save()
         if another_file:
             buffer.seek(0)
@@ -45,7 +48,6 @@ class PDFTools:
             page.mergePage(waterpage)
             writer = PdfFileWriter()
             writer.addPage(page)
-            print('num de pags', reader.numPages)
             for pageNum in range(1, reader.numPages):
                 pageObj = reader.getPage(pageNum)
                 writer.addPage(pageObj)

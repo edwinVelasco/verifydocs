@@ -31,6 +31,11 @@ class Dependence(models.Model):
 
 
 class DocumentType(models.Model):
+    CHOICES_SCALE = (
+        (42, '1x'),
+        (63, '1.5x'),
+        (84, '2x'),
+    )
     name = models.CharField(max_length=45, unique=True)
     days_validity = models.IntegerField(default=None, null=True, blank=True)
     active = models.BooleanField(default=True)
@@ -40,6 +45,8 @@ class DocumentType(models.Model):
                                    related_name='dependence_docs_type')
     pos_x = models.DecimalField(max_digits=7, decimal_places=2, null=True)
     pos_y = models.DecimalField(max_digits=7, decimal_places=2, null=True)
+    scale = models.IntegerField(null=True,
+                                choices=CHOICES_SCALE)
     updated = models.DateTimeField(auto_now=True,
                                    null=False,
                                    verbose_name='Última modificación')
@@ -126,4 +133,8 @@ class Document(models.Model):
         verbose_name_plural = 'Documentos'
         ordering = ('-id',)
         db_table = 'verifydocs_document'
+
+    def update_active(self):
+        self.enable = not self.enable
+        self.save()
 

@@ -48,7 +48,7 @@
                         <div class="form-group">
 							<div class="col-md-6 col-sm-6 col-xs-6">
 								<label>
-									<span style="color: red">*</span> Posición X:
+									<span style="color: red">*</span> Posición X: <i class="fa fa-arrow-right"></i>
 								</label>
 								{{ form.pos_x }}
 								<label id="pos_x_errors">
@@ -57,12 +57,21 @@
 							</div>
                             <div class="col-md-6 col-sm-6 col-xs-6">
                                 <label>
-									<span style="color: red">*</span> Posición Y:
+									<span style="color: red">*</span> Posición Y: <i class="fa fa-arrow-up"></i>
 								</label>
 								{{ form.pos_y }}
 								<label id="pos_y_errors">
 									{{ form.pos_y.errors }}
 								</label>
+							</div>
+                            <div class="col-md-12 col-sm-6 col-xs-6">
+                                <label>
+									<span style="color: red">*</span> Proporción de tamaño:
+								</label>
+                                {{ form.scale }}
+                                <label>
+                                    {{ form.scale.errors }}
+                                </label>
 							</div>
                             <div class="col-md-12 col-sm-6 col-xs-6">
                                 <label>
@@ -88,7 +97,7 @@
                     </form>
                     </div>
                     <div class="col-md-9 col-xs-12">
-                        <iframe id="id_embed" src="" frameborder="0" width="100%" height="500" ></iframe>
+                        <iframe id="id_embed" src="" frameborder="0" width="100%" height="500" title="example"></iframe>
                     </div>
                 </div>
             </div>
