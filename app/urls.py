@@ -1,7 +1,8 @@
 from django.urls import path
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LogoutView
-from app.views import HomeView, IndexView, AdminHomeView
+from app.views import HomeView, IndexView, AdminHomeView, \
+    DocumentAdminListView, DocumentActiveView
 from app.views import DocumentTypeSettingQRView, DependenceListView
 from app.views import DocumentTypeListView, DocumentTypeCreateView
 from app.views import DocumentTypeUpdateActiveView, DocumentTypeUpdateView
@@ -62,6 +63,11 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
 
     # documents
+    # administrador
+    path('home/documents_admin/', DocumentAdminListView.as_view(),
+         name='documents_admin'),
+    path('documents/admin/<int:pk>/active/', DocumentActiveView.as_view(),
+         name='documents_update_active'),
     # administrativos
     path('documents/', DocumentListView.as_view(), name='documents_home'),
     path('document_create/', DocumentCreateView.as_view(),

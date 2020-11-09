@@ -64,7 +64,8 @@ class DocumentTypeForm(forms.ModelForm):
 
 class DocumentTypeQRForm(forms.ModelForm):
 
-    file = forms.FileField(widget=forms.FileInput(), required=False)
+    file = forms.FileField(widget=forms.FileInput(
+                attrs={'accept': '.pdf,.PDF'}), required=False)
 
     def __init__(self, *args, **kwargs):
         super(DocumentTypeQRForm, self).__init__(*args, **kwargs)
@@ -73,7 +74,7 @@ class DocumentTypeQRForm(forms.ModelForm):
 
     class Meta:
         model = DocumentType
-        fields = ('pos_x', 'pos_y')
+        fields = ('pos_x', 'pos_y', 'scale')
 
         error_messages = {
             'pos_x': {
@@ -83,6 +84,10 @@ class DocumentTypeQRForm(forms.ModelForm):
             'pos_y': {
                 'required': "La posición Y es requerida.",
                 'blank': 'Este valor no puede ser vacio'
+            },
+            'scale': {
+                'required': 'Debe seleccionar una escala',
+                'blank': 'Debe seleccionar una escala',
             }
         }
 
@@ -95,6 +100,9 @@ class DocumentTypeQRForm(forms.ModelForm):
                 attrs={'class': 'form-control',
                        'value': '0', 'min': 0, 'step': 1}
             ),
+            'scale': forms.Select(
+                attrs={'class': 'form-control'}
+            )
         }
 
     def clean(self):

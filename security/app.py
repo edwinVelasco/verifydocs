@@ -2,6 +2,7 @@ import pyqrcode
 import hashlib
 import base64
 
+from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPDF
@@ -39,10 +40,12 @@ class SecurityApp:
             md_5 = self.__encrypt_sha256_to_md5(sha_256=sha_256)
 
             qr2 = pyqrcode.create(md_5)
-            qr2.svg(f'{settings.MEDIA_ROOT}/tmp/{ref}.svg', scale=1.5)
+            qr2.svg(f'{settings.MEDIA_ROOT}/tmp/{ref}.svg',
+                    scale=self.pdf_tools.width/37)
             my_canvas = canvas.Canvas(f'{settings.MEDIA_ROOT}/tmp/{ref}.pdf',
                                       pagesize=letter)
             drawing = svg2rlg(f'{settings.MEDIA_ROOT}/tmp/{ref}.svg')
+            print(drawing.getBounds())
             renderPDF.draw(drawing, my_canvas, self.pdf_tools.pos_x,
                            self.pdf_tools.pos_y)
             self.pdf_tools.add_text(my_canvas, 'Verifique el documento en',
