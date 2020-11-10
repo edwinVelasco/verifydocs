@@ -64,7 +64,7 @@ class DocumentType(models.Model):
         db_table = 'verifydocs_document_type'
 
     def __str__(self):
-        return f'{self.name.capitalize()}'
+        return self.name.capitalize()
 
 
 class UserMail(models.Model):
@@ -86,6 +86,8 @@ class UserMail(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name='Creado')
     document_types = models.ManyToManyField(
         DocumentType, related_name="verifydocs_user_doc_type")
+    password = models.CharField('Contraseña', max_length=128, null=True,
+                                blank=True)
 
     class Meta:
         verbose_name = 'Correo permitido'

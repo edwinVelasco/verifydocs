@@ -1,6 +1,8 @@
 from django.urls import path
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LogoutView
+from rest_framework.authtoken import views
+
 from app.views import HomeView, IndexView, AdminHomeView, \
     DocumentAdminListView, DocumentActiveView
 from app.views import DocumentTypeSettingQRView, DependenceListView
@@ -10,6 +12,8 @@ from app.views import DependenceCreateView, DependenceUpdateView
 from app.views import UserMailUpdateView, UserMailListView, UserMailCreateView
 from app.views import UserMailActiveView, DocumentListView, DocumentCreateView
 from app.views import DocumentTypeSettingQRPreviewView, DependenceActiveView
+from app.views import DocumentCreateViewAplication, ApplicantLogoutView
+
 
 urlpatterns = [
     path('', IndexView.as_view(),
@@ -72,5 +76,14 @@ urlpatterns = [
     path('documents/', DocumentListView.as_view(), name='documents_home'),
     path('document_create/', DocumentCreateView.as_view(),
          name='document_create'),
+
+    # aplications
+    path('aplication/v1/login/', views.obtain_auth_token),
+    path('aplication/v1/logout/', ApplicantLogoutView.as_view()),
+
+    path('application/document_create/',
+         DocumentCreateViewAplication.as_view(),
+         name='document_create_applicant'),
+
 
 ]

@@ -54,7 +54,7 @@
 							</div>
                         </div>
                         <div class="form-group">
-                            <div class="col-md-offset-2 col-md-8 col-sm-8 col-xs-12">
+                            <div class="col-md-offset-2 col-md-4 col-sm-4 col-xs-12">
 								<label>
 									<span style="color: red">*</span> Tipos de documentos:
 								</label>
@@ -67,6 +67,16 @@
 									{{ form.document_types.errors }}
 								</label>
 							</div>
+                            <div class="col-md-4 col-sm-6 col-xs-12">
+								<label>
+                                    Contraseña:
+								</label>
+								{{ form.password }}
+								<label>
+									{{ form.password.errors }}
+								</label>
+							</div>
+
                         </div>
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-8 text-right">

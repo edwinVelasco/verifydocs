@@ -3,23 +3,25 @@ import traceback
 from django import forms
 from django.views.generic.base import View
 from django.urls.base import reverse_lazy
-from django.urls import reverse as urls_reverse
 from urllib.parse import urlencode
-from django.shortcuts import redirect, HttpResponse, render
-from django.views.generic import CreateView, ListView, DeleteView, FormView
+from django.shortcuts import HttpResponse
+from django.views.generic import CreateView, ListView
 from django.views.generic import UpdateView, TemplateView
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.core.paginator import Paginator, InvalidPage
+from django.contrib.auth import logout
+from django.core.paginator import InvalidPage
 from django.db.models import Q
 from django.http import Http404, FileResponse
 from django.utils.translation import gettext as _
-
+from django.contrib.auth.models import User
 
 from app.forms import VerifyDocsForm, DependenceForm, UserMailForm
 from app.forms import UserMailSearchForm, DependenceSearchForm
 from app.forms import DocumentTypeSearchForm, DocumentTypeForm
 from app.forms import DocumentSearchForm, DocumentTypeQRForm, DocumentForm
+
+from app.serializers import DocumentSerializer
 
 from app.models import DocumentType, Dependence, UserMail, Document
 
@@ -343,10 +345,38 @@ class UserMailCreateView(UserAdminMixin, CreateView):
     form_class = UserMailForm
 
     def get_success_url(self):
+        user = self.model.objects.last()
+        user.password = ''
+        user.save()
         messages.success(self.request,
                          'Usuario registrado correctamente')
         return get_url_to_redirect(self.request, 'filter',
                                    'allowed_users')
+
+    def form_valid(self, form):
+        data_post = {
+            'encoding': 'utf-8',
+            'csrfmiddlewaretoken': self.request.POST['csrfmiddlewaretoken'],
+            'email': self.request.POST['email'],
+            'role': self.request.POST['role'],
+            'active': self.request.POST['active'],
+            'document_types': self.request.POST.get('document_types', []),
+            'password': '12345678'
+        }
+        password = self.request.POST['password']
+        if password:
+            try:
+                u = User.objects.get(username=self.request.POST['email'])
+                u.set_password(password)
+                u.save()
+            except User.DoesNotExist:
+                user = User.objects.create_user(data_post['email'], data_post['email'],
+                                                password=password).save()
+
+        form_extra = UserMailForm(data=data_post)
+        if form_extra.is_valid():
+            return super(UserMailCreateView, self).form_valid(form_extra)
+        return super(UserMailCreateView, self).form_valid(form)
 
 
 class UserMailUpdateView(UserAdminMixin, UpdateView):
@@ -355,10 +385,39 @@ class UserMailUpdateView(UserAdminMixin, UpdateView):
     form_class = UserMailForm
 
     def get_success_url(self):
+        user = self.get_object()
+        user.password = ''
+        user.save()
         messages.success(self.request,
                          'Usuario actualizado correctamente')
         return get_url_to_redirect(self.request, 'filter',
                                    'allowed_users')
+
+    def form_valid(self, form):
+        data_post = {
+            'encoding': 'utf-8',
+            'csrfmiddlewaretoken': self.request.POST['csrfmiddlewaretoken'],
+            'email': self.request.POST['email'],
+            'role': self.request.POST['role'],
+            'active': self.request.POST['active'],
+            'document_types': self.request.POST.get('document_types', []),
+            'password': '12345678'
+        }
+        password = self.request.POST['password']
+        if password:
+            try:
+                u = User.objects.get(username=self.request.POST['email'])
+                u.set_password(password)
+                u.save()
+            except User.DoesNotExist:
+                user = User.objects.create_user(data_post['email'], data_post['email'],
+                                                password=password).save()
+
+        form_extra = UserMailForm(data=data_post)
+        if form_extra.is_valid():
+            return super(UserMailUpdateView, self).form_valid(form_extra)
+        return super(UserMailUpdateView, self).form_valid(form)
+
 
 
 class UserMailListView(UserAdminMixin, ListView):
@@ -692,4 +751,74 @@ class DocumentCreateView(UserMixin, CreateView):
         return render(self.request, self.template_name, {'user': self.request.user,
                                                          'form': form})
         # return redirect(reverse_lazy('document_create'), form=form)
+
+
+
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework.response import Response
+
+
+class DocumentCreateViewAplication(generics.CreateAPIView):
+    serializer_class = DocumentSerializer
+    permission_classes = (IsAuthenticated, )
+    authentication_classes = (TokenAuthentication, )
+
+    def post(self, request, *args, **kwargs):
+        data_post = {
+            'identification_applicant': request.data[
+                'identification_applicant'],
+            'name_applicant': request.data['name_applicant'],
+            'email_applicant': request.data['email_applicant'],
+            'expedition': request.data['expedition'],
+            'document_type': request.data['document_type']
+        }
+        doc_type = DocumentType.objects.get(id=int(data_post['document_type']))
+        if 'file_original' in request.data:
+            data_post['file_original'] = request.data['file_original']
+            pdf_tool = PDFTools(pos_x=doc_type.pos_x, pos_y=doc_type.pos_y,
+                                scale=doc_type.scale)
+            out_file, sha_256, token = pdf_tool.create_main_qr(
+                file_doc=self.request.FILES['file_original'],
+                user=self.request.user.id)
+
+            data_post['token'] = token
+            data_post['hash'] = sha_256
+            data_post['hash_qr'] = pdf_tool.create_hash_qr(
+                file_doc=out_file, user=self.request.user.id)
+            data_post['file_qr'] = out_file
+
+        serializer = self.serializer_class(data=data_post)
+        if serializer.is_valid():
+            serializer.save()
+            data = serializer.data
+            rest = dict(file_qr=data.get('file_qr'), )
+            return Response(rest,
+                            status=status.HTTP_201_CREATED)
+        if 'file_original' in serializer.errors:
+            return Response(dict(error='El archivo en PDF es requrido'),
+                            status=status.HTTP_400_BAD_REQUEST)
+        if 'token' in serializer.errors:
+            return Response(
+                dict(error='El archivo ya se encuentra registrado'),
+                status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+# class ApplicantLogoutView(APIView):
+class ApplicantLogoutView(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+    def post(self, request, *args, **kwargs):
+        print(request)
+        request.user.auth_token.delete()
+        logout(request)
+        return Response('Cierre correcto', status=status.HTTP_200_OK)
+
+
 

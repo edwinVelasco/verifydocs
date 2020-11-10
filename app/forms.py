@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import ModelForm as BaseModelForm
+from django.contrib.auth.models import User
 
 from app.models import Dependence, UserMail
 
@@ -185,12 +186,13 @@ class UserMailForm(forms.ModelForm):
         super(UserMailForm, self).__init__(*args, **kwargs)
         self.fields['email'].required = True
         self.fields['document_types'].required = False
+        self.fields['password'].required = False
         self.fields['document_types'].queryset = DocumentType.objects.filter(
             active=True)
 
     class Meta:
         model = UserMail
-        fields = ('email', 'role', 'active', 'document_types')
+        fields = ('email', 'role', 'active', 'document_types', 'password')
 
         error_messages = {
             'email': {
@@ -218,6 +220,10 @@ class UserMailForm(forms.ModelForm):
                        'multiple': 'multiple',
                        'data-placeholder': 'Seleccionar Tipos de documentos'},
 
+            ),
+            'password': forms.PasswordInput(
+                attrs={'class': 'form-control',
+                       'placeholder': 'Contraseña, Solo para aplicaciones'}
             )
         }
 
@@ -227,10 +233,32 @@ class UserMailForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(UserMailForm, self).clean()
         document_types = cleaned_data.get("document_types")
+        password = cleaned_data.get("password")
+        email = cleaned_data.get("email")
+
         role = cleaned_data.get("role")
         if int(role) == 1 and document_types:
             self.add_error('document_types',
                            'El usuario administrador no debe tener documentos')
+
+        if int(role) == 3:
+            try:
+                user = User.objects.get(username=email)
+            except User.DoesNotExist:
+                if not password:
+                    self.add_error('password',
+                                   'El usuario de aplicación debe tener '
+                                   'una contraseña')
+        else:
+            try:
+                user = User.objects.get(username=email)
+                user.delete()
+            except User.DoesNotExist:
+                pass
+            finally:
+                if password:
+                    self.add_error('password',
+                                   'El usuario no requiere contraseña')
         return cleaned_data
 
 

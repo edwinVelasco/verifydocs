@@ -26,7 +26,7 @@ class PDFTools:
     height = 41
     # height = 61.5
 
-    def __init__(self, pos_x, pos_y, scale=42):
+    def __init__(self, pos_x=None, pos_y=None, scale=42):
         self.pos_x = float(pos_x)
         self.pos_y = float(pos_y)
         self.width = float(scale or 42)
