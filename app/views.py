@@ -21,7 +21,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import status
 from rest_framework.response import Response
-
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
 
 from app.forms import VerifyDocsForm, DependenceForm, UserMailForm
 from app.forms import UserMailSearchForm, DependenceSearchForm
@@ -788,7 +789,16 @@ class DocumentCreateViewAplication(generics.CreateAPIView):
             'document_type': request.data['document_type'],
             'user_mail': request.user.email
         }
+        user_email = UserMail.objects.filter(email=request.user.email,
+                                             active=True).last()
+        doc_types = user_email.document_types.filter(active=True)
         doc_type = DocumentType.objects.get(id=int(data_post['document_type']))
+        if doc_type in doc_types:
+            return Response(
+                dict(error=f'No tiene permiso para registrar documentos de {doc_type.name}'),
+                status=status.HTTP_400_BAD_REQUEST)
+
+
         if 'file_original' in request.data:
             data_post['file_original'] = request.data['file_original']
             pdf_tool = PDFTools(pos_x=doc_type.pos_x, pos_y=doc_type.pos_y,
@@ -833,15 +843,21 @@ class DocumentListViewAplication(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class ApplicantLogoutView(generics.GenericAPIView):
+class LogoutAplicationView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
 
     def post(self, request, *args, **kwargs):
-        print(request)
         request.user.auth_token.delete()
         logout(request)
         return Response('Cierre correcto', status=status.HTTP_200_OK)
 
 
+class LoginAplicationTestPostmanView(ObtainAuthToken):
 
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key, 'access_token': token.key})
