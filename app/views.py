@@ -16,6 +16,13 @@ from django.http import Http404, FileResponse
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import User
 
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from rest_framework import status
+from rest_framework.response import Response
+
+
 from app.forms import VerifyDocsForm, DependenceForm, UserMailForm
 from app.forms import UserMailSearchForm, DependenceSearchForm
 from app.forms import DocumentTypeSearchForm, DocumentTypeForm
@@ -419,7 +426,6 @@ class UserMailUpdateView(UserAdminMixin, UpdateView):
         return super(UserMailUpdateView, self).form_valid(form)
 
 
-
 class UserMailListView(UserAdminMixin, ListView):
     model = UserMail
     template_name = 'allowed_user/list.html'
@@ -753,15 +759,6 @@ class DocumentCreateView(UserMixin, CreateView):
         # return redirect(reverse_lazy('document_create'), form=form)
 
 
-
-from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.views import APIView
-from rest_framework import status
-from rest_framework.response import Response
-
-
 class DocumentCreateViewAplication(generics.CreateAPIView):
     serializer_class = DocumentSerializer
     permission_classes = (IsAuthenticated, )
@@ -809,7 +806,6 @@ class DocumentCreateViewAplication(generics.CreateAPIView):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
-# class ApplicantLogoutView(APIView):
 class ApplicantLogoutView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
