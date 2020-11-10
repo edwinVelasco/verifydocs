@@ -29,6 +29,7 @@ from app.forms import DocumentTypeSearchForm, DocumentTypeForm
 from app.forms import DocumentSearchForm, DocumentTypeQRForm, DocumentForm
 
 from app.serializers import DocumentSerializer, TypeDocumentSerializer
+from app.serializers import DocumentListSerializer
 
 from app.models import DocumentType, Dependence, UserMail, Document
 
@@ -821,7 +822,7 @@ class DocumentCreateViewAplication(generics.CreateAPIView):
 
 
 class DocumentListViewAplication(generics.ListAPIView):
-    serializer_class = DocumentSerializer
+    serializer_class = DocumentListSerializer
     permission_classes = (IsAuthenticated, )
     authentication_classes = (TokenAuthentication, )
 

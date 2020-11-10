@@ -17,8 +17,7 @@ class DocumentListSerializer(serializers.ModelSerializer):
         model = Document
         fields = (
             'identification_applicant', 'name_applicant', 'email_applicant',
-            'expedition', 'document_type', 'user_mail',
-            'token', 'hash', 'file_qr', 'hash_qr'
+            'expedition', 'created', 'document_type', 'file_qr'
         )
 
 
