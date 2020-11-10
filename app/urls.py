@@ -80,8 +80,8 @@ urlpatterns = [
          name='document_create'),
 
     # aplications v1
-    # path('aplication/v1/login/', views.obtain_auth_token),
-    path('aplication/v1/login/', LoginAplicationTestPostmanView.as_view()),
+    path('aplication/v1/login/', views.obtain_auth_token),
+    path('aplication/v1/login_t/', LoginAplicationTestPostmanView.as_view()),
     path('aplication/v1/logout/', LogoutAplicationView.as_view()),
     path('application/v1/document_create/',
          DocumentCreateViewAplication.as_view()),
