@@ -28,7 +28,7 @@ from app.forms import UserMailSearchForm, DependenceSearchForm
 from app.forms import DocumentTypeSearchForm, DocumentTypeForm
 from app.forms import DocumentSearchForm, DocumentTypeQRForm, DocumentForm
 
-from app.serializers import DocumentSerializer
+from app.serializers import DocumentSerializer, TypeDocumentSerializer
 
 from app.models import DocumentType, Dependence, UserMail, Document
 
@@ -759,6 +759,19 @@ class DocumentCreateView(UserMixin, CreateView):
         # return redirect(reverse_lazy('document_create'), form=form)
 
 
+class TypeDocumentViewAplication(generics.ListAPIView):
+    serializer_class = TypeDocumentSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+    def get(self, request, *args, **kwargs):
+        user_email = UserMail.objects.filter(email=request.user.email,
+                                             active=True).last()
+        serializer = self.serializer_class(
+            user_email.document_types.filter(active=True), many=True)
+        return Response(serializer.data)
+
+
 class DocumentCreateViewAplication(generics.CreateAPIView):
     serializer_class = DocumentSerializer
     permission_classes = (IsAuthenticated, )
@@ -771,7 +784,8 @@ class DocumentCreateViewAplication(generics.CreateAPIView):
             'name_applicant': request.data['name_applicant'],
             'email_applicant': request.data['email_applicant'],
             'expedition': request.data['expedition'],
-            'document_type': request.data['document_type']
+            'document_type': request.data['document_type'],
+            'user_mail': request.user.email
         }
         doc_type = DocumentType.objects.get(id=int(data_post['document_type']))
         if 'file_original' in request.data:
@@ -804,6 +818,18 @@ class DocumentCreateViewAplication(generics.CreateAPIView):
                 status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+class DocumentListViewAplication(generics.ListAPIView):
+    serializer_class = DocumentSerializer
+    permission_classes = (IsAuthenticated, )
+    authentication_classes = (TokenAuthentication, )
+
+    def get(self, request, *args, **kwargs):
+        docs = Document.objects.filter(user_mail=request.user.email)
+        serializer = self.serializer_class(
+            docs, many=True)
+        return Response(serializer.data)
 
 
 class ApplicantLogoutView(generics.GenericAPIView):

@@ -13,6 +13,7 @@ from app.views import UserMailUpdateView, UserMailListView, UserMailCreateView
 from app.views import UserMailActiveView, DocumentListView, DocumentCreateView
 from app.views import DocumentTypeSettingQRPreviewView, DependenceActiveView
 from app.views import DocumentCreateViewAplication, ApplicantLogoutView
+from app.views import TypeDocumentViewAplication, DocumentListViewAplication
 
 
 urlpatterns = [
@@ -77,13 +78,14 @@ urlpatterns = [
     path('document_create/', DocumentCreateView.as_view(),
          name='document_create'),
 
-    # aplications
+    # aplications v1
     path('aplication/v1/login/', views.obtain_auth_token),
     path('aplication/v1/logout/', ApplicantLogoutView.as_view()),
-
-    path('application/document_create/',
-         DocumentCreateViewAplication.as_view(),
-         name='document_create_applicant'),
-
+    path('application/v1/document_create/',
+         DocumentCreateViewAplication.as_view()),
+    path('application/v1/document_list/',
+         DocumentListViewAplication.as_view()),
+    path('application/v1/type_document_list/',
+         TypeDocumentViewAplication.as_view()),
 
 ]

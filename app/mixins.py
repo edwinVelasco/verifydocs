@@ -19,6 +19,13 @@ class UserMixin(LoginRequiredMixin):
         user_email = user_email.first()
         if user_email.role == 1:
             return redirect(reverse('admon'))
+
+        if user_email.role == 3:
+            messages.warning(request=request,
+                             message=f'El correo electrónico '
+                                     f'{request.user.email} no tiene acceso, '
+                                     f'Es de un usuario de aplicación')
+            return redirect(reverse('logout'))
         return super().dispatch(request, *args, **kwargs)
 
 
