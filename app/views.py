@@ -1,5 +1,6 @@
 from django.shortcuts import render
 import traceback
+import base64
 from django import forms
 from django.views.generic.base import View
 from django.urls.base import reverse_lazy
@@ -23,6 +24,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
+from rest_framework.views import APIView
 
 from app.forms import VerifyDocsForm, DependenceForm, UserMailForm
 from app.forms import UserMailSearchForm, DependenceSearchForm
@@ -740,7 +742,7 @@ class DocumentCreateView(UserMixin, CreateView):
 
             pdf_tool = PDFTools(pos_x=doc_type.pos_x, pos_y=doc_type.pos_y,
                                 scale=doc_type.scale)
-            out_file, sha_256, token = pdf_tool.create_main_qr(
+            out_file, sha_256, token, _ = pdf_tool.create_main_qr(
                 file_doc=self.request.FILES['file_original'],
                 user=self.request.user.id)
 
@@ -774,7 +776,7 @@ class TypeDocumentViewAplication(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class DocumentCreateViewAplication(generics.CreateAPIView):
+class DocumentCreateViewApplication(generics.CreateAPIView):
     serializer_class = DocumentSerializer
     permission_classes = (IsAuthenticated, )
     authentication_classes = (TokenAuthentication, )
@@ -793,45 +795,47 @@ class DocumentCreateViewAplication(generics.CreateAPIView):
                                              active=True).last()
         doc_types = user_email.document_types.filter(active=True)
         doc_type = DocumentType.objects.get(id=int(data_post['document_type']))
-        if doc_type in doc_types:
+        if not doc_type in doc_types:
             return Response(
                 dict(error=f'No tiene permiso para registrar documentos de {doc_type.name}'),
                 status=status.HTTP_400_BAD_REQUEST)
-
 
         if 'file_original' in request.data:
             data_post['file_original'] = request.data['file_original']
             pdf_tool = PDFTools(pos_x=doc_type.pos_x, pos_y=doc_type.pos_y,
                                 scale=doc_type.scale)
-            out_file, sha_256, token = pdf_tool.create_main_qr(
+            out_file, sha_256, token, file = pdf_tool.create_main_qr(
                 file_doc=self.request.FILES['file_original'],
                 user=self.request.user.id)
 
             data_post['token'] = token
             data_post['hash'] = sha_256
-            data_post['hash_qr'] = pdf_tool.create_hash_qr(
+            data_post['hash_qr'], _ = pdf_tool.create_hash_qr(
                 file_doc=out_file, user=self.request.user.id)
             data_post['file_qr'] = out_file
 
-        serializer = self.serializer_class(data=data_post)
-        if serializer.is_valid():
-            serializer.save()
-            data = serializer.data
-            rest = dict(file_qr=data.get('file_qr'), )
-            return Response(rest,
-                            status=status.HTTP_201_CREATED)
-        if 'file_original' in serializer.errors:
-            return Response(dict(error='El archivo en PDF es requrido'),
-                            status=status.HTTP_400_BAD_REQUEST)
-        if 'token' in serializer.errors:
-            return Response(
-                dict(error='El archivo ya se encuentra registrado'),
-                status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors,
+            serializer = self.serializer_class(data=data_post)
+            if serializer.is_valid():
+                serializer.save()
+                response = HttpResponse(status=status.HTTP_201_CREATED,
+                                        content_type='application/pdf')
+                response['mimetype'] = 'application/pdf'
+                response['Content-Disposition'] = f'attachment; filename={out_file}'
+
+                response.write(file)
+                return response
+            if 'file_original' in serializer.errors:
+                return Response(dict(error='El archivo en PDF es requrido'),
+                                status=status.HTTP_400_BAD_REQUEST)
+            if 'token' in serializer.errors:
+                return Response(
+                    dict(error='El archivo ya se encuentra registrado'),
+                    status=status.HTTP_400_BAD_REQUEST)
+        return Response(dict(error='No se encuentra el archivo PDF'),
                         status=status.HTTP_400_BAD_REQUEST)
 
 
-class DocumentListViewAplication(generics.ListAPIView):
+class DocumentListViewApplication(generics.ListAPIView):
     serializer_class = DocumentListSerializer
     permission_classes = (IsAuthenticated, )
     authentication_classes = (TokenAuthentication, )
@@ -843,7 +847,7 @@ class DocumentListViewAplication(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class LogoutAplicationView(generics.GenericAPIView):
+class LogoutApplicationView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
 
@@ -853,7 +857,7 @@ class LogoutAplicationView(generics.GenericAPIView):
         return Response('Cierre correcto', status=status.HTTP_200_OK)
 
 
-class LoginAplicationTestPostmanView(ObtainAuthToken):
+class LoginApplicationTestPostmanView(ObtainAuthToken):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -861,3 +865,28 @@ class LoginAplicationTestPostmanView(ObtainAuthToken):
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
         return Response({'token': token.key, 'access_token': token.key})
+
+
+class DownloadFileApplicationView(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+    def get(self, request, *args, **kwargs):
+        try:
+            document = Document.objects.get(id=kwargs.get('pk'))
+            doc_type = document.document_type
+            pdf_tool = PDFTools(pos_x=doc_type.pos_x, pos_y=doc_type.pos_y,
+                                scale=doc_type.scale)
+            _, file = pdf_tool.create_hash_qr(
+                file_doc=document.file_qr, user=request.user.id)
+            response = HttpResponse(status=status.HTTP_201_CREATED,
+                                    content_type='application/pdf')
+            response['mimetype'] = 'application/pdf'
+            response['Content-Disposition'] = f'attachment; filename={document.file_original}'
+            response.write(file)
+            return response
+        except Document.DoesNotExist:
+            return Response(dict(error='No se encuentra el archivo PDF'),
+                            status=status.HTTP_400_BAD_REQUEST)
+
+

@@ -16,8 +16,8 @@ class DocumentListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
         fields = (
-            'identification_applicant', 'name_applicant', 'email_applicant',
-            'expedition', 'created', 'document_type', 'file_qr'
+            'id', 'identification_applicant', 'name_applicant', 'email_applicant',
+            'expedition', 'created', 'document_type'
         )
 
 

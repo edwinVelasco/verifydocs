@@ -151,14 +151,14 @@ class PDFTools:
             out_file = self.__create_pdf_file_qr(ref=ref, file=file)
             if out_file:
                 fv = open(default_storage.path(
-                    f'{settings.MEDIA_ROOT}/tmp/{ref}_out.pdf'), 'rb').read()
-                stream_str = io.BytesIO(fv)
+                    f'{settings.MEDIA_ROOT}/tmp/{ref}_out.pdf'), 'rb')
+                stream_str = io.BytesIO(fv.read())
                 text_file = InMemoryUploadedFile(
                     stream_str, 'file_qr', f'{file_doc}', 'application/pdf',
                     stream_str.getvalue().__sizeof__(), None, dict()
                 )
                 self.__remove_files_temp(ref=ref, qr=True)
-                return text_file, sha_256, token
+                return text_file, sha_256, token, stream_str.getvalue()
         except Exception as e:
             print(e)
             print('create_main_qr')
@@ -168,7 +168,8 @@ class PDFTools:
         ref, file = self.__create_file_disk(file_doc=file_doc, user=user)
         security_app = SecurityApp(pdf_tools=self)
         self.__remove_files_temp(ref=ref)
-        return security_app.create_hash_256_qr(file=file.read())
+        stream_str = io.BytesIO(file.read())
+        return security_app.create_hash_256_qr(file=file.read()), stream_str.getvalue()
 
 
 

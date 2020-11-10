@@ -12,9 +12,10 @@ from app.views import DependenceCreateView, DependenceUpdateView
 from app.views import UserMailUpdateView, UserMailListView, UserMailCreateView
 from app.views import UserMailActiveView, DocumentListView, DocumentCreateView
 from app.views import DocumentTypeSettingQRPreviewView, DependenceActiveView
-from app.views import DocumentCreateViewAplication, LogoutAplicationView
-from app.views import TypeDocumentViewAplication, DocumentListViewAplication
-from app.views import LoginAplicationTestPostmanView
+from app.views import DocumentCreateViewApplication, LogoutApplicationView
+from app.views import TypeDocumentViewAplication, DocumentListViewApplication
+from app.views import LoginApplicationTestPostmanView
+from app.views import DownloadFileApplicationView
 
 
 urlpatterns = [
@@ -81,12 +82,15 @@ urlpatterns = [
 
     # aplications v1
     path('aplication/v1/login/', views.obtain_auth_token),
-    path('aplication/v1/login_t/', LoginAplicationTestPostmanView.as_view()),
-    path('aplication/v1/logout/', LogoutAplicationView.as_view()),
+    path('aplication/v1/login_t/', LoginApplicationTestPostmanView.as_view()),
+    path('aplication/v1/logout/', LogoutApplicationView.as_view()),
     path('application/v1/document_create/',
-         DocumentCreateViewAplication.as_view()),
+         DocumentCreateViewApplication.as_view()),
     path('application/v1/document_list/',
-         DocumentListViewAplication.as_view()),
+         DocumentListViewApplication.as_view()),
+    path('application/v1/document/<int:pk>/download/',
+         DownloadFileApplicationView.as_view()),
+
     path('application/v1/type_document_list/',
          TypeDocumentViewAplication.as_view()),
 
