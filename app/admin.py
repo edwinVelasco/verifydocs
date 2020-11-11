@@ -11,8 +11,7 @@ class DocumentAdmin(admin.ModelAdmin):
 
 
 class UserMailAdmin(admin.ModelAdmin):
-    fields = ('email', 'role', 'active', 'updated', 'created',
-              'document_types', 'password')
+    fields = ('email', 'role', 'active', 'updated', 'created','password')
     readonly_fields = ('updated', 'created')
     list_display = ['email', 'role', 'active']
 
