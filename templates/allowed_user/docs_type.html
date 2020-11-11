@@ -1,0 +1,100 @@
+{% extends "admin.html" %}
+{% load static %}
+{% block container %}
+    <div class="row">
+        <div class="headline-center-v2-dark col-md-12">
+            <div class="shop-h1 col-md-6 col-sm-6 col-xs-6"
+                style="font-size: 30px;">
+                <b>
+                    Tipos de documentos a usuario
+                    <p class="text-success text-center">
+                        Asignación
+                    </p>
+                </b>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <br>
+            <p class="text-muted text-center">
+                <span style="color: red">*</span> Datos requeridos para el formulario
+            </p>
+            <div class="row equal-height-columns margin-bottom-10">
+                <div class="container">
+                    <form class="form-horizontal" method="POST">
+                        {% csrf_token %}
+                        {{ form.active }}
+                        <input type="hidden" name="usermail" id="id_usermail" value="{{ usermail }}">
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-4 col-sm-4 col-xs-12">
+								<label>
+									<span style="color: red">*</span> Tipos de documento:
+								</label>
+								{{ form.document_type }}
+								<label>
+									{{ form.document_type.errors }}
+									{{ form.errors }}
+								</label>
+							</div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-8 text-right">
+                                <a href="{% url 'allowed_users' %}" class="btn
+                                btn-default">
+                                    <i class="fa fa-angle-double-left"></i>
+                                    Volver
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-floppy-o"></i>
+                                    Guardar
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+                    <table class="table table-bordered table-hover text-center">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Creación</th>
+                                <th class="text-center">Tipo de documento</th>
+                                <th class="text-center">Gestión</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doc_type in list_docs_type %}
+                                <tr
+                                    {% if not doc_type.active %}
+                                    style="background: #d0d0d0"
+                                    {% endif %} >
+                                    <td>{{ doc_type.created|date:"SHORT_DATE_FORMAT" }}</td>
+                                    <td>{{ doc_type.document_type }}</td>
+                                    <td>
+                                        {% if doc_type.active %}
+                                            <a class="btn btn-outline btn-xs btn-primary"
+                                                type="button" data-toggle="tooltip"
+                                                data-placement="top"
+                                                title data-original-title="Desactivar"
+                                                href="{% url 'allowed_user_docs_type_active' usermail doc_type.id %}">
+                                                    <i class="fa fa-times fa-lg"></i>
+                                            </a>
+                                        {% else %}
+                                            <a class="btn btn-outline btn-xs btn-primary"
+                                                type="button" data-toggle="tooltip"
+                                                data-placement="top"
+                                                title data-original-title="Activar"
+                                                href="{% url 'allowed_user_docs_type_active' usermail doc_type.id %}">
+                                                    <i class="fa fa-check fa-lg"></i>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -158,7 +158,7 @@ class PDFTools:
                     stream_str.getvalue().__sizeof__(), None, dict()
                 )
                 self.__remove_files_temp(ref=ref, qr=True)
-                return text_file, sha_256, token, stream_str.getvalue()
+                return text_file, sha_256, token
         except Exception as e:
             print(e)
             print('create_main_qr')

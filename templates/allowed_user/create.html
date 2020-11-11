@@ -53,21 +53,8 @@
 								</label>
 							</div>
                         </div>
-                        <div class="form-group">
-                            <div class="col-md-offset-2 col-md-4 col-sm-4 col-xs-12">
-								<label>
-									<span style="color: red">*</span> Tipos de documentos:
-								</label>
-								{{ form.document_types }}
-                                <p class="text-info">
-                                    Los tipos de documentos son solo para los
-                                    usuarios administrativos y aplicaciones
-                                </p>
-								<label>
-									{{ form.document_types.errors }}
-								</label>
-							</div>
-                            <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="form-group" id="view_password" hidden>
+                            <div class="col-md-offset-2 col-md-4 col-sm-6 col-xs-12">
 								<label>
                                     Contraseña:
 								</label>
@@ -76,7 +63,6 @@
 									{{ form.password.errors }}
 								</label>
 							</div>
-
                         </div>
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-8 text-right">
@@ -98,16 +84,22 @@
         </div>
     </div>
 {% endblock %}
-{% block css %}
-    {{ block.super }}
-    <link href="{% static 'app/css/chosen/bootstrap-chosen.css' %}" rel="stylesheet">
-{% endblock %}
 {% block javascript %}
     {{ block.super }}
-    <script  src="{% static 'app/js/chosen/chosen.jquery.js' %}"></script>
     <script>
         $(document).ready(function(){
-            $('.chosen-select').chosen({width: "100%"});
+            var eject_view = function (){
+                var role = $("#id_role").val();
+                if(role!== '3')
+                {
+                    $("#view_password").attr('hidden', '');
+                    $("#id_password").val('');
+                }else{
+                    $("#view_password").removeAttr('hidden');
+                }
+            };
+            $("#id_role").change(eject_view);
+            eject_view();
         });
     </script>
 {% endblock %}

@@ -90,6 +90,15 @@
                                         {% endif %}
                                     </td>
                                     <td class="text-center">
+                                        {% if allowed_user.role != 1 %}
+                                            <a class="btn btn-outline btn-xs btn-primary"
+                                               type="button" data-toggle="tooltip"
+                                               data-placement="top"
+                                               title data-original-title="Tipos de documentos permitidos"
+                                               href="{% url 'allowed_user_docs_type' allowed_user.id %}">
+                                                    <i class="fa fa-th-list"></i>
+                                            </a>
+                                        {% endif %}
                                         <a class="btn btn-outline btn-xs btn-primary"
                                            type="button" data-toggle="tooltip"
                                            data-placement="top"

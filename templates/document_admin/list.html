@@ -66,7 +66,7 @@
                                     <td>{{ document.expedition|date:"SHORT_DATE_FORMAT" }}</td>
                                     <td>{{ document.identification_applicant }} - {{ document.name_applicant  }}</td>
                                     <td>{{ document.email_applicant }}</td>
-                                    <td>{{ document.document_type.name }}</td>
+                                    <td>{{ document.doc_type_user.document_type.name }}</td>
                                     <td class="text-center">
                                         {% if document.enable%}
                                             <a class="btn btn-outline btn-xs btn-primary"

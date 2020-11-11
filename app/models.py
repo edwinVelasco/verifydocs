@@ -2,6 +2,7 @@ from django.db import models
 from gdstorage.storage import GoogleDriveStorage
 from django.core.validators import EmailValidator
 from app.validators import validate_domainonly_email
+from django.contrib.auth.models import User
 
 # Define Google Drive Storage
 gd_storage = GoogleDriveStorage()
@@ -84,8 +85,6 @@ class UserMail(models.Model):
     updated = models.DateTimeField(auto_now=True,
                                    verbose_name='Última modificación')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Creado')
-    document_types = models.ManyToManyField(
-        DocumentType, related_name="verifydocs_user_doc_type")
     password = models.CharField('Contraseña', max_length=128, null=True,
                                 blank=True)
 
@@ -101,6 +100,44 @@ class UserMail(models.Model):
     def update_active(self):
         self.active = not self.active
         self.save()
+        try:
+            user = User.objects.get(username=self.email)
+            user.is_active = self.active
+            user.save()
+        except User.DoesNotExist:
+            pass
+
+
+class DocumentTypeUserMail(models.Model):
+    document_type = models.ForeignKey(DocumentType, on_delete=models.PROTECT,
+                                      verbose_name='Tipo de documento de usuario',
+                                      null=False, blank=False,
+                                      related_name='doc_types_user_mail')
+    usermail = models.ForeignKey(UserMail, on_delete=models.PROTECT,
+                                 verbose_name='Usuario',
+                                 null=False, blank=False,
+                                 related_name='user_doc_types_user_mail')
+    active = models.BooleanField(default=True)
+    updated = models.DateTimeField(auto_now=True,
+                                   null=False,
+                                   verbose_name='Última modificación')
+    created = models.DateTimeField(auto_now_add=True,
+                                   null=False,
+                                   verbose_name='Creado')
+
+    def update_active(self):
+        self.active = not self.active
+        self.save()
+
+    class Meta:
+        verbose_name = 'Tipo de documento de usuario'
+        verbose_name_plural = 'Tipos de documento de usuarios'
+        ordering = ('-created',)
+        unique_together = (('document_type', 'usermail'),)
+        db_table = 'verifydocs_user_doc_type'
+
+    def __str__(self):
+        return f'{self.document_type.name.capitalize()}'
 
 
 class Document(models.Model):
@@ -123,10 +160,10 @@ class Document(models.Model):
 
     created = models.DateTimeField(auto_now_add=True, verbose_name='Creado')
 
-    document_type = models.ForeignKey(DocumentType, on_delete=models.PROTECT,
+    doc_type_user = models.ForeignKey(DocumentTypeUserMail,
+                                      on_delete=models.PROTECT,
                                       verbose_name='Tipo de documento',
                                       related_name='dependence_docs_type')
-    user_mail = models.EmailField(max_length=45, default='')
     enable = models.BooleanField(default=True)
 
     class Meta:
@@ -138,4 +175,7 @@ class Document(models.Model):
     def update_active(self):
         self.enable = not self.enable
         self.save()
+
+
+
 
