@@ -26,7 +26,7 @@ class PDFTools:
     height = 41
     # height = 61.5
 
-    def __init__(self, pos_x, pos_y, scale=42):
+    def __init__(self, pos_x=None, pos_y=None, scale=42):
         self.pos_x = float(pos_x)
         self.pos_y = float(pos_y)
         self.width = float(scale or 42)
@@ -151,8 +151,8 @@ class PDFTools:
             out_file = self.__create_pdf_file_qr(ref=ref, file=file)
             if out_file:
                 fv = open(default_storage.path(
-                    f'{settings.MEDIA_ROOT}/tmp/{ref}_out.pdf'), 'rb').read()
-                stream_str = io.BytesIO(fv)
+                    f'{settings.MEDIA_ROOT}/tmp/{ref}_out.pdf'), 'rb')
+                stream_str = io.BytesIO(fv.read())
                 text_file = InMemoryUploadedFile(
                     stream_str, 'file_qr', f'{file_doc}', 'application/pdf',
                     stream_str.getvalue().__sizeof__(), None, dict()
@@ -168,7 +168,8 @@ class PDFTools:
         ref, file = self.__create_file_disk(file_doc=file_doc, user=user)
         security_app = SecurityApp(pdf_tools=self)
         self.__remove_files_temp(ref=ref)
-        return security_app.create_hash_256_qr(file=file.read())
+        stream_str = io.BytesIO(file.read())
+        return security_app.create_hash_256_qr(file=file.read()), stream_str.getvalue()
 
 
 

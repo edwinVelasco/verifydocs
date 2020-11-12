@@ -45,7 +45,6 @@ class SecurityApp:
             my_canvas = canvas.Canvas(f'{settings.MEDIA_ROOT}/tmp/{ref}.pdf',
                                       pagesize=letter)
             drawing = svg2rlg(f'{settings.MEDIA_ROOT}/tmp/{ref}.svg')
-            print(drawing.getBounds())
             renderPDF.draw(drawing, my_canvas, self.pdf_tools.pos_x,
                            self.pdf_tools.pos_y)
             self.pdf_tools.add_text(my_canvas, 'Verifique el documento en',

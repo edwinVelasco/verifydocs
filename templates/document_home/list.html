@@ -25,7 +25,7 @@
                     {{ form_search.applicant }}
                 </div>
                 <div class="form-group">
-                    {{ form_search.document_type }}
+                    {{ form_search.doc_type_user }}
                 </div>
                 <div class="form-group">
                     {{ form_search.expedition }}
@@ -73,7 +73,7 @@
                                     <td>{{ document.expedition|date:"SHORT_DATE_FORMAT" }}</td>
                                     <td>{{ document.identification_applicant }} - {{ document.name_applicant  }}</td>
                                     <td>{{ document.email_applicant }}</td>
-                                    <td>{{ document.document_type.name }}</td>
+                                    <td>{{ document.doc_type_user.document_type.name }}</td>
                                     <td class="text-center">
                                         <a class="btn btn-outline btn-xs btn-primary"
                                            type="button" data-toggle="tooltip"

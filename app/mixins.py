@@ -1,7 +1,9 @@
 from django.shortcuts import redirect, reverse
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import UserMail
+from django.contrib.auth.models import User
+
+from app.models import UserMail
 
 
 class UserMixin(LoginRequiredMixin):
@@ -15,10 +17,23 @@ class UserMixin(LoginRequiredMixin):
             messages.warning(request=request,
                              message=f'El correo electrónico '
                                      f'{request.user.email} no tiene acceso')
+            try:
+                user = User.objects.filter(email=request.user.email).last()
+                user.delete()
+            except User.DoesNotExist:
+                pass
+
             return redirect(reverse('logout'))
         user_email = user_email.first()
         if user_email.role == 1:
             return redirect(reverse('admon'))
+
+        if user_email.role == 3:
+            messages.warning(request=request,
+                             message=f'El correo electrónico '
+                                     f'{request.user.email} no tiene acceso, '
+                                     f'Es de un usuario de aplicación')
+            return redirect(reverse('logout'))
         return super().dispatch(request, *args, **kwargs)
 
 

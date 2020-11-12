@@ -1,27 +1,42 @@
 from django.shortcuts import render
 import traceback
+import base64
 from django import forms
 from django.views.generic.base import View
 from django.urls.base import reverse_lazy
-from django.urls import reverse as urls_reverse
 from urllib.parse import urlencode
-from django.shortcuts import redirect, HttpResponse, render
-from django.views.generic import CreateView, ListView, DeleteView, FormView
+from django.shortcuts import HttpResponse
+from django.views.generic import CreateView, ListView
 from django.views.generic import UpdateView, TemplateView
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.core.paginator import Paginator, InvalidPage
+from django.contrib.auth import logout
+from django.core.paginator import InvalidPage
 from django.db.models import Q
 from django.http import Http404, FileResponse
 from django.utils.translation import gettext as _
+from django.contrib.auth.models import User
 
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.views import APIView
 
 from app.forms import VerifyDocsForm, DependenceForm, UserMailForm
 from app.forms import UserMailSearchForm, DependenceSearchForm
 from app.forms import DocumentTypeSearchForm, DocumentTypeForm
 from app.forms import DocumentSearchForm, DocumentTypeQRForm, DocumentForm
+from app.forms import DocumentTypeUserMailForm, DocumentSearchAdminForm
+
+from app.serializers import DocumentSerializer, DocumentTypeUserMailSerializer
+from app.serializers import DocumentListSerializer
 
 from app.models import DocumentType, Dependence, UserMail, Document
+from app.models import DocumentTypeUserMail
 
 # Create your views here.
 from tools.PDFTools import PDFTools
@@ -343,10 +358,38 @@ class UserMailCreateView(UserAdminMixin, CreateView):
     form_class = UserMailForm
 
     def get_success_url(self):
+        user = self.model.objects.last()
+        user.password = ''
+        user.save()
         messages.success(self.request,
                          'Usuario registrado correctamente')
         return get_url_to_redirect(self.request, 'filter',
                                    'allowed_users')
+
+    def form_valid(self, form):
+        data_post = {
+            'encoding': 'utf-8',
+            'csrfmiddlewaretoken': self.request.POST['csrfmiddlewaretoken'],
+            'email': self.request.POST['email'],
+            'role': self.request.POST['role'],
+            'active': self.request.POST['active'],
+            'document_types': self.request.POST.get('document_types', []),
+            'password': '12345678'
+        }
+        password = self.request.POST['password']
+        if password:
+            try:
+                u = User.objects.get(username=self.request.POST['email'])
+                u.set_password(password)
+                u.save()
+            except User.DoesNotExist:
+                user = User.objects.create_user(data_post['email'], data_post['email'],
+                                                password=password).save()
+
+        form_extra = UserMailForm(data=data_post)
+        if form_extra.is_valid():
+            return super(UserMailCreateView, self).form_valid(form_extra)
+        return super(UserMailCreateView, self).form_valid(form)
 
 
 class UserMailUpdateView(UserAdminMixin, UpdateView):
@@ -355,10 +398,41 @@ class UserMailUpdateView(UserAdminMixin, UpdateView):
     form_class = UserMailForm
 
     def get_success_url(self):
+        user = self.get_object()
+        user.password = ''
+        user.save()
         messages.success(self.request,
                          'Usuario actualizado correctamente')
         return get_url_to_redirect(self.request, 'filter',
                                    'allowed_users')
+
+    def form_valid(self, form):
+        usermail = self.get_object()
+        data_post = {
+            'encoding': 'utf-8',
+            'csrfmiddlewaretoken': self.request.POST['csrfmiddlewaretoken'],
+            'email': self.request.POST['email'],
+            'role': self.request.POST['role'],
+            'active': self.request.POST['active'],
+            'password': '12345678'
+        }
+        password = self.request.POST['password']
+        try:
+            user = User.objects.get(username=usermail.email)
+            if password:
+                user.set_password(password)
+            if usermail.email != self.request.POST['email']:
+                user.username = self.request.POST['email']
+                user.email = self.request.POST['email']
+                user.save()
+        except User.DoesNotExist:
+            user = User.objects.create_user(data_post['email'],
+                                            data_post['email'],
+                                            password=password).save()
+        form_extra = UserMailForm(data=data_post)
+        if form_extra.is_valid():
+            return super(UserMailUpdateView, self).form_valid(form_extra)
+        return super(UserMailUpdateView, self).form_valid(form)
 
 
 class UserMailListView(UserAdminMixin, ListView):
@@ -440,6 +514,49 @@ class UserMailActiveView(UserAdminMixin, UpdateView):
                                             'allowed_users'))
 
 
+class DocumentTypeUserMailView(UserAdminMixin, TemplateView):
+    model = DocumentTypeUserMail
+    template_name = 'allowed_user/docs_type.html'
+    form_class = DocumentTypeUserMailForm
+
+    def get_context_data(self, **kwargs):
+        useremail = UserMail.objects.get(id=kwargs.get('user'))
+        list_docs_type = self.model.objects.filter(usermail=useremail)
+        context = super(DocumentTypeUserMailView,
+                        self).get_context_data(**kwargs)
+        context['list_docs_type'] = list_docs_type
+        context['form'] = self.form_class()
+        context['usermail'] = kwargs.get('user')
+        return context
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(data=request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(self.request,
+                             'Tipo de documento asociado correctamente')
+        else:
+            if '__all__' in form.errors:
+                messages.warning(
+                    self.request,
+                    'El tipo de documento ya se encuentra asociado')
+        return redirect(reverse_lazy('allowed_user_docs_type',
+                                     args=(self.kwargs['user'],)))
+
+
+class DocumentTypeUserMailActiveView(UserAdminMixin, UpdateView):
+    model = DocumentTypeUserMail
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_object()
+        obj.update_active()
+        messages.success(self.request,
+                         'El Tipo de documento para el usuario ha sido '
+                         'actualizado')
+        return redirect(reverse_lazy('allowed_user_docs_type',
+                                     args=(self.kwargs['user'],)))
+
+
 class DocumentListView(UserMixin, ListView):
     model = Document
     template_name = 'document_home/list.html'
@@ -450,7 +567,7 @@ class DocumentListView(UserMixin, ListView):
         # clear_data_session(self.request, 'filter')
         load_data_session(self.request, self.request.GET, 'filter')
         if self.request.GET.get('id', '') == '' and \
-                self.request.GET.get('document_type', '') == '' and \
+                self.request.GET.get('doc_type_user', '') == '' and \
                 self.request.GET.get('is_active', '') == '' and \
                 self.request.GET.get('applicant', '') == '' and \
                 self.request.GET.get('expedition', '') == '':
@@ -478,9 +595,9 @@ class DocumentListView(UserMixin, ListView):
 
             if self.request.GET.get('id', '') != '':
                 params['id'] = self.request.GET.get('id', '')
-            if self.request.GET.get('document_type', '') != '':
-                params['document_type_id'] = int(self.request.GET.get(
-                    'document_type', ''))
+            if self.request.GET.get('doc_type_user', '') != '':
+                params['doc_type_user_id'] = int(self.request.GET.get(
+                    'doc_type_user', ''))
             if docs:
                 return docs.filter(**params)
             return self.model.objects.filter(**params)
@@ -518,6 +635,14 @@ class DocumentListView(UserMixin, ListView):
         context = super(DocumentListView, self) \
             .get_context_data(**kwargs)
         context['form_search'] = DocumentSearchForm(data=self.request.GET)
+        user_email = UserMail.objects.get(email=self.request.user.email)
+        context['form_search'].fields['doc_type_user'] = forms.ModelChoiceField(
+            widget=forms.Select(
+                attrs={'class': 'form-control'}
+            ),
+            queryset=DocumentTypeUserMail.objects.filter(usermail=user_email),
+            empty_label='Seleccione tipo de documento'
+        )
         context['paginator_params'] = self.get_params_pagination()
         return context
 
@@ -568,7 +693,7 @@ class DocumentAdminListView(UserAdminMixin, ListView):
             if self.request.GET.get('id', '') != '':
                 params['id'] = self.request.GET.get('id', '')
             if self.request.GET.get('document_type', '') != '':
-                params['document_type_id'] = int(self.request.GET.get(
+                params['doc_type_user__document_type_id'] = int(self.request.GET.get(
                     'document_type', ''))
             if docs:
                 return docs.filter(**params)
@@ -606,7 +731,7 @@ class DocumentAdminListView(UserAdminMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(DocumentAdminListView, self) \
             .get_context_data(**kwargs)
-        context['form_search'] = DocumentSearchForm(data=self.request.GET)
+        context['form_search'] = DocumentSearchAdminForm(data=self.request.GET)
         context['paginator_params'] = self.get_params_pagination()
         return context
 
@@ -646,11 +771,12 @@ class DocumentCreateView(UserMixin, CreateView):
         user_email = UserMail.objects.filter(email=self.request.user.email,
                                              active=True).last()
         context = super(DocumentCreateView, self).get_context_data(**kwargs)
-        context['form'].fields['document_type'] = forms.ModelChoiceField(
+        context['form'].fields['doc_type_user'] = forms.ModelChoiceField(
             widget=forms.Select(
                 attrs={'class': 'form-control'}
             ),
-            queryset=user_email.document_types.filter(active=True),
+            queryset=DocumentTypeUserMail.objects.filter(usermail=user_email,
+                                                         active=True),
             empty_label='Seleccione tipo de documento'
         )
         return context
@@ -659,37 +785,174 @@ class DocumentCreateView(UserMixin, CreateView):
         data_post = {
             'encoding': 'utf-8',
             'csrfmiddlewaretoken': self.request.POST['csrfmiddlewaretoken'],
-            'user_mail': self.request.POST['user_mail'],
             'identification_applicant': self.request.POST['identification_applicant'],
             'name_applicant': self.request.POST['name_applicant'],
             'email_applicant': self.request.POST['email_applicant'],
             'expedition': self.request.POST['expedition'],
-            'document_type': self.request.POST['document_type']
+            'doc_type_user': self.request.POST['doc_type_user']
         }
-        doc_type = DocumentType.objects.get(id=int(data_post['document_type']))
+        doc_type_user = DocumentTypeUserMail.objects.get(
+            id=int(data_post['doc_type_user']))
         files = dict()
         if 'file_original' in self.request.FILES:
             files['file_original'] = self.request.FILES['file_original']
 
-            pdf_tool = PDFTools(pos_x=doc_type.pos_x, pos_y=doc_type.pos_y,
-                                scale=doc_type.scale)
+            pdf_tool = PDFTools(pos_x=doc_type_user.document_type.pos_x,
+                                pos_y=doc_type_user.document_type.pos_y,
+                                scale=doc_type_user.document_type.scale)
             out_file, sha_256, token = pdf_tool.create_main_qr(
                 file_doc=self.request.FILES['file_original'],
                 user=self.request.user.id)
 
             data_post['token'] = token
             data_post['hash'] = sha_256
-            data_post['hash_qr'] = pdf_tool.create_hash_qr(
+            data_post['hash_qr'], _ = pdf_tool.create_hash_qr(
                 file_doc=out_file, user=self.request.user.id)
 
             files['file_qr'] = out_file
-        form_extra = DocumentForm(data=data_post, files=files)
-        if form_extra.is_valid():
-            return super(DocumentCreateView, self).form_valid(form_extra)
+            form_extra = DocumentForm(data=data_post, files=files)
+            if form_extra.is_valid():
+                return super(DocumentCreateView, self).form_valid(form_extra)
 
         messages.error(self.request,
                          'El documento ya se encuantra registrado')
         return render(self.request, self.template_name, {'user': self.request.user,
                                                          'form': form})
         # return redirect(reverse_lazy('document_create'), form=form)
+
+# --------------------------------- Applications ------------------------------
+
+
+class TypeDocumentAplicationView(generics.ListAPIView):
+    serializer_class = DocumentTypeUserMailSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+    def get(self, request, *args, **kwargs):
+        user_email = UserMail.objects.filter(email=request.user.email,
+                                             active=True).last()
+        serializer = self.serializer_class(
+            DocumentTypeUserMail.objects.filter(usermail=user_email,
+                                                active=True), many=True)
+        return Response(serializer.data)
+
+
+class DocumentCreateApplicationView(generics.CreateAPIView):
+    serializer_class = DocumentSerializer
+    permission_classes = (IsAuthenticated, )
+    authentication_classes = (TokenAuthentication, )
+
+    def post(self, request, *args, **kwargs):
+        data_post = {
+            'identification_applicant': request.data[
+                'identification_applicant'],
+            'name_applicant': request.data['name_applicant'],
+            'email_applicant': request.data['email_applicant'],
+            'expedition': request.data['expedition'],
+            'doc_type_user': request.data['doc_type_user']
+        }
+        user_email = UserMail.objects.filter(email=request.user.email).last()
+        doc_type_user = DocumentTypeUserMail.objects.get(
+            id=int(data_post['doc_type_user']))
+        doc_types_user = DocumentTypeUserMail.objects.filter(
+            usermail=user_email, active=True)
+        if not doc_type_user in doc_types_user:
+            return Response(
+                dict(error='No tiene permiso para registrar este tipo '
+                           'de documento'),
+                status=status.HTTP_400_BAD_REQUEST)
+
+        if 'file_original' in request.data:
+            data_post['file_original'] = request.data['file_original']
+            pdf_tool = PDFTools(pos_x=doc_type_user.document_type.pos_x,
+                                pos_y=doc_type_user.document_type.pos_y,
+                                scale=doc_type_user.document_type.scale)
+            out_file, sha_256, token = pdf_tool.create_main_qr(
+                file_doc=self.request.FILES['file_original'],
+                user=self.request.user.id)
+
+            data_post['token'] = token
+            data_post['hash'] = sha_256
+            data_post['hash_qr'], file = pdf_tool.create_hash_qr(
+                file_doc=out_file, user=self.request.user.id)
+            data_post['file_qr'] = out_file
+
+            serializer = self.serializer_class(data=data_post)
+            if serializer.is_valid():
+                serializer.save()
+                response = HttpResponse(status=status.HTTP_201_CREATED,
+                                        content_type='application/pdf')
+                response['mimetype'] = 'application/pdf'
+                response['Content-Disposition'] = f'attachment; filename={out_file}'
+
+                response.write(file)
+                return response
+            if 'file_original' in serializer.errors:
+                return Response(dict(error='El archivo en PDF es requrido'),
+                                status=status.HTTP_400_BAD_REQUEST)
+            if 'token' in serializer.errors or 'hash_qr' in serializer.errors:
+                return Response(
+                    dict(error='El archivo ya se encuentra registrado'),
+                    status=status.HTTP_400_BAD_REQUEST)
+        return Response(dict(error='No se encuentra el archivo PDF'),
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+class DocumentListApplicationView(generics.ListAPIView):
+    serializer_class = DocumentListSerializer
+    permission_classes = (IsAuthenticated, )
+    authentication_classes = (TokenAuthentication, )
+
+    def get(self, request, *args, **kwargs):
+        user_email = UserMail.objects.get(email=request.user.email)
+        doc_types_user = DocumentTypeUserMail.objects.filter(
+            usermail=user_email)
+        docs = Document.objects.filter(doc_type_user__in=doc_types_user)
+        serializer = self.serializer_class(
+            docs, many=True)
+        return Response(serializer.data)
+
+
+class LogoutApplicationView(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+    def post(self, request, *args, **kwargs):
+        request.user.auth_token.delete()
+        logout(request)
+        return Response('Cierre correcto', status=status.HTTP_200_OK)
+
+
+class LoginApplicationTestPostmanView(ObtainAuthToken):
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'access_token': token.key})
+
+
+class DownloadFileApplicationView(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+    def get(self, request, *args, **kwargs):
+        try:
+            document = Document.objects.get(id=kwargs.get('pk'))
+            doc_type = document.doc_type_user.document_type
+            pdf_tool = PDFTools(pos_x=doc_type.pos_x, pos_y=doc_type.pos_y,
+                                scale=doc_type.scale)
+            _, file = pdf_tool.create_hash_qr(
+                file_doc=document.file_qr, user=request.user.id)
+            response = HttpResponse(status=status.HTTP_201_CREATED,
+                                    content_type='application/pdf')
+            response['mimetype'] = 'application/pdf'
+            response['Content-Disposition'] = f'attachment; filename={document.file_original}'
+            response.write(file)
+            return response
+        except Document.DoesNotExist:
+            return Response(dict(error='No se encuentra el archivo PDF'),
+                            status=status.HTTP_400_BAD_REQUEST)
+
 

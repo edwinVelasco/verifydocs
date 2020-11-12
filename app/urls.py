@@ -1,6 +1,8 @@
 from django.urls import path
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LogoutView
+from rest_framework.authtoken import views
+
 from app.views import HomeView, IndexView, AdminHomeView, \
     DocumentAdminListView, DocumentActiveView
 from app.views import DocumentTypeSettingQRView, DependenceListView
@@ -10,6 +12,12 @@ from app.views import DependenceCreateView, DependenceUpdateView
 from app.views import UserMailUpdateView, UserMailListView, UserMailCreateView
 from app.views import UserMailActiveView, DocumentListView, DocumentCreateView
 from app.views import DocumentTypeSettingQRPreviewView, DependenceActiveView
+from app.views import DocumentCreateApplicationView, LogoutApplicationView
+from app.views import TypeDocumentAplicationView, DocumentListApplicationView
+from app.views import LoginApplicationTestPostmanView
+from app.views import DownloadFileApplicationView, DocumentTypeUserMailView
+from app.views import DocumentTypeUserMailActiveView
+
 
 urlpatterns = [
     path('', IndexView.as_view(),
@@ -57,6 +65,12 @@ urlpatterns = [
     path('home/allowed_users/<int:pk>/active/',
          UserMailActiveView.as_view(),
          name='allowed_user_update_active'),
+    path('home/allowed_users/<int:user>/documet_types/',
+         DocumentTypeUserMailView.as_view(),
+         name='allowed_user_docs_type'),
+    path('home/allowed_users/<int:user>/documet_types/<int:pk>/active/',
+         DocumentTypeUserMailActiveView.as_view(),
+         name='allowed_user_docs_type_active'),
 
 
     # logout_then_login
@@ -72,5 +86,19 @@ urlpatterns = [
     path('documents/', DocumentListView.as_view(), name='documents_home'),
     path('document_create/', DocumentCreateView.as_view(),
          name='document_create'),
+
+    # aplications v1
+    path('aplication/v1/login/', views.obtain_auth_token),
+    path('aplication/v1/login_t/', LoginApplicationTestPostmanView.as_view()),
+    path('aplication/v1/logout/', LogoutApplicationView.as_view()),
+
+    path('application/v1/type_document_list/',
+         TypeDocumentAplicationView.as_view()),
+    path('application/v1/document_create/',
+         DocumentCreateApplicationView.as_view()),
+    path('application/v1/document_list/',
+         DocumentListApplicationView.as_view()),
+    path('application/v1/document/<int:pk>/download/',
+         DownloadFileApplicationView.as_view()),
 
 ]

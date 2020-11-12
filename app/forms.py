@@ -1,9 +1,10 @@
 from django import forms
 from django.forms import ModelForm as BaseModelForm
+from django.contrib.auth.models import User
 
 from app.models import Dependence, UserMail
 
-from app.models import DocumentType, Document
+from app.models import DocumentType, Document, DocumentTypeUserMail
 
 
 class VerifyDocsForm(forms.Form):
@@ -184,13 +185,11 @@ class UserMailForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(UserMailForm, self).__init__(*args, **kwargs)
         self.fields['email'].required = True
-        self.fields['document_types'].required = False
-        self.fields['document_types'].queryset = DocumentType.objects.filter(
-            active=True)
+        self.fields['password'].required = False
 
     class Meta:
         model = UserMail
-        fields = ('email', 'role', 'active', 'document_types')
+        fields = ('email', 'role', 'active', 'password')
 
         error_messages = {
             'email': {
@@ -213,11 +212,9 @@ class UserMailForm(forms.ModelForm):
                 attrs={'class': 'form-control'}
             ),
             'active': forms.HiddenInput(),
-            'document_types': forms.SelectMultiple(
-                attrs={'class': 'chosen-select',
-                       'multiple': 'multiple',
-                       'data-placeholder': 'Seleccionar Tipos de documentos'},
-
+            'password': forms.PasswordInput(
+                attrs={'class': 'form-control',
+                       'placeholder': 'Contraseña, Solo para aplicaciones'}
             )
         }
 
@@ -226,11 +223,29 @@ class UserMailForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(UserMailForm, self).clean()
-        document_types = cleaned_data.get("document_types")
+        password = cleaned_data.get("password")
+        email = cleaned_data.get("email")
+
         role = cleaned_data.get("role")
-        if int(role) == 1 and document_types:
-            self.add_error('document_types',
-                           'El usuario administrador no debe tener documentos')
+
+        if int(role) == 3:
+            try:
+                user = User.objects.get(username=email)
+            except User.DoesNotExist:
+                if not password:
+                    self.add_error('password',
+                                   'El usuario de aplicación debe tener '
+                                   'una contraseña')
+        else:
+            try:
+                user = User.objects.get(username=email)
+                user.delete()
+            except User.DoesNotExist:
+                pass
+            finally:
+                if password:
+                    self.add_error('password',
+                                   'El usuario no requiere contraseña')
         return cleaned_data
 
 
@@ -259,6 +274,43 @@ class UserMailSearchForm(forms.Form):
     )
 
 
+class DocumentTypeUserMailForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(DocumentTypeUserMailForm, self).__init__(*args, **kwargs)
+        self.fields['document_type'].required = True
+        self.fields['usermail'].required = True
+        self.fields['active'].required = True
+        self.fields['document_type'].queryset = DocumentType.objects.filter(
+            active=True)
+
+    class Meta:
+        model = DocumentTypeUserMail
+        fields = ('usermail', 'active', 'document_type')
+
+        error_messages = {
+            '__all__': {
+                'unique_together': 'El tipo de documento ya se encuentra '
+                                   'registrado al usuario'
+            },
+            'usermail': {
+                'required': "El correo es requerido."
+            },
+            'document_type': {
+                'required': "El tipo de documento es requerido",
+            },
+        }
+
+        widgets = {
+            'usermail': forms.HiddenInput(),
+            'active': forms.HiddenInput(),
+            'document_type': forms.Select(
+                attrs={'class': 'form-control',
+                       'data-placeholder': 'Seleccionar Tipo de documento'},
+
+            )
+        }
+
+
 class DocumentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(DocumentForm, self).__init__(*args, **kwargs)
@@ -273,15 +325,14 @@ class DocumentForm(forms.ModelForm):
         self.fields['hash_qr'].required = False
         self.fields['file_qr'].required = False
 
-        self.fields['document_type'].required = True
-        self.fields['document_type'].empty_label = 'Seleccione tipo de documento'
+        self.fields['doc_type_user'].required = True
+        self.fields['doc_type_user'].empty_label = 'Seleccione tipo de documento'
 
     class Meta:
         model = Document
         fields = ('identification_applicant', 'name_applicant',
                   'email_applicant', 'expedition', 'file_original',
-                  'document_type', 'user_mail', 'token', 'hash', 'file_qr',
-                  'hash_qr')
+                  'doc_type_user', 'token', 'hash', 'file_qr', 'hash_qr')
 
         error_messages = {
             'identification_applicant': {
@@ -300,7 +351,7 @@ class DocumentForm(forms.ModelForm):
             'file_original': {
                 'required': "El documento en PDF es requerido.",
             },
-            'document_type': {
+            'doc_type_user': {
                 'required': "El tipo de documento es requerido.",
             },
             'hash_qr': {
@@ -335,11 +386,10 @@ class DocumentForm(forms.ModelForm):
             'file_original': forms.FileInput(
                 attrs={'accept': '.pdf,.PDF'}
             ),
-            'document_type': forms.Select(
-                attrs={'class': 'form-control chosen-select'}
+            'doc_type_user': forms.Select(
+                attrs={'class': 'form-control'}
             ),
             'enable': forms.HiddenInput(),
-            'user_mail': forms.HiddenInput(),
             'token': forms.HiddenInput(),
             'hash': forms.HiddenInput(),
             'hash_qr': forms.HiddenInput(),
@@ -364,6 +414,41 @@ class DocumentForm(forms.ModelForm):
 
 
 class DocumentSearchForm(forms.Form):
+    id = forms.CharField(
+        widget=forms.NumberInput(
+            attrs={
+                'class': 'form-control col-md-2', 'placeholder': 'ID',
+                'autocomplete': 'off'
+            }
+        )
+    )
+
+    applicant = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control', 'placeholder': 'Solicitante',
+            'autocomplete': 'off'
+        })
+    )
+    expedition = forms.DateField(
+        widget=forms.DateInput(attrs={'class': 'form-control',
+                                      'placeholder': 'Expedición',
+                                      'readonly': ''}
+                               )
+    )
+    doc_type_user = forms.ModelChoiceField(
+        queryset=DocumentTypeUserMail.objects.all(),
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'autocomplete': 'off'
+        }),
+        empty_label='Tipos de documento',
+    )
+    is_enable = forms.BooleanField(
+        widget=forms.CheckboxInput()
+    )
+
+
+class DocumentSearchAdminForm(forms.Form):
     id = forms.CharField(
         widget=forms.NumberInput(
             attrs={
