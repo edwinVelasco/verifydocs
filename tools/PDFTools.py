@@ -59,6 +59,31 @@ class PDFTools:
             return encoded_string
         return base64.b64encode(buffer.getvalue())
 
+    def add_watermark(self, original_pdf):
+        buffer = BytesIO()
+        reader = PdfFileReader(original_pdf)
+        page = reader.getPage(0)
+        pdf = canvas.Canvas(buffer, pagesize=letter)
+        self.add_watermark_img(pdf, page.artBox.upperRight[0],
+                               page.artBox.upperRight[1])
+        pdf.setTitle('Copia no valida')
+        pdf.save()
+        buffer.seek(0)
+        reader2 = PdfFileReader(buffer)
+        waterpage = reader2.getPage(0)
+        page.mergePage(waterpage)
+        writer = PdfFileWriter()
+        writer.addPage(page)
+        for pageNum in range(1, reader.numPages):
+            pageObj = reader.getPage(pageNum)
+            writer.addPage(pageObj)
+        resultFile = open(f'temp/mark.pdf', 'wb')
+        writer.write(resultFile)
+        resultFile.close()
+        pdf = open('temp/mark.pdf', 'rb')
+        encoded_string = base64.b64encode(pdf.read())
+        return encoded_string.decode()
+
     def add_img(self, img, pdf):
         pdf.drawImage(f'{settings.STATIC_ROOT}/app/rsc/img/QR.png',
                       self.pos_x,
@@ -67,6 +92,10 @@ class PDFTools:
         url = WEB_CLIENT_URL
         self.add_text(pdf, text, self.pos_y-8)
         self.add_text(pdf, url, self.pos_y-16)
+
+    def add_watermark_img(self, pdf, width, height):
+        pdf.drawImage(f'{settings.STATIC_ROOT}/app/rsc/img/cnv.png', 0, 0,
+                      width, height, mask='auto')
 
     def add_text(self, pdf, line, pos_y):
         text_size = stringWidth(line, "Helvetica", 6)
@@ -170,6 +199,16 @@ class PDFTools:
         self.__remove_files_temp(ref=ref)
         stream_str = io.BytesIO(file.read())
         return security_app.create_hash_256_qr(file=file.read()), stream_str.getvalue()
+
+    def get_hash_document(self, file_doc, user):
+        ref = ''
+        try:
+            ref, file = self.__create_file_disk(file_doc=file_doc, user=user)
+            io.BytesIO(file.read())
+            return SecurityApp(None).create_hash_256_qr(file=file.read())
+        finally:
+            if ref:
+                self.__remove_files_temp(ref)
 
 
 

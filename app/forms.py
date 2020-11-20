@@ -2,12 +2,41 @@ from django import forms
 from django.forms import ModelForm as BaseModelForm
 from django.contrib.auth.models import User
 
-from app.models import Dependence, UserMail
+from app.models import Dependence, UserMail, VerificationRequest
 
 from app.models import DocumentType, Document, DocumentTypeUserMail
 
 
-class VerifyDocsForm(forms.Form):
+class VerifyDocsForm(forms.ModelForm):
+    class Meta:
+        model = VerificationRequest
+        fields = ('verifier_name', 'verifier_email')
+        error_messages = {
+            'verifier_name': {
+                'required': 'El nombre del verificador es necesario'
+            },
+            'verifier_email': {
+                'required': 'El correo electrónico del verificador es necesario'
+            }
+        }
+
+        widgets = {
+            'verifier_name': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Nombre de empresa/persona solicitante',
+                    'style': 'border-top-left-radius: 4px;border-bottom-left-radius: 4px; width: 100%;'
+                }
+            ),
+            'verifier_email': forms.EmailInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Correo electrónico',
+                    'style': 'border-top-left-radius: 4px;border-bottom-left-'
+                             'radius: 4px; width: 100%;'
+                }
+            ),
+        }
     code = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -15,8 +44,25 @@ class VerifyDocsForm(forms.Form):
                 'placeholder': 'Código seguro de verificación',
                 'style': 'border-top-left-radius: 4px;border-bottom-left-radius: 4px;'
             }
-        )
+        ), required=False
     )
+
+    file = forms.FileField(
+        widget=forms.FileInput(
+            attrs={
+                'hidden': True,
+                'accept': '.pdf,.PDF'
+            }
+        ), required=False
+    )
+
+    # def clean(self):
+    #     if not self.cleaned_data.get('file') and \
+    #             not self.cleaned_data.get('code'):
+    #         self.add_error('code', 'Debe ingresar el código identificativo '
+    #                                'del documento o cargar el documento.')
+
+
 
 
 class DocumentTypeForm(forms.ModelForm):
@@ -320,6 +366,7 @@ class DocumentForm(forms.ModelForm):
         self.fields['expedition'].required = True
         self.fields['file_original'].required = True
 
+        self.fields['expiration'].required = False
         self.fields['token'].required = False
         self.fields['hash'].required = False
         self.fields['hash_qr'].required = False
@@ -332,7 +379,8 @@ class DocumentForm(forms.ModelForm):
         model = Document
         fields = ('identification_applicant', 'name_applicant',
                   'email_applicant', 'expedition', 'file_original',
-                  'doc_type_user', 'token', 'hash', 'file_qr', 'hash_qr')
+                  'doc_type_user', 'token', 'hash', 'file_qr', 'hash_qr',
+                  'expiration')
 
         error_messages = {
             'identification_applicant': {

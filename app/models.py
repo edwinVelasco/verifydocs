@@ -161,6 +161,7 @@ class Document(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name='Creado')
 
     doc_type_user = models.ForeignKey(DocumentTypeUserMail,
+                                      null=True,
                                       on_delete=models.PROTECT,
                                       verbose_name='Tipo de documento',
                                       related_name='dependence_docs_type')
@@ -175,6 +176,32 @@ class Document(models.Model):
     def update_active(self):
         self.enable = not self.enable
         self.save()
+
+
+class VerificationRequest(models.Model):
+    verifier_name = models.CharField(max_length=128, verbose_name='Nombre')
+    verifier_email = models.EmailField(verbose_name='Correo electrónico')
+    token = models.CharField(max_length=32, verbose_name='Token', null=True)
+    document = models.ForeignKey(Document, on_delete=models.PROTECT,
+                                 verbose_name='Documento', null=True)
+    end_validate_time = models.DateTimeField(verbose_name=
+                                             'Fecha final para validación',
+                                             null=True)
+    updated = models.DateTimeField(auto_now=True,
+                                   null=False,
+                                   verbose_name='Última modificación')
+    created = models.DateTimeField(auto_now_add=True,
+                                   null=False,
+                                   verbose_name='Creado')
+
+    class Meta:
+        verbose_name = 'Solicitud de verificación'
+        verbose_name_plural = 'Solicitudes de verificación'
+        ordering = ('-id',)
+        db_table = 'verifydocs_verification_request'
+
+    def __str__(self):
+        return self.verifier_name
 
 
 

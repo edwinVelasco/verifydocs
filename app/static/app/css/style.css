@@ -182,3 +182,5 @@ b p {
     background-color: #BC0017;
 }
 #qr-canvas { display: none; }
+
+#id_file { display: none; }
