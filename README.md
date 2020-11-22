@@ -243,7 +243,48 @@ Si todo parece estar correcto reicniar nginx
 ```shell script
 $ sudo systemctl restart nginx
 ```
+Crear usuario superadministrador, ingresando a la ruta raiz del proyecto, 
+ejecutar e ingresar usuario, contraseña y correo electrónico de superadministrador
+ ```shell script
+$ python manage.py createsuperuser
+```
+***
+### Configurar servicios Google API
+#### OAuth 2.0
+Para obtener credenciales de Google API Console use la siguiente 
+[guía](https://developers.google.com/identity/protocols/oauth2?authuser=1).
+tendrá un resultado como se muestra en la siguiente imagen:
+![img](https://dl.dropboxusercontent.com/s/n4bgqgc1krtzwhc/WhatsApp%20Image%202020-11-22%20at%209.53.57%20AM.jpeg?dl=0)
 
+Ingrese a través del explorador web al proyecto, con la ruta admin e
+ iniciar sesión.
+ ```shell script
+Ejemplo: https://verifydocs.ufps.edu.co/admin/
+```
+Debe agregar un nuevo site,
+para esto presione el botón *add* que se encuentra delante del modelo *sites*
+![img](https://dl.dropboxusercontent.com/s/zm19utfs6ewum29/Captura%20de%20pantalla%20de%202020-11-20%2013-54-37.png?dl=0)
+En los campos de *Domain name* y *Display name* el valor de *https://verifydocs.ufps.edu.co* 
+y presionar el botón guardar.
+
+Regresar a la lista de modelos y presionar el botón *add* del modelo 
+*Social application* e ingresar los siguientes valores:
+* Provider: Google
+* Name: GOOGLE API
+* Client id: *Client ID* de las credenciales propocionadas por google.
+* Secret key: *Client secret* de  las credenciales proporcionadas por google.
+* Sites: Seleccione el site creado en el paso anterior.
+
+#### Servicio de aplicación para el alamacenamiento de documentos
+Para obtener el servicio de aplicación use la siguiente 
+[guía](https://developers.google.com/identity/protocols/oauth2/service-account) 
+y descargue el archivo json del servicio.
+
+Cargue el archivo en la siguiente ruta del servidor en donde se 
+encuentra alojado el aplicativo y con el mismo nombre
+```shell script
+$ verifydocs/tools/storage_key_file.json
+```
 ***
 ### Demo
 
@@ -253,7 +294,7 @@ Para ver el demo de la aplicación puede dirigirse a: [VerifyDocs](https://alber
 ### Autores
 Proyecto desarrollado por:
  - Edwin Velasco [GitHub](https://github.com/edwinVelasco) [LinkedIn](https://www.linkedin.com/in/edwin-alberto-velasco-2396891a7)
- - Denis González [GitHub](https://github.com/dexer13) [LinkedIn](https://www.linkedin.com/in/edwin-alberto-velasco-2396891a7)
+ - Denis González [GitHub](https://github.com/dexer13)
 
 ***
 ### Institución Académica   
