@@ -27,3 +27,14 @@ CACHE_REDIS_DB = '1'
 NAME_URL_FILE_QR = ''
 
 WEB_CLIENT_URL = 'https://verifydocs.ufps.edu.co/'
+
+#
+# Email
+#
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

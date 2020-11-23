@@ -22,7 +22,7 @@ from app.views import DocumentTypeUserMailActiveView
 urlpatterns = [
     path('', IndexView.as_view(),
          name='index'),
-    path('verify/<str:token>', VerifyView.as_view(), name='verify'),
+    path('verify/<str:token>/', VerifyView.as_view(), name='verify'),
     path('home/', HomeView.as_view(), name='home'),
     # admin
     path('home/admin/', AdminHomeView.as_view(), name='admon'),
