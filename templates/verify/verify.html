@@ -1,0 +1,144 @@
+{% extends "base_index.html" %}
+
+{% load socialaccount %}
+{% load static %}
+
+{% block body %}
+
+    <div class="wrapper" style="position: relative; min-height: 100%; top: 0px;">
+        <div id="menu-principal" class="header-v6 header-white-transparent
+                                        header-sticky"
+             style="position: relative;">
+            <div id="barra-superior" class="header-v8">
+                <div class="blog-topbar">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-7 col-xs-7">
+                                <div class="visible-xs-block visible-sm-block hidden-md hidden-lg"
+                                     style="font-size: 10px; color: #eee; letter-spacing: 1px; text-transform: uppercase;">
+                                            <a href="http://www.ufps.edu.co/" target="_blank">
+                                            <img class="header-banner" src="{% static 'app/rsc/img/logo_ufps_png.png' %}"
+                                                 style="max-height:5em;"
+                                                 alt="Escudo de la Universidad Francisco de Paula Santander" ></a>
+                                </div>
+                                <ul class="topbar-list topbar-menu">
+                                    <li class="cd-log_reg home hidden-sm"
+                                        style="font-size: 14px !important;">
+                                        {{ object.verifier_name }} - verificación valida hasta {{ object.end_validate_time|date:"d/m/Y H:i:s" }}
+                                    </li>
+                                    <li class="cd-log_reg hidden-sm hidden-md hidden-lg">
+                                        <a href="{% url 'home' %}">
+                                            <i class="fa fa-home"></i>
+                                        </a>
+                                    </li>
+                                    <li class="cd-log_reg hidden-sm hidden-md hidden-lg">
+                                        <a href="{% url 'logout' %}">
+                                            <i class="fa fa-power-off"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-sm-5 col-xs-5">
+                                <ul class="topbar-list topbar-log_reg
+                                pull-right visible-sm-block visible-md-block
+                                visible-lg-block visible-xs-block">
+                                    {% if user.is_authenticated %}
+                                        <li class="cd-log_reg home home_hover hidden-xs"
+                                            style="font-size: 14px !important;">
+                                            <a href="{% url 'home' %}">
+                                                <i class="fa fa-home"></i>
+                                                Home
+                                            </a>
+                                        </li>
+                                        <li class="cd-log_reg home home_hover hidden-lg hidden-md hidden-sm"
+                                            style="font-size: 14px !important;">
+                                            <a href="{% url 'home' %}">
+                                                <i class="fa fa-home fa-lg"></i>
+                                            </a>
+                                        </li>
+
+                                        <li class="cd-log_reg home home_hover hidden-xs"
+                                            style="font-size: 14px !important; padding-right: 12px;">
+                                            <a href="{% url 'logout' %}">
+                                                <i class="fa fa-power-off"></i>
+                                                Salir
+                                            </a>
+                                        </li>
+                                        <li class="cd-log_reg home home_hover hidden-lg hidden-md hidden-sm"
+                                            style="font-size: 14px !important; padding-right: 12px;">
+                                            <a href="{% url 'logout' %}">
+                                                <i class="fa fa-power-off fa-lg"></i>
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li class="cd-log_reg home home_hover hidden-xs"
+                                            style="font-size: 14px !important; padding-right: 12px;">
+                                            <a href="{% url 'index' %}">
+                                                <i class="fa fa-times fa-lg"></i>
+                                                SALIR
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+    {% if valid_token %}
+        <div class="row">
+            <div class="col-md-12" style="padding-top: 80px">
+                <div class="container">
+                    <p style="font-size: xx-large" class="text-center">
+                        Verificación caducada, realice de nuevo la solicitud del documento
+                        <a href="/">aquí</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="row">
+            <div class="col-md-12">
+                <br>
+                <div class="row equal-height-columns margin-bottom-10">
+                    <div class="container">
+                        <div class="col-md-4 col-xs-12">
+                            <div class="headline-center-v2-dark">
+                                <div class="shop-h1"
+                                     style="font-size: 30px;">
+                                    <b>
+                                        Documento
+                                    </b>
+                                </div>
+                            </div>
+                            <p>Documento expedido por la Universidad Francisco de paula santander.</p>
+                            <span style="font-size: large">Nombre del documento</span>
+                            <p>{{ object.document.doc_type_user.document_type.name }}</p>
+                            <span style="font-size: large">Solicitante</span>
+                            <p>{{ object.document.name_applicant }}</p>
+                            <span style="font-size: large">Dependencia que expidió el documento</span>
+                            <p>{{ object.document.doc_type_user.document_type.dependence.name }}</p>
+                            <span style="font-size: large">Fecha de expedición</span>
+                            <p>{{ object.document.expedition|date:"SHORT_DATE_FORMAT" }}</p>
+                        </div>
+                        <div class="col-md-8 col-xs-12">
+                            <iframe id="id_embed" src="data:application/pdf;base64,{{ file2 }}" frameborder="0" width="100%" height="500" title="example"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    </div>
+{% endblock %}
+{% block javascript %}
+    {{ block.super }}
+
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.js"></script>
+    <script  src="{% static 'app/js/verifydocs.js' %}"></script>
+    <script>
+    </script>
+{% endblock %}

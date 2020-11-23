@@ -4,7 +4,7 @@ from django.contrib.auth.views import LogoutView
 from rest_framework.authtoken import views
 
 from app.views import HomeView, IndexView, AdminHomeView, \
-    DocumentAdminListView, DocumentActiveView
+    DocumentAdminListView, DocumentActiveView, VerifyView
 from app.views import DocumentTypeSettingQRView, DependenceListView
 from app.views import DocumentTypeListView, DocumentTypeCreateView
 from app.views import DocumentTypeUpdateActiveView, DocumentTypeUpdateView
@@ -22,6 +22,7 @@ from app.views import DocumentTypeUserMailActiveView
 urlpatterns = [
     path('', IndexView.as_view(),
          name='index'),
+    path('verify/<str:token>/', VerifyView.as_view(), name='verify'),
     path('home/', HomeView.as_view(), name='home'),
     # admin
     path('home/admin/', AdminHomeView.as_view(), name='admon'),

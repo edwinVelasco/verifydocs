@@ -1,19 +1,19 @@
-from django.shortcuts import render
-import traceback
+import hashlib
+from datetime import datetime, timedelta
 import base64
 from django import forms
 from django.views.generic.base import View
 from django.urls.base import reverse_lazy
 from urllib.parse import urlencode
 from django.shortcuts import HttpResponse
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, ListView, DetailView
 from django.views.generic import UpdateView, TemplateView
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.core.paginator import InvalidPage
 from django.db.models import Q
-from django.http import Http404, FileResponse
+from django.http import Http404
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import User
 
@@ -24,7 +24,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
-from rest_framework.views import APIView
 
 from app.forms import VerifyDocsForm, DependenceForm, UserMailForm
 from app.forms import UserMailSearchForm, DependenceSearchForm
@@ -35,11 +34,14 @@ from app.forms import DocumentTypeUserMailForm, DocumentSearchAdminForm
 from app.serializers import DocumentSerializer, DocumentTypeUserMailSerializer
 from app.serializers import DocumentListSerializer
 
-from app.models import DocumentType, Dependence, UserMail, Document
+from app.models import DocumentType, Dependence, UserMail, Document, \
+    VerificationRequest
 from app.models import DocumentTypeUserMail
 
 # Create your views here.
 from tools.PDFTools import PDFTools
+from tools.mail import send_email
+from verifydocs.parameters import WEB_CLIENT_URL
 
 from .mixins import UserAdminMixin, UserMixin
 
@@ -82,29 +84,94 @@ class AdminHomeView(UserAdminMixin, View):
         return render(request, self.template, {'user': request.user})
 
 
-class IndexView(TemplateView):
+class IndexView(CreateView):
     template_name = 'index.html'
-
-    def get(self, request, *args, **kwargs):
-        """Handle GET requests: instantiate a blank version of the form."""
-        contest = self.get_context_data()
-        contest['form'] = VerifyDocsForm()
-        return self.render_to_response(contest)
+    form_class = VerifyDocsForm
 
     def post(self, request, *args, **kwargs):
         """
         Handle POST requests: instantiate a form instance with the passed
         POST variables and then check if it's valid.
         """
-        form = VerifyDocsForm(data=request.POST)
+        form = self.get_form()
         if form.is_valid():
-            messages.success(request, 'Formulario correcto')
-            return render(request, self.template_name, {'user': request.user,
-                                                        'form': form})
+            try:
+                if form.files and form.files.get('file'):
+                    file = form.files.get('file')
+                    from security.app import SecurityApp
+                    # hash_token1 = SecurityApp(None).create_hash_256_qr(
+                    #     file.file.read())
+                    hash_token = PDFTools(0, 0).get_hash_document(
+                        file, form.instance.verifier_email)
+                    document = Document.objects.get(hash_qr=hash_token)
+                else:
+                    document = Document.objects.get(
+                        token=form.data.get('code')).all()
+            except Exception as e:
+                document = None
+            if not document:
+                messages.error(request, 'No se ha encontrado documento')
+                return render(request, self.template_name,
+                              {'user': request.user, 'form': form})
+            if document.expiration and document.expiration < datetime.now():
+                messages.error(request, 'El documento ya expiró')
+                return render(request, self.template_name,
+                              {'user': request.user, 'form': form})
+            form.instance.document = document
+            current_date = datetime.now()
+            value_token = '{}{}'.format(datetime.now().strftime(
+                "%d/%m/%Y, %H:%M:%S"), form.instance.verifier_name)
+            form.instance.token = hashlib.md5(value_token.encode()).\
+                hexdigest()
+            form.instance.end_validate_time = current_date + timedelta(
+                days=1)
+            form.save()
+            token = f'{WEB_CLIENT_URL}/verify/{form.instance.token}'
+            document_name = form.instance.document.doc_type_user.\
+                document_type.name
+            end_validation = form.instance.end_validate_time.\
+                strftime("%m/%d/%Y, %H:%M:%S")
+            send_email([form.instance.verifier_email],
+                       'Solicitud de verificación aprobada',
+                       {
+                           'verifier_name': form.instance.verifier_name,
+                           'document_name': document_name,
+                           'url_token': token,
+                           'end_validation': end_validation,
+                       }, 'mail/email_request.html')
+            applicant_name = form.instance.document.name_applicant
+            send_email([form.instance.document.email_applicant],
+                       'Notificación VerifyDocs',
+                       {
+                           'applicant_name': applicant_name,
+                           'document_name': document_name,
+                           'verifier_name': form.instance.verifier_name,
+                       }, 'mail/email_owner.html')
+            messages.success(request, 'Se ha enviado un correo electrónico '
+                                      'con un enlace para que realice la '
+                                      'verificación del documento.')
+            return render(request, self.template_name,
+                          {'user': request.user,
+                           'form': VerifyDocsForm()})
         else:
-            messages.error(self.request, 'Codigo no registrado')
+            messages.error(self.request, 'Código no registrado')
             return render(request, self.template_name, {'user': request.user,
                                                         'form': form})
+
+
+class VerifyView(DetailView):
+    template_name = 'verify/verify.html'
+    model = VerificationRequest
+    slug_field = 'token'
+    slug_url_kwarg = 'token'
+
+    def get_context_data(self, **kwargs):
+        context = super(VerifyView, self).get_context_data(**kwargs)
+        pdf = self.object.document.file_original
+        context['file'] = base64.b64encode(pdf.file.file.read()).decode()
+        context['file2'] = PDFTools(0, 0, None).add_watermark(pdf.file.file)
+        context['valid_token'] = self.object.end_validate_time < datetime.now()
+        return context
 
 
 class DependenceCreateView(UserAdminMixin, CreateView):
@@ -793,6 +860,9 @@ class DocumentCreateView(UserMixin, CreateView):
         }
         doc_type_user = DocumentTypeUserMail.objects.get(
             id=int(data_post['doc_type_user']))
+        if doc_type_user.document_type.days_validity:
+            data_post['expiration'] = form.instance.expedition + timedelta(
+                doc_type_user.document_type.days_validity)
         files = dict()
         if 'file_original' in self.request.FILES:
             files['file_original'] = self.request.FILES['file_original']
@@ -854,6 +924,9 @@ class DocumentCreateApplicationView(generics.CreateAPIView):
         user_email = UserMail.objects.filter(email=request.user.email).last()
         doc_type_user = DocumentTypeUserMail.objects.get(
             id=int(data_post['doc_type_user']))
+        if doc_type_user.document_type.days_validity:
+            data_post['expiration'] = self.get_object().expedition + timedelta(
+                doc_type_user.document_type.days_validity)
         doc_types_user = DocumentTypeUserMail.objects.filter(
             usermail=user_email, active=True)
         if not doc_type_user in doc_types_user:
