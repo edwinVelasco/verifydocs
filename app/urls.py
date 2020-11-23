@@ -90,16 +90,19 @@ urlpatterns = [
 
     # aplications v1
     path('aplication/v1/login/', views.obtain_auth_token),
-    path('aplication/v1/login_t/', LoginApplicationTestPostmanView.as_view()),
-    path('aplication/v1/logout/', LogoutApplicationView.as_view()),
+    path('aplication/v1/login_t/', LoginApplicationTestPostmanView.as_view(),
+         name='login_rest'),
+    path('aplication/v1/logout/', LogoutApplicationView.as_view(),
+         name='logout_rest'),
 
     path('application/v1/type_document_list/',
-         TypeDocumentAplicationView.as_view()),
+         TypeDocumentAplicationView.as_view(), name='list_document_type_rest'),
     path('application/v1/document_create/',
-         DocumentCreateApplicationView.as_view()),
+         DocumentCreateApplicationView.as_view(),
+         name='create_document _rest'),
     path('application/v1/document_list/',
-         DocumentListApplicationView.as_view()),
+         DocumentListApplicationView.as_view(), name='list_document_rest'),
     path('application/v1/document/<int:pk>/download/',
-         DownloadFileApplicationView.as_view()),
+         DownloadFileApplicationView.as_view(), name=''),
 
 ]
