@@ -385,8 +385,8 @@ class DocumentTypeSettingQRPreviewView(UserAdminMixin, View):
         form = self.form_class(data=request.POST, files=request.FILES)
         default_file = None
         if form.is_valid():
-            if form.files.get('file'):
-                default_file = form.files.get('file').file
+            if form.files.get('file_u'):
+                default_file = form.files.get('file_u').file
             response = HttpResponse(content_type='application/pdf')
             pdf = PDFTools(form.instance.pos_x, form.instance.pos_y,
                            form.instance.scale).\

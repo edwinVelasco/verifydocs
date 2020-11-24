@@ -111,7 +111,7 @@ class DocumentTypeForm(forms.ModelForm):
 
 class DocumentTypeQRForm(forms.ModelForm):
 
-    file = forms.FileField(widget=forms.FileInput(
+    file_u = forms.FileField(widget=forms.FileInput(
                 attrs={'accept': '.pdf,.PDF'}), required=False)
 
     def __init__(self, *args, **kwargs):
