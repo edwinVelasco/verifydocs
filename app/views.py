@@ -113,7 +113,7 @@ class IndexView(CreateView):
                 messages.error(request, 'No se ha encontrado documento')
                 return render(request, self.template_name,
                               {'user': request.user, 'form': form})
-            if document.expiration and document.expiration < datetime.now():
+            if document.expiration and document.expiration < datetime.now().date():
                 messages.error(request, 'El documento ya expiró')
                 return render(request, self.template_name,
                               {'user': request.user, 'form': form})
