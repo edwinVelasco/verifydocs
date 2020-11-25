@@ -203,7 +203,7 @@ class PDFTools:
         ref = ''
         try:
             ref, file = self.__create_file_disk(file_doc=file_doc, user=user)
-            io.BytesIO(file.read())
+            # io.BytesIO(file.read())
             return SecurityApp(None).create_hash_256_qr(file=file.read())
         finally:
             if ref:
