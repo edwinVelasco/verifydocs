@@ -77,10 +77,10 @@ class PDFTools:
         for pageNum in range(1, reader.numPages):
             pageObj = reader.getPage(pageNum)
             writer.addPage(pageObj)
-        resultFile = open(f'temp/mark.pdf', 'wb')
+        resultFile = open(f'{settings.MEDIA_ROOT}/tmp/mark.pdf', 'wb')
         writer.write(resultFile)
         resultFile.close()
-        pdf = open('temp/mark.pdf', 'rb')
+        pdf = open(f'{settings.MEDIA_ROOT}/tmp/mark.pdf', 'rb')
         encoded_string = base64.b64encode(pdf.read())
         return encoded_string.decode()
 
