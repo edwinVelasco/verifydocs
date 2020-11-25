@@ -828,7 +828,7 @@ class DocumentCreateView(UserMixin, CreateView):
     form_class = DocumentForm
 
     def get_success_url(self):
-        doc = self.model.objects.last()
+        doc = self.model.objects.first()
         messages.success(self.request,
                          f'Documento con ID {doc.id} registrado correctamente')
         return get_url_to_redirect(self.request, 'filter',

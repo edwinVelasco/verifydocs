@@ -116,6 +116,7 @@ class PDFTools:
     def __create_pdf_file_qr(self, ref, file):
         try:
             reader = PyPDF2.PdfFileReader(file)
+            num_page = reader.getNumPages()
             page = reader.getPage(0)
             water = open(f'{settings.MEDIA_ROOT}/tmp/{ref}.pdf', 'rb')
             reader2 = PyPDF2.PdfFileReader(water)
