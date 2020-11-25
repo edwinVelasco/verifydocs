@@ -197,8 +197,7 @@ class PDFTools:
         ref, file = self.__create_file_disk(file_doc=file_doc, user=user)
         security_app = SecurityApp(pdf_tools=self)
         self.__remove_files_temp(ref=ref)
-        stream_str = io.BytesIO(file.read())
-        return security_app.create_hash_256_qr(file=file.read()), stream_str.getvalue()
+        return security_app.create_hash_256_qr(file=file.read()), io.BytesIO(file.read()).getvalue()
 
     def get_hash_document(self, file_doc, user):
         ref = ''
