@@ -15,5 +15,5 @@ def send_email(email,subject, context, template):
         message.attach_alternative(html_content, "text/html")
         message.send()
     except smtplib.SMTPException as e:
-        print(e.message)
+        print(e)
         raise smtplib.SMTPException(e)
