@@ -40,7 +40,7 @@
   - [app/validators.py](https://github.com/edwinVelasco/verifydocs/blob/master/app/validators.py): Archivo en donde se ubican las validaciones del dominio del correo
   - [app/views.py](https://github.com/edwinVelasco/verifydocs/blob/master/app/views.py): Archivo en donde se ubican las clases de las vistas
   - [app/static/app](https://github.com/edwinVelasco/verifydocs/tree/master/app/static/app): Carpeta donde se ubican los archivos estaticos de la aplicación app
-  - [app/static/test](https://github.com/edwinVelasco/verifydocs/tree/master/app/test): Modulo de las pruebas unitarias de formularios, modelos, url's y vistas
+  - [app/test](https://github.com/edwinVelasco/verifydocs/tree/master/app/test): Modulo de las pruebas unitarias de formularios, modelos, url's y vistas
 
 ***
 #### Tecnologías
