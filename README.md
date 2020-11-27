@@ -16,32 +16,55 @@
 #### Características:
 
   - Lectura de codigo qr mediante webcam usando el desarrollo de [bc-qr-reader](https://github.com/blockchain/bc-qr-reader)
-  - Inicio de sesión social con Google
+  - Inicio de sesión las cuentas de correo institucionales  con Google
+  - Encriptación de documentos con sha_512, sha_256
+  - Encriptación de token de verificación con md5
+  - Servicios REST de consumo para la vinculación entre aplicaciones
+  - Envío de notificación por correo electrónico 
+
 ***
  
  #### Contenido del proyecto
-  - [repositorio Github](https://gitlab.com/programacion-web---i-sem-2019/lectura-json-ii-2020-pizzeria/-/blob/master/index.html): Archivo principal de invocación a la lectura de JSON
-  - [js/proceso.js](https://gitlab.com/programacion-web---i-sem-2019/lectura-json-ii-2020-pizzeria/-/blob/master/js/proceso.js): Archivo JS con el proceso de lectura del JSON y sus funciones adicionales para la impresión de resultados
+  - [repositorio Github](https://github.com/edwinVelasco/verifydocs): Raiz del proyecto
+  - [Security/app.py](https://github.com/edwinVelasco/verifydocs/tree/master/security): Paquete de seguridad de encriptación de documentos
+  - [tools](https://github.com/edwinVelasco/verifydocs/tree/master/tools): Paquete de herramientas requeridas en el proyecto, manejo de archivos PDF y envío de correo 
+  - [templates](https://github.com/edwinVelasco/verifydocs/tree/master/templates): Carpeta en donde se encuantran ubicados los archivos .html ubicados por modulos 
+  - [verifydocs/parameters-dist.py](https://github.com/edwinVelasco/verifydocs/blob/master/verifydocs/parameters-dist.py): Archivo de parametrización del proyecto 
+  - [verifydocs/urls.py](https://github.com/edwinVelasco/verifydocs/blob/master/verifydocs/urls.py): Archivo de rutas del proyecto 
+  - [app/migrations](https://github.com/edwinVelasco/verifydocs/tree/master/app/migrations): Modulo en donde se ubican las migraciones del proyecto
+  - [app/forms.py](https://github.com/edwinVelasco/verifydocs/blob/master/app/forms.py): Archivo en donde se ubican las clases de los formularios
+  - [app/mixins.py](https://github.com/edwinVelasco/verifydocs/blob/master/app/mixins.py): Archivo en donde se ubican las clases de los mixins
+  - [app/models.py](https://github.com/edwinVelasco/verifydocs/blob/master/app/models.py): Archivo en donde se ubican las clases de los modelos
+  - [app/serializers.py](https://github.com/edwinVelasco/verifydocs/blob/master/app/serializers.py): Archivo en donde se ubican las clases que serializan las clases de los modelos
+  - [app/urls.py](https://github.com/edwinVelasco/verifydocs/blob/master/app/urls.py): Archivo en donde se ubican las rutas de la aplicación app
+  - [app/validators.py](https://github.com/edwinVelasco/verifydocs/blob/master/app/validators.py): Archivo en donde se ubican las validaciones del dominio del correo
+  - [app/views.py](https://github.com/edwinVelasco/verifydocs/blob/master/app/views.py): Archivo en donde se ubican las clases de las vistas
+  - [app/static/app](https://github.com/edwinVelasco/verifydocs/tree/master/app/static/app): Carpeta donde se ubican los archivos estaticos de la aplicación app
+  - [app/static/test](https://github.com/edwinVelasco/verifydocs/tree/master/app/test): Modulo de las pruebas unitarias de formularios, modelos, url's y vistas
 
 ***
 #### Tecnologías
 
   - HTML5
   - JavaScript
-
-Usted puede ver el siguiente marco conceptual sobre la API fetch:
-
-  - [Vídeo explicativo lectura con fetch()](https://www.youtube.com/watch?v=DP7Hkr2ss_I)
-  - [Gúia de Mozzilla JSON](https://developer.mozilla.org/es/docs/Learn/JavaScript/Objects/JSON)
+  - Angular JS
+  - Python
+  - Django
+  - Patron de diseño MTV (Models, Templates, Views)
+  - Bootstrap
+  - Sha 512
+  - Sha 256
+  - MD5
   
   ***
 #### IDE
   - El proyecto se desarrolla con [PyCharm](https://www.jetbrains.com/es-es/pycharm/) con [licencia de estudiante](https://www.jetbrains.com/es-es/community/education/#students)
+  - Entornos virtuales del interprete python3.8 [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/)
 
-***
+  ***
 ### Instalación
 
- - Intalar y configurar [postgresql](https://www.postgresql.org/), preferiblemente la versión mas reciente
+ - Instalar y configurar [postgresql](https://www.postgresql.org/), preferiblemente la versión mas reciente
  - Instalar [supervisor](http://supervisord.org/installing.html)
  - Instalar [node](https://nodejs.org/es/) y [bower](https://bower.io/)
  - Instalar [gunicorn](https://docs.gunicorn.org/en/stable/install.html#ubuntu)
@@ -80,19 +103,26 @@ $ nano verifydocs/parameters.py
 ```
 Se presentan las siguientes variables.
 ```python
+# Sistema de base de datos
 PG_ENGINE = ''
+
 # Nombre de la base de datos
 PG_DBNAME = ''
+
 # Usuario con acceso a la base de datos
 PG_DBUSER = ''
+
 # Contraseña del usuario con acceso a la base de datos
 PG_DBPASSWORD = ''
+
+# host donde se ubica el servidor de base de datos, IP o dominio
 PG_DBHOST = ''
+# puerto donde se aloja la base de datos en caso de tenerlo
 PG_DBPORT = ''
 
 DJ_SECRET_KEY = ''
 
-# True en cado de estar en ambiente de pruebas
+# True en caso de estar en ambiente de pruebas
 DJ_DEBUG = False
 
 # Dominio en donde se esta alojando el aplicativo ejemplo: ['verifydocs.ufps.edu.co'] o ['*'] para ejecuciones de prueba
@@ -108,13 +138,23 @@ DJ_USE_L10N = True
 DJ_USE_TZ = False
 
 # Id del sitio configurado con Google
-DJ_SITE_ID = 1
+DJ_SITE_ID = 2
 
 # Ruta absoluta de la raiz del proyecto ejemplo: '/home/<user>/verifydocs'
 DJ_URL_PROJECT = ''
 
 # URL del proyecto instalado, se usa para utilizarlo en la creación del texto que acompaña el código QR
 WEB_CLIENT_URL = 'https://verifydocs.ufps.edu.co/'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+# Correo elecronico para el envío de notificación por smtp
+EMAIL_HOST_USER = ''
+# Contraseña de la cuenta de correo
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 ```
 #### Configuración de acceso a la base de datos
 Sistema de base de datos
