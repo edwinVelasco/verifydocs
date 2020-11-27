@@ -106,7 +106,7 @@ class IndexView(CreateView):
                     document = Document.objects.get(hash_qr=hash_token)
                 else:
                     document = Document.objects.get(
-                        token=form.data.get('code')).all()
+                        token=form.data.get('code'))
             except Exception as e:
                 document = None
             if not document:

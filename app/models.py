@@ -107,6 +107,16 @@ class UserMail(models.Model):
         except User.DoesNotExist:
             pass
 
+    def get_dependence_name(self):
+        u_docs_type = self.user_doc_types_user_mail.all()
+        for u_doc_type in u_docs_type:
+            if not u_doc_type.active:
+                continue
+            doc_type = u_doc_type.document_type
+            if not doc_type.active:
+                continue
+            return doc_type.dependence.name
+
 
 class DocumentTypeUserMail(models.Model):
     document_type = models.ForeignKey(DocumentType, on_delete=models.PROTECT,

@@ -95,7 +95,7 @@ class PDFTools:
 
     def add_watermark_img(self, pdf, width, height):
         pdf.drawImage(f'{settings.STATIC_ROOT}/app/rsc/img/cnv.png', 0, 0,
-                      width, height, mask='auto')
+                      float(width), float(height), mask='auto')
 
     def add_text(self, pdf, line, pos_y):
         text_size = stringWidth(line, "Helvetica", 6)

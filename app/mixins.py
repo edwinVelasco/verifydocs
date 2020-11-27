@@ -34,6 +34,7 @@ class UserMixin(LoginRequiredMixin):
                                      f'{request.user.email} no tiene acceso, '
                                      f'Es de un usuario de aplicación')
             return redirect(reverse('logout'))
+        request.session['dependence'] = user_email.get_dependence_name()
         return super().dispatch(request, *args, **kwargs)
 
 
