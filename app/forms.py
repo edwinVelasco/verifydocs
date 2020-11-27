@@ -33,7 +33,8 @@ class VerifyDocsForm(forms.ModelForm):
                     'class': 'form-control',
                     'placeholder': 'Correo electrónico',
                     'style': 'border-top-left-radius: 4px;border-bottom-left-'
-                             'radius: 4px; width: 100%;'
+                             'radius: 4px; width: 100%;',
+                    'oninput': "compare_email()"
                 }
             ),
         }
@@ -56,11 +57,22 @@ class VerifyDocsForm(forms.ModelForm):
         ), required=False
     )
 
-    # def clean(self):
-    #     if not self.cleaned_data.get('file') and \
-    #             not self.cleaned_data.get('code'):
-    #         self.add_error('code', 'Debe ingresar el código identificativo '
-    #                                'del documento o cargar el documento.')
+    verifier_email_two = forms.EmailField(
+        widget=forms.EmailInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Confirme el correo electrónico',
+                'style': 'border-top-left-radius: 4px;border-bottom-left-'
+                         'radius: 4px; width: 100%;',
+                'oninput': "compare_email()"
+            }
+        )
+    )
+
+    def clean(self):
+        if self.cleaned_data.get('verifier_email') != self.cleaned_data.get(
+                'verifier_email_two'):
+            self.add_error('verifier_email_two', 'El email no coincide')
 
 
 

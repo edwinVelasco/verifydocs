@@ -129,15 +129,42 @@
             <strong>Codigo QR Detectado!</strong>
         </div>
     </div>
-
-    <div class="container"  >
-        <form enctype="multipart/form-data" method="POST" ng-hide="cameraRequested" action="/" style="margin-bottom: 100px">
+    <div class="container"  style="padding-bottom: 40px">
+        <div class="row">
+            <div class="col-md-6">
+                <br>
+                <br>
+                <div class="row text-center" ng-hide="!cameraRequested">
+                    <h4 class="font-bold">¡Acerque el código QR a la camara web!</h4>
+                    <div class="col-md-12">
+                        <bc-qr-reader active="cameraRequested"
+                                      on-result="processURLfromQR"
+                                      on-error="onError" camera-status="cameraIsOn"
+                        ></bc-qr-reader>
+                    </div>
+                </div>
+                <div class="row" ng-hide="cameraRequested" style="padding: 20px">
+                    <div class="text-center">
+                        <h1>¡Bienvenido a VerifyDocs!</h1>
+                    </div>
+                    <p class="text-justify" style="font-size: large">
+                        Verifydocs es el sistema encargado del almacenamiento, autenticación y verificación
+                        de los documentos expedidos por las diferentes dependencias de la Universidad Francisco de Paula Santander. Si usted
+                        posee un documento digital o físico con un código QR puede usar el formulario que se encuentra al lado derecho
+                        para verificar el documento. Para mas información haga clic
+                         <a href="https://www.youtube.com">aquí</a> en donde encontrará un tutorial.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <form enctype="multipart/form-data" method="POST" action="/" style="margin-bottom: 100px">
             {% csrf_token %}
-            <div class="col-lg-6 col-md-6 col-sm-12 col-lg-offset-3 col-md-offset-3">
+            <div class="col-lg-12 col-md-12 col-sm-12">
                 <div class="row">
                     <br>
-                    <h1 class="text-center" style="font-size: 4em;">VerifyDocs</h1>
-                    <br>
+                    <h4 class="text-center">
+                        Ingrese los siguientes datos para solicitar la verificación del documento
+                    </h4>
                 </div>
                 <div class="row">
                     <div class="col-lg-12" style="height: 54px">
@@ -184,17 +211,18 @@
                         </div>
                     </div>
                     <div class="col-lg-12">
-                        <input type="submit" class="btn btn-primary btn-block" value="SOLICITAR VERIFICACIÓN">
+                        <div class="form-inline">
+                            {{ form.verifier_email_two }}
+                            <label>{{ form.verifier_email_two.errors }}</label>
+                            <label class="verify_email_two text-danger" style="display: none"><ul class="errorlist"><li>El email no coincide</li></ul></label>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <input type="submit" class="btn btn-primary btn-block" value="SOLICITAR VERIFICACIÓN" id="btn_submit">
                     </div>
                 </div>
             </div>
         </form>
-        <div class="row" ng-hide="!cameraRequested">
-            <div class="col-lg-6 col-lg-offset-3">
-                <bc-qr-reader active="cameraRequested"
-                              on-result="processURLfromQR"
-                                on-error="onError" camera-status="cameraIsOn"
-                                ></bc-qr-reader>
             </div>
         </div>
     </div>
@@ -223,8 +251,9 @@
             $("#id_file").change(function (){
                 var fileName = $(this).val();
                 if (fileName){
+                    fileName = fileName.split('\\');
                     $("#id_code").attr('disabled', true);
-                    $("#id_code").attr('placeholder', 'Archivo seleccionado');
+                    $("#id_code").attr('placeholder', fileName[fileName.length-1]);
                     $('#id_btn_cam').hide();
                     $('#id_btn_not_file').show();
                 }
@@ -239,6 +268,20 @@
             $("#id_code").attr('placeholder',
                 'Código seguro de verificación');
         })
+
+        function compare_email(){
+            var ver_email = $('#id_verifier_email').val();
+            var ver_email_t = $('#id_verifier_email_two').val();
+            console.log(ver_email, ver_email_t);
+            if (ver_email !== ver_email_t){
+                $('.verify_email_two').attr('style', {});
+                $('#btn_submit').attr('disabled', 'disabled');
+            }else {
+                $('.verify_email_two').attr('style', "display: none");
+                $('#btn_submit').removeAttr('disabled');
+            }
+        }
+
     </script>
 
 {% endblock %}

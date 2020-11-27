@@ -3,6 +3,8 @@ angular
   .controller("DemoCtrl", DemoCtrl);
 
 function DemoCtrl($scope) {
+    $scope.url = null;
+
     $scope.start = function() {
         $scope.url = null;
         $scope.cameraRequested = true;
