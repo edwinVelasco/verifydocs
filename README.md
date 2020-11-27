@@ -15,7 +15,7 @@
 
 #### Características:
 
-  - Lectura de codigo qr mediante webcam usando el desarrollo de [bc-qr-reader](https://github.com/blockchain/bc-qr-reader)
+  - Lectura de código qr mediante webcam usando el desarrollo de [bc-qr-reader](https://github.com/blockchain/bc-qr-reader)
   - Inicio de sesión las cuentas de correo institucionales  con Google
   - Encriptación de documentos con sha_512, sha_256
   - Encriptación de token de verificación con md5
@@ -82,7 +82,7 @@ Clonar el repositorio privado desde GitHub
  $ cd verifydocs
 ```
 
-Instalar las librerias necesarias para la ejecución 
+Instalar las librerías necesarias para la ejecución 
 ```shell script
  $ pip install -Ur requirements.txt
 ```
@@ -91,12 +91,12 @@ Ajustar la variable de entorno necesaria
 ```shell script
 sudo nano /home/<usuario>/.virtualenvs/verifydocs/bin/postactivate
 ```
-Registrar la siguiente linea al final del archivo
+Registrar la siguiente línea al final del archivo
 ```shell script
 export DJANGO_SETTINGS_MODULE=verifydocs.settings
 ```
 
-Copiar y configurar el archivo de parametros requeridos para la ejecución.
+Copiar y configurar el archivo de parámetros requeridos para la ejecución.
 ```shell script
 $ mv verifydocs/parameters-dist.py verifydocs/parameters.py
 $ nano verifydocs/parameters.py
@@ -170,19 +170,19 @@ Puerto de acceso a la base de datos
 PG_DBPORT: El puerto por defecto para PostgreSQL es 5432 y y para MySQL es 6379
 ```
 
-#### Configuración personal de las variables de ejecición
-Llave unica por instancia instala
+#### Configuración personal de las variables de ejecución
+Llave única por instancia instala
 ```python
 DJ_SECRET_KEY = ''
 ```
-Ejecutar el siguiente comando para crear la llave unica, retorna una cadena
+Ejecutar el siguiente comando para crear la llave única, retorna una cadena
 ```shell script
 $ openssl rand -base64 32
 HuUk7oOLlxgdA0rw2J5qF+Et9kYW1+MwBTtMeFUHN8M=
 $ # copiar el texto generado a la variable DJ_SECRET_KEY
 ```
 
-Creación y ejecución de las migraciones, y la agrupación del los archivos estaticos de la aplicación
+Creación y ejecución de las migraciones, y la agrupación del los archivos estáticos de la aplicación
 ```shell script
 $ python manage.py makemigrations
 $ python manage.py migrate
@@ -190,7 +190,7 @@ $ mkdir static & mkdir temp & mkdir media & mkdir media/tmp/
 $ python manage.py collectstatic
 ```
 
-Ejecutar bower para descargar las librerias de javascript necesarias
+Ejecutar bower para descargar las librerías de javascript necesarias
 ```shell script
 $ cd static/app/
 $ bower install --save blockchain/bc-qr-reader
@@ -217,7 +217,7 @@ environment=LANG=en_US.UTF-8,LC_ALL=en_US.UTF-8
 [group:guni]
 programs:verifydocs_gunicorn
 ```
-Activar la configuracion de supervisorctl y revisar el estado de ejecución de la tarea
+Activar la configuración de supervisorctl y revisar el estado de ejecución de la tarea
 ```shell script
 $ sudo supervisorctl reread
 $ sudo supervisorctl update
@@ -279,11 +279,11 @@ Ejecutar pruebas de configuración en nginx
 ```shell script
 $ nginx -t
 ```
-Si todo parece estar correcto reicniar nginx
+Si todo parece estar correcto reiniciar nginx
 ```shell script
 $ sudo systemctl restart nginx
 ```
-Crear usuario superadministrador, ingresando a la ruta raiz del proyecto, 
+Crear usuario superadministrador, ingresando a la ruta raíz del proyecto, 
 ejecutar e ingresar usuario, contraseña y correo electrónico de superadministrador
  ```shell script
 $ python manage.py createsuperuser
@@ -311,11 +311,11 @@ Regresar a la lista de modelos y presionar el botón *add* del modelo
 *Social application* e ingresar los siguientes valores:
 * Provider: Google
 * Name: GOOGLE API
-* Client id: *Client ID* de las credenciales propocionadas por google.
+* Client id: *Client ID* de las credenciales proporcionadas por google.
 * Secret key: *Client secret* de  las credenciales proporcionadas por google.
 * Sites: Seleccione el site creado en el paso anterior.
 
-#### Servicio de aplicación para el alamacenamiento de documentos
+#### Servicio de aplicación para el almacenamiento de documentos
 Para obtener el servicio de aplicación use la siguiente 
 [guía](https://developers.google.com/identity/protocols/oauth2/service-account) 
 y descargue el archivo json del servicio.
