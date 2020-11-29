@@ -152,7 +152,7 @@
                         de los documentos expedidos por las diferentes dependencias de la Universidad Francisco de Paula Santander. Si usted
                         posee un documento digital o físico con un código QR puede usar el formulario que se encuentra al lado derecho
                         para verificar el documento. Para mas información haga clic
-                         <a href="https://www.youtube.com">aquí</a> en donde encontrará un tutorial.
+                         <a href="https://www.youtube.com" target="_blank">aquí</a> en donde encontrará un tutorial.
                     </p>
                 </div>
             </div>
@@ -185,7 +185,7 @@
                                         style="border-radius: 0px !important;" hidden>
                                     <i class="fa fa-times"></i>
                                 </button>
-                                <label type="button" class="btn btn-default" type="submit"
+                                <label type="button" class="btn btn-default"
                                        data-toggle="tooltip"
                                         data-placement="top"
                                         title data-original-title="Cargar documento"
@@ -195,21 +195,47 @@
                                 </label>
                             </span>
                         </div>
+                        <div class="form-group">
+                            <span class="help-block text-justify">
+                                <ul>
+                                    <li style="color: #3c763d">
+                                        Con el botón <i class="fa fa-camera"></i> puede
+                                    utilizar la camara web para escanear el código
+                                    QR del documento, requiere permiso para utilizar la camara
+                                    </li>
+                                    <li style="color: #3c763d">
+                                        Con el botón <i class="fa fa-upload"></i> puede
+                                        examinar el documento con el código QR para ser
+                                        verificado
+                                    </li>
+                                </ul>
 
-                            {{ form.code.errors }}
+                            </span>
+                        </div>
+
+                        {{ form.code.errors }}
                     </div>
+                </div>
+                <br>
+                <br>
+                <br>
+                <br>
+                <div class="row">
                     <div class="col-lg-12">
                         <div class="form-inline">
                             {{ form.verifier_name }}
                             <label>{{ form.verifier_name.errors }}</label>
                         </div>
                     </div>
+                </div>
+                <div class="row">
                     <div class="col-lg-12">
                         <div class="form-inline">
                             {{ form.verifier_email }}
                             <label>{{ form.verifier_email.errors }}</label>
                         </div>
-                    </div>
+                    </div></div>
+                <div class="row">
                     <div class="col-lg-12">
                         <div class="form-inline">
                             {{ form.verifier_email_two }}
@@ -217,8 +243,12 @@
                             <label class="verify_email_two text-danger" style="display: none"><ul class="errorlist"><li>El email no coincide</li></ul></label>
                         </div>
                     </div>
+                </div>
+                <div class="row">
                     <div class="col-lg-12">
-                        <input type="submit" class="btn btn-primary btn-block" value="SOLICITAR VERIFICACIÓN" id="btn_submit">
+                        <input type="submit"
+                               class="btn btn-primary btn-block"
+                               value="SOLICITAR VERIFICACIÓN" id="btn_submit">
                     </div>
                 </div>
             </div>
