@@ -665,11 +665,19 @@ class DocumentListView(UserMixin, ListView):
             if self.request.GET.get('doc_type_user', '') != '':
                 params['doc_type_user_id'] = int(self.request.GET.get(
                     'doc_type_user', ''))
+
+            docs_types = DocumentTypeUserMail.objects.filter(
+                usermail__email=self.request.user.email, active=True)
             if docs:
                 return docs.filter(**params)
-            return self.model.objects.filter(**params)
+            return self.model.objects.filter(**params).filter(
+                doc_type_user__document_type__in=[w.document_type for w in
+                                                  docs_types]
+            )
         except ValueError:
-            return self.model.objects.all()
+            docs_types = DocumentTypeUserMail.objects.filter(
+                usermail__email=self.request.user.email, active=True)
+            return self.model.objects.filter(doc_type_user__document_type__in=[w.document_type for w in docs_types])
 
     def paginate_queryset(self, queryset, page_size):
         """Paginate the queryset, if needed."""
