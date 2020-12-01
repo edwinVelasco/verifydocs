@@ -5,7 +5,7 @@ from app.views import IndexView, HomeView, AdminHomeView, \
     DocumentTypeUpdateActiveView, DependenceListView, \
     DependenceCreateView, DependenceUpdateView, DependenceActiveView, \
     UserMailListView, UserMailCreateView, UserMailUpdateView, \
-    UserMailActiveView
+    UserMailActiveView, DocumentTypeSettingQRView
 from django.contrib.auth.views import LogoutView
 
 
@@ -39,6 +39,11 @@ class TestUrls(SimpleTestCase):
         url = reverse('documents_type_update_active', args=[1])
         self.assertEquals(resolve(url).func.view_class,
                           DocumentTypeUpdateActiveView)
+
+    def test_documents_type_settting_qr_url_resolves(self):
+        url = reverse('documents_type_setting_qr', args=[1])
+        self.assertEquals(resolve(url).func.view_class,
+                          DocumentTypeSettingQRView)
 
     def test_dependences_url_resolves(self):
         url = reverse('dependences')

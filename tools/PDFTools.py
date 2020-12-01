@@ -211,6 +211,11 @@ class PDFTools:
                 self.__remove_files_temp(ref)
 
 
-
-
-
+def create_pdf(text='blank'):
+    buffer = BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+    pdf.setTitle('blank')
+    pdf.drawString(100, 100, text)
+    pdf.save()
+    buffer.seek(0)
+    return buffer.getvalue()

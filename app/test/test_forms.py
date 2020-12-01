@@ -1,5 +1,6 @@
 from django.test import TestCase
-from app.forms import DependenceForm, DocumentTypeForm, UserMailForm
+from app.forms import DependenceForm, DocumentTypeForm, UserMailForm, \
+    DocumentTypeQRForm
 from app.models import Dependence
 
 
@@ -24,6 +25,14 @@ class TestDocumentTypeForm(TestCase):
             'days_validity': 40,
             'active': True,
             'dependence': dependence.id,
+        })
+        self.assertTrue(form.is_valid())
+
+    def test_document_type_setting_qr(self):
+        form = DocumentTypeQRForm(data={
+            'pos_x': 0,
+            'pos_y': 0,
+            'scale': 42,
         })
         self.assertTrue(form.is_valid())
 

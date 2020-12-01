@@ -925,7 +925,8 @@ class DocumentCreateApplicationView(generics.CreateAPIView):
         doc_type_user = DocumentTypeUserMail.objects.get(
             id=int(data_post['doc_type_user']))
         if doc_type_user.document_type.days_validity:
-            data_post['expiration'] = self.get_object().expedition + timedelta(
+            expedition = datetime.strptime(data_post.get('expedition'), '%Y-%m-%d')
+            data_post['expiration'] = expedition + timedelta(
                 doc_type_user.document_type.days_validity)
         doc_types_user = DocumentTypeUserMail.objects.filter(
             usermail=user_email, active=True)
