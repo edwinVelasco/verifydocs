@@ -200,6 +200,17 @@ class PDFTools:
         self.__remove_files_temp(ref=ref)
         return security_app.create_hash_256_qr(file=file.read()), io.BytesIO(file.read()).getvalue()
 
+    def download_hash_qr(self, file_doc, user=None):
+        ref, file = self.__create_file_disk(file_doc=file_doc, user=user)
+        security_app = SecurityApp(pdf_tools=self)
+        return security_app.create_hash_256_qr(
+            file=file.read()), ref
+
+    def download_file(self, ref):
+        file = open(f'{settings.MEDIA_ROOT}/tmp/{ref}_original.pdf', 'rb')
+        self.__remove_files_temp(ref=ref)
+        return io.BytesIO(file.read()).getvalue()
+
     def get_hash_document(self, file_doc, user):
         ref = ''
         try:

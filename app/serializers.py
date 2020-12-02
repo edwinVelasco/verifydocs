@@ -36,6 +36,17 @@ class DocumentSerializer(serializers.ModelSerializer):
         )
 
 
+class DocumentSerializerApplicant(serializers.ModelSerializer):
+
+    class Meta:
+        model = Document
+        fields = (
+            'identification_applicant', 'name_applicant', 'email_applicant',
+            'expedition', 'file_original', 'token', 'hash', 'file_qr',
+            'hash_qr', 'doc_type_user'
+        )
+
+
 class DocumentListSerializer(serializers.ModelSerializer):
     doc_type_user = DocumentTypeUserMailSerializer(read_only=True)
 

@@ -32,7 +32,7 @@ from app.forms import DocumentSearchForm, DocumentTypeQRForm, DocumentForm
 from app.forms import DocumentTypeUserMailForm, DocumentSearchAdminForm
 
 from app.serializers import DocumentSerializer, DocumentTypeUserMailSerializer
-from app.serializers import DocumentListSerializer
+from app.serializers import DocumentListSerializer, DocumentSerializerApplicant
 
 from app.models import DocumentType, Dependence, UserMail, Document, \
     VerificationRequest
@@ -916,7 +916,7 @@ class TypeDocumentAplicationView(generics.ListAPIView):
 
 
 class DocumentCreateApplicationView(generics.CreateAPIView):
-    serializer_class = DocumentSerializer
+    serializer_class = DocumentSerializerApplicant
     permission_classes = (IsAuthenticated, )
     authentication_classes = (TokenAuthentication, )
 
@@ -927,15 +927,11 @@ class DocumentCreateApplicationView(generics.CreateAPIView):
             'name_applicant': request.data['name_applicant'],
             'email_applicant': request.data['email_applicant'],
             'expedition': request.data['expedition'],
-            'doc_type_user': request.data['doc_type_user']
+            'doc_type_user': int(request.data['doc_type_user'])
         }
         user_email = UserMail.objects.filter(email=request.user.email).last()
         doc_type_user = DocumentTypeUserMail.objects.get(
-            id=int(data_post['doc_type_user']))
-        if doc_type_user.document_type.days_validity:
-            expedition = datetime.strptime(data_post.get('expedition'), '%Y-%m-%d')
-            data_post['expiration'] = expedition + timedelta(
-                doc_type_user.document_type.days_validity)
+            id=data_post['doc_type_user'])
         doc_types_user = DocumentTypeUserMail.objects.filter(
             usermail=user_email, active=True)
         if not doc_type_user in doc_types_user:
@@ -943,6 +939,11 @@ class DocumentCreateApplicationView(generics.CreateAPIView):
                 dict(error='No tiene permiso para registrar este tipo '
                            'de documento'),
                 status=status.HTTP_400_BAD_REQUEST)
+        # data_post['doc_type_user'] = doc_type_user
+        if doc_type_user.document_type.days_validity:
+            expedition = datetime.strptime(data_post.get('expedition'), '%Y-%m-%d')
+            data_post['expiration'] = expedition + timedelta(
+                doc_type_user.document_type.days_validity)
 
         if 'file_original' in request.data:
             data_post['file_original'] = request.data['file_original']
@@ -955,9 +956,10 @@ class DocumentCreateApplicationView(generics.CreateAPIView):
 
             data_post['token'] = token
             data_post['hash'] = sha_256
-            data_post['hash_qr'], file = pdf_tool.create_hash_qr(
+            data_post['hash_qr'], ref = pdf_tool.download_hash_qr(
                 file_doc=out_file, user=self.request.user.id)
             data_post['file_qr'] = out_file
+            file = pdf_tool.download_file(ref=ref)
 
             serializer = self.serializer_class(data=data_post)
             if serializer.is_valid():
@@ -1002,7 +1004,8 @@ class LogoutApplicationView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         request.user.auth_token.delete()
         logout(request)
-        return Response('Cierre correcto', status=status.HTTP_200_OK)
+        return Response('Sesión cerrada correctamente',
+                        status=status.HTTP_200_OK)
 
 
 class LoginApplicationTestPostmanView(ObtainAuthToken):
@@ -1025,8 +1028,10 @@ class DownloadFileApplicationView(generics.GenericAPIView):
             doc_type = document.doc_type_user.document_type
             pdf_tool = PDFTools(pos_x=doc_type.pos_x, pos_y=doc_type.pos_y,
                                 scale=doc_type.scale)
-            _, file = pdf_tool.create_hash_qr(
-                file_doc=document.file_qr, user=request.user.id)
+
+            _, ref = pdf_tool.download_hash_qr(
+                file_doc=document.file_qr, user=self.request.user.id)
+            file = pdf_tool.download_file(ref=ref)
             response = HttpResponse(status=status.HTTP_201_CREATED,
                                     content_type='application/pdf')
             response['mimetype'] = 'application/pdf'
