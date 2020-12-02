@@ -825,7 +825,7 @@ class DocumentActiveView(UserAdminMixin, UpdateView):
         obj = self.model.objects.get(id=kwargs['pk'])
         obj.update_active()
         messages.success(self.request,
-                         f'Usuario {obj} ha sido actualizado')
+                         f'Documento con ID: {obj.id} ha sido actualizado')
         return redirect(get_url_to_redirect(self.request, 'filter',
                                             'documents_admin'))
 
