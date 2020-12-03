@@ -494,7 +494,7 @@ class UserMailUpdateView(UserAdminMixin, UpdateView):
             if usermail.email != self.request.POST['email']:
                 user.username = self.request.POST['email']
                 user.email = self.request.POST['email']
-                user.save()
+            user.save()
         except User.DoesNotExist:
             user = User.objects.create_user(data_post['email'],
                                             data_post['email'],
