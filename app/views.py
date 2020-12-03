@@ -2,6 +2,7 @@ import hashlib
 from datetime import datetime, timedelta
 import base64
 from django import forms
+from django.urls import reverse
 from django.views.generic.base import View
 from django.urls.base import reverse_lazy
 from urllib.parse import urlencode
@@ -74,7 +75,8 @@ class HomeView(UserMixin, View):
     template = 'home.html'
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template, {'user': request.user})
+        return redirect(reverse('documents_home'))
+        # return render(request, self.template, {'user': request.user})
 
 
 class AdminHomeView(UserAdminMixin, View):
@@ -137,6 +139,7 @@ class IndexView(CreateView):
                            'verifier_name': form.instance.verifier_name,
                            'document_name': document_name,
                            'url_token': token,
+                           'hostname': WEB_CLIENT_URL,
                            'end_validation': end_validation,
                        }, 'mail/email_request.html')
             applicant_name = form.instance.document.name_applicant
@@ -638,7 +641,11 @@ class DocumentListView(UserMixin, ListView):
                 self.request.GET.get('is_active', '') == '' and \
                 self.request.GET.get('applicant', '') == '' and \
                 self.request.GET.get('expedition', '') == '':
-            return self.model.objects.all()
+            docs_types = DocumentTypeUserMail.objects.filter(
+                usermail__email=self.request.user.email, active=True)
+            return self.model.objects.filter(
+                doc_type_user__document_type__in=[w.document_type for w in
+                                                  docs_types])
         params = dict()
         if 'is_enable' in self.request.GET:
             params['enable'] = True

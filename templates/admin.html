@@ -72,13 +72,6 @@
                 <div class="containermenu">
                     <div class="container">
                         <ul class="nav navbar-nav" style="float:left;">
-                            <li class="nodropdown {% if '/admin' in request.path  %}active{% endif %}">
-                                <a href="{% url 'admon' %}"
-                                   class="dropdown-toggle disabled"
-                                   data-toggle="dropdown">
-                                    <i class="fa fa-home fa-lg"></i>
-                                </a>
-                            </li>
                             <li class="nodropdown {% if '/documents_admin' in request.path  %}active{% endif %}">
                                 <a href="{% url 'documents_admin' %}"
                                    class="dropdown-toggle disabled"

@@ -26,7 +26,7 @@ class UserMixin(LoginRequiredMixin):
             return redirect(reverse('logout'))
         user_email = user_email.first()
         if user_email.role == 1:
-            return redirect(reverse('admon'))
+            return redirect(reverse('documents_admin'))
 
         if user_email.role == 3:
             messages.warning(request=request,

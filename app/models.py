@@ -116,6 +116,7 @@ class UserMail(models.Model):
             if not doc_type.active:
                 continue
             return doc_type.dependence.name
+        return 'Sin dependencia'
 
 
 class DocumentTypeUserMail(models.Model):
