@@ -205,7 +205,7 @@ Copiar el siguiente texto en el archivo de configuración
 ```text
 [program:verifydocs_gunicorn]
 directory=/home/<usuario>/verifydocs
-command=/home/<usuario>/.virtualenvs/verifydocs/bin/gunicorn --workers 2 --bind unix:/home/<usuario>/verifydocs/verifydocs.sock verifydocs.wsgi:appl$
+command=/home/<usuario>/.virtualenvs/verifydocs/bin/gunicorn --workers 2 --bind unix:/home/<usuario>/verifydocs/verifydocs.sock  --certfile /home/<usuario>/ssl/file.crt --keyfile /home/<usuario>/ssl/file.key verifydocs.wsgi:application
 autostart=true
 autorestart=true
 stderr_logfile=/var/log/verifydocs/gunicorn.out.log
@@ -296,14 +296,16 @@ Para obtener credenciales de Google API Console use la siguiente
 tendrá un resultado como se muestra en la siguiente imagen:
 ![img](https://dl.dropboxusercontent.com/s/n4bgqgc1krtzwhc/WhatsApp%20Image%202020-11-22%20at%209.53.57%20AM.jpeg?dl=0)
 
-Ingrese a través del explorador web al proyecto, con la ruta admin e
- iniciar sesión.
- ```shell script
+Ingrese a través del explorador web al proyecto, con la ruta admin e iniciar sesión.
+ 
+ ```text
 Ejemplo: https://verifydocs.ufps.edu.co/admin/
 ```
-Debe agregar un nuevo site,
-para esto presione el botón *add* que se encuentra delante del modelo *sites*
+
+Debe agregar un nuevo site, para esto presione el botón *add* que se encuentra delante del modelo *sites*
+
 ![img](https://dl.dropboxusercontent.com/s/zm19utfs6ewum29/Captura%20de%20pantalla%20de%202020-11-20%2013-54-37.png?dl=0)
+
 En los campos de *Domain name* y *Display name* el valor de *https://verifydocs.ufps.edu.co* 
 y presionar el botón guardar.
 
@@ -322,9 +324,11 @@ y descargue el archivo json del servicio.
 
 Cargue el archivo en la siguiente ruta del servidor en donde se 
 encuentra alojado el aplicativo y con el mismo nombre
-```shell script
+
+ ```shell script
 $ verifydocs/tools/storage_key_file.json
 ```
+
 ***
 ### Demo
 
