@@ -444,16 +444,17 @@ class UserMailCreateView(UserAdminMixin, CreateView):
             'role': self.request.POST['role'],
             'active': self.request.POST['active'],
             'document_types': self.request.POST.get('document_types', []),
-            'password': '12345678'
+            'password': ''
         }
-        password = self.request.POST['password']
+        password = self.request.POST.get('password', None)
         if password:
             try:
                 u = User.objects.get(username=self.request.POST['email'])
                 u.set_password(password)
                 u.save()
             except User.DoesNotExist:
-                user = User.objects.create_user(data_post['email'], data_post['email'],
+                user = User.objects.create_user(username=data_post['email'],
+                                                email=data_post['email'],
                                                 password=password).save()
 
         form_extra = UserMailForm(data=data_post)
@@ -484,7 +485,7 @@ class UserMailUpdateView(UserAdminMixin, UpdateView):
             'email': self.request.POST['email'],
             'role': self.request.POST['role'],
             'active': self.request.POST['active'],
-            'password': '12345678'
+            'password': self.request.POST.get('password', '')
         }
         password = self.request.POST['password']
         try:
@@ -499,7 +500,7 @@ class UserMailUpdateView(UserAdminMixin, UpdateView):
             user = User.objects.create_user(data_post['email'],
                                             data_post['email'],
                                             password=password).save()
-        form_extra = UserMailForm(data=data_post)
+        form_extra = self.form_class(data=data_post, instance=usermail)
         if form_extra.is_valid():
             return super(UserMailUpdateView, self).form_valid(form_extra)
         return super(UserMailUpdateView, self).form_valid(form)

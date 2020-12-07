@@ -111,8 +111,10 @@
                             </div>-->
                             <div class="col-md-7 col-sm-8 col-xs-7 text-right">
                                 <a href="https://www.colombia.co/" target="_blank">
+
                                     <img class="header-banner" src="{% static 'app/rsc/img/escudo_colombia.png' %}"
-                                         style="max-height:100px;" alt="Escudo de colombia" ></a>
+                                     style="max-height:100px;" alt="Escudo de colombia" >
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -136,12 +138,14 @@
                 <br>
                 <div class="row text-center" ng-hide="!cameraRequested">
                     <h4 class="font-bold">¡Acerque el código QR a la camara web!</h4>
-                    <div class="col-md-12">
-                        <bc-qr-reader active="cameraRequested"
-                                      on-result="processURLfromQR"
-                                      on-error="onError" camera-status="cameraIsOn"
-                        ></bc-qr-reader>
-                    </div>
+
+                    <bc-qr-reader active="cameraRequested"
+                                  on-result="processURLfromQR"
+                                  on-error="onError" camera-status="cameraIsOn"
+                    ></bc-qr-reader>
+                    <br>
+                    <caption>Acercar el codigo QR a la camara web</caption>
+                    <a href="/" class="button">Cancelar</a>
                 </div>
                 <div class="row" ng-hide="cameraRequested" style="padding: 20px">
                     <div class="text-center">

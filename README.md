@@ -292,8 +292,8 @@ $ python manage.py createsuperuser
 ### Configurar servicios Google API
 #### OAuth 2.0
 Para obtener credenciales de Google API Console use la siguiente 
-[guía](https://developers.google.com/identity/protocols/oauth2?authuser=1).
-tendrá un resultado como se muestra en la siguiente imagen:
+[guía](https://developers.google.com/identity/protocols/oauth2?authuser=1) tendrá un resultado como se muestra en la siguiente imagen:
+
 ![img](https://dl.dropboxusercontent.com/s/n4bgqgc1krtzwhc/WhatsApp%20Image%202020-11-22%20at%209.53.57%20AM.jpeg?dl=0)
 
 Ingrese a través del explorador web al proyecto, con la ruta admin e iniciar sesión.
@@ -328,6 +328,8 @@ encuentra alojado el aplicativo y con el mismo nombre
  ```shell script
 $ verifydocs/tools/storage_key_file.json
 ```
+
+
 
 ***
 ### Demo

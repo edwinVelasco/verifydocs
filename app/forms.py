@@ -288,7 +288,7 @@ class UserMailForm(forms.ModelForm):
 
         if int(role) == 3:
             try:
-                user = User.objects.get(username=email)
+                user = User.objects.get(username=self.instance.email)
             except User.DoesNotExist:
                 if not password:
                     self.add_error('password',
