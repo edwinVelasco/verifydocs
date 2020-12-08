@@ -6,6 +6,14 @@
             <div class="shop-h1 col-md-6 col-sm-6 col-xs-6"
                 style="font-size: 30px;"><b>Usuarios permitidos</b></div>
             <div class="col-md-6 col-sm-6 col-xs-6 text-right">
+                <a class="btn btn-default"
+                   style="margin-top: 14px !important;" role="button" data-toggle="modal" data-target="#exampleModalOne">
+                    <i class="fa fa-info-circle"></i> Usuarios administrativos
+                </a>
+                <a class="btn btn-default"
+                   style="margin-top: 14px !important;" role="button" data-toggle="modal" data-target="#exampleModalTwo">
+                    <i class="fa fa-info-circle"></i> Usuarios de aplicación
+                </a>
                 <a class="btn btn-primary"
                    style="margin-top: 14px !important;"
                    href="{% url 'allowed_user_create' %}" role="button">
@@ -139,4 +147,52 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="exampleModalOne" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <span class="modal-title" id="exampleModalLabel" style="font-size: large">Gestión de usuarios administrativos</span>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <iframe width="560" height="315" src="https://www.youtube.com/embed/tunVhCVdHuY" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="exampleModalTwo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <span class="modal-title" id="exampleModalLabel" style="font-size: large">Gestión de usuarios de aplicación</span>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <iframe width="560" height="315" src="https://www.youtube.com/embed/cBDcZRV2elY" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+{% block javascript %}
+    {{ block.super }}
+    <script>
+        $("#exampleModalOne").on('hidden.bs.modal', function (e) {
+            $("#exampleModalOne iframe").attr("src", $("#exampleModalOne iframe").attr("src"));
+        });
+        $("#exampleModalTwo").on('hidden.bs.modal', function (e) {
+            $("#exampleModalTwo iframe").attr("src", $("#exampleModalTwo iframe").attr("src"));
+        });
+    </script>
 {% endblock %}
