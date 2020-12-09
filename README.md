@@ -329,6 +329,17 @@ encuentra alojado el aplicativo y con el mismo nombre
 $ verifydocs/tools/storage_key_file.json
 ```
 
+#### Crear el usuario administrador en VerifyDcos
+
+Regresar a la lista de modelos y presionar el botón add del modelo Correos permitidos e ingresar los siguientes valores:
+![](https://dl.dropboxusercontent.com/s/4ay1u4mmve74g8a/admin.png?dl=0)
+
+Registrar el correo del adminitrador
+
+![](https://dl.dropboxusercontent.com/s/r57kkqpjg85hsnm/data_admin.png?dl=0)
+
+Ingresar a VerifyDocs para iniciar sesión por primera vez con las credenciales de la cuenta institucional.
+
 
 
 ***
